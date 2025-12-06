@@ -9,10 +9,14 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@tabler/icons-react": "^3.35.0",
     "class-variance-authority": "^0.7.1",
     "cloudinary": "^2.8.0",
     "clsx": "^2.1.1",
+    "cobe": "^0.6.5",
+    "framer-motion": "^12.23.25",
     "lucide-react": "^0.556.0",
+    "motion": "^12.23.25",
     "next": "16.0.7",
     "next-cloudinary": "^6.17.5",
     "react": "19.2.0",
