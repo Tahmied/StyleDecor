@@ -1,4 +1,4 @@
-import Btn from '@/Components/Utils/Btn';
+import Btn from '@/components/Utils/Btn';
 import Link from "next/link";
 import HeadingLight from "../Utils/HeadingLight";
 
@@ -25,8 +25,8 @@ export default function LatestArticles() {
     ];
 
     return (
-        <div className="w-full py-16 px-4 sm:px-6 lg:px-8">
-            <HeadingLight />
+        <div className="w-full py-16 px-4 sm:px-6 lg:px-8 bg-[#9fadbe]">
+            <HeadingLight text={'Blogs'} />
             <div className="max-w-7xl mx-auto">
                 <div className="grid w-[90%] grid-cols-1 lg:max-w-full lg:w-[90%] mx-auto lg:grid-cols-2 gap-8 lg:gap-12">
                     {/* pinned artile */}

@@ -1,5 +1,5 @@
 'use client'
-import Cta from '@/Components/Utils/Cta';
+import Cta from '@/components/Utils/Cta';
 import Link from "next/link";
 import { useState } from 'react';
 import styled from 'styled-components';
@@ -113,7 +113,7 @@ const Header = ({children}) => {
 
                         <Link href={'/'}>
                             <div className="cursor-pointer">
-                                <p className="font-logo text-[40px] font-bold">StyleDecor</p>
+                                <p className="font-logo text-[40px] text-[#DEEBFA] font-bold">StyleDecor</p>
                             </div>
                         </Link>
 

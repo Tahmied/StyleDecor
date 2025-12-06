@@ -1,6 +1,6 @@
 'use client';
 
-import Heading from '@/Components/Utils/Heading';
+import Heading from '@/components/Utils/Heading';
 import { useState } from 'react';
 
 // Dummy data - replace with database fetch later
@@ -24,7 +24,7 @@ const PROJECTS_DATA = [
   {
     id: 2,
     mainImage: '/Images/section-four/project-one-pinned.png',
-    packageType: 'Home Decor',
+    packageType: 'Marriage Decor',
     price: '$10,000 BDT',
     videoThumbnail: '/Images/section-four/fourth-video-thumbnail.png',
     thumbnails: [
@@ -85,17 +85,17 @@ const ProjectSection = ({ project, index }) => {
               }}
             />
 
-            <button className="project-pinned-pic-btn flex flex-col items-center justify-center w-[31%] h-[16%] bg-[rgba(255,255,255,0.94)] rounded-[900px] absolute bottom-[13px] left-0 border-none outline-none cursor-pointer hover:scale-105 hover:brightness-110 transition-all">
+            <button className="project-pinned-pic-btn flex flex-col items-center justify-center w-[31%] h-[16%] bg-[#9FADBE] rounded-[900px] absolute bottom-[13px] left-0 border-none outline-none cursor-pointer hover:scale-[1.01] hover:brightness-110 transition-all">
               <p className="package-type font-['Urbanist'] font-semibold text-[#0B141F]">
                 {project.packageType}
               </p>
-              <p className="package-price font-['Urbanist'] font-medium text-[#293B52]">
+              <p className="package-price font-['Urbanist'] font-medium text-[#0B141F]">
                 {project.price}
               </p>
             </button>
 
-            <button className="project-details-page-indicator-btn absolute top-[10px] right-[10px] bg-[rgba(255,255,255,0.9)] border-none outline-none cursor-pointer px-[20px] py-[12px] rounded-[50px] flex items-center gap-[8px] z-[9999] hover:scale-105 hover:brightness-115 transition-all">
-              <span className="project-button-text font-['Urbanist'] text-[14px] font-medium text-[#0B141F] relative right-[5px]">
+            <button className="project-details-page-indicator-btn absolute top-[10px] right-[10px] bg-[#9FADBE] border-none outline-none cursor-pointer px-[20px] py-[10px] rounded-[50px] flex items-center gap-[5px] z-[9999] hover:scale-105 hover:brightness-115 transition-all">
+              <span className="project-button-text font-urbanist text-[15px] font-medium text-[#0B141F]">
                 Order Now
               </span>
               <img

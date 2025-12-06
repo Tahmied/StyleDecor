@@ -1,7 +1,7 @@
-import CustomerReviews from '@/Components/Homepage/CustomerReviews';
-import LatestArticles from '@/Components/Homepage/LatestArticles';
-import Packages from '@/Components/Homepage/Packages';
-import TrustedCompanies from '@/Components/Homepage/TrustedCompanies';
+import CustomerReviews from '@/components/Homepage/CustomerReviews';
+import LatestArticles from '@/components/Homepage/LatestArticles';
+import Packages from '@/components/Homepage/Packages';
+import TrustedCompanies from '@/components/Homepage/TrustedCompanies';
 
 const Page = () => {
     return (

@@ -1,5 +1,5 @@
-import Header from "@/Components/Header";
-import Hero from "@/Components/Homepage/Hero";
+import Header from "@/components/Header";
+import Hero from "@/components/Homepage/Hero";
 import type { Metadata } from "next";
 import { Geist_Mono, Urbanist } from "next/font/google";
 import localFont from 'next/font/local';

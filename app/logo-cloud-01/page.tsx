@@ -1,4 +1,4 @@
-import LogoCloud from '@/components/shadcn-studio/blocks/logo-cloud-01/logo-cloud-01';
+import LogoCloud from '@/components/shadcn-studio/blocks/logo-cloud-01/logo-cloud-01'
 
 const logos = [
   {
@@ -43,9 +43,8 @@ const logos = [
   }
 ]
 
-
-export default function TrustedCompanies() {
-  return (
-       <LogoCloud logos={logos} />
-  );
+const LogoCloudPage = () => {
+  return <LogoCloud logos={logos} />
 }
+
+export default LogoCloudPage

@@ -1,4 +1,4 @@
-import SearchBar from '@/Components/Homepage/SearchBar';
+import SearchBar from '@/components/Homepage/SearchBar';
 
 const Hero = () => {
     return (
