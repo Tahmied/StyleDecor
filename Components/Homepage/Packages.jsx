@@ -6,33 +6,33 @@ import { useState } from 'react';
 const PROJECTS_DATA = [
   {
     id: 1,
-    mainImage: '/images/section-four/project-one-pinned.png',
+    mainImage: '/Images/section-four/project-one-pinned.png',
     packageType: 'Home Decor',
     price: '$10,000 BDT',
-    videoThumbnail: '/images/section-four/fourth-video-thumbnail.png',
+    videoThumbnail: '/Images/section-four/fourth-video-thumbnail.png',
     thumbnails: [
-      '/images/section-four/project-one-pinned.png',
-      '/images/section-four/other-project-one-imgs1.png',
-      '/images/section-four/other-project-one-imgs1.png',
-      '/images/section-four/other-project-one-imgs2.png',
-      '/images/section-four/other-project-one-imgs3.png',
-      '/images/section-four/other-project-one-imgs-3.png',
+      '/Images/section-four/project-one-pinned.png',
+      '/Images/section-four/other-project-one-imgs1.png',
+      '/Images/section-four/other-project-one-imgs1.png',
+      '/Images/section-four/other-project-one-imgs2.png',
+      '/Images/section-four/other-project-one-imgs3.png',
+      '/Images/section-four/other-project-one-imgs-3.png',
     ],
     reversed: false,
   },
   {
     id: 2,
-    mainImage: '/images/section-four/project-one-pinned.png',
+    mainImage: '/Images/section-four/project-one-pinned.png',
     packageType: 'Home Decor',
     price: '$10,000 BDT',
-    videoThumbnail: '/images/section-four/fourth-video-thumbnail.png',
+    videoThumbnail: '/Images/section-four/fourth-video-thumbnail.png',
     thumbnails: [
-      '/images/section-four/project-one-pinned.png',
-      '/images/section-four/other-project-one-imgs1.png',
-      '/images/section-four/other-project-one-imgs1.png',
-      '/images/section-four/other-project-one-imgs2.png',
-      '/images/section-four/other-project-one-imgs3.png',
-      '/images/section-four/other-project-one-imgs-3.png',
+      '/Images/section-four/project-one-pinned.png',
+      '/Images/section-four/other-project-one-imgs1.png',
+      '/Images/section-four/other-project-one-imgs1.png',
+      '/Images/section-four/other-project-one-imgs2.png',
+      '/Images/section-four/other-project-one-imgs3.png',
+      '/Images/section-four/other-project-one-imgs-3.png',
     ],
     reversed: true,
   },
@@ -58,7 +58,7 @@ const ProjectSection = ({ project, index }) => {
         {/* Overlay Shadow - only for first section */}
         {!project.reversed && (
           <img
-            src="/images/section-four/fourth-overlay-shadow.png"
+            src="/Images/section-four/fourth-overlay-shadow.png"
             alt=""
             className="absolute left-1/2 -translate-x-1/2 w-full pointer-events-none"
           />
@@ -110,10 +110,10 @@ const ProjectSection = ({ project, index }) => {
             {/* Details Button */}
             <button className="project-details-page-indicator-btn absolute top-[10px] right-[10px] bg-[rgba(255,255,255,0.9)] border-none outline-none cursor-pointer px-[20px] py-[12px] rounded-[50px] flex items-center gap-[8px] z-[9999] hover:scale-105 hover:brightness-115 transition-all">
               <span className="project-button-text font-['Urbanist'] text-[14px] font-medium text-[#0B141F] relative right-[5px]">
-                Click for details
+                Order Now
               </span>
               <img
-                src="/images/hero/button-arrow.svg"
+                src="/Images/section-four/button-arrow.svg"
                 alt=""
                 className="cta-btn-arrow h-[40px] w-[40px] relative left-[10px]"
               />
@@ -164,7 +164,7 @@ const ProjectSection = ({ project, index }) => {
               PLAY
             </p>
             <img
-              src="/images/section-four/video-play-icon.svg"
+              src="/Images/section-four/video-play-icon.svg"
               alt="Play"
               className="video-play-icon w-auto h-auto"
             />
