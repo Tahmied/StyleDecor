@@ -222,10 +222,33 @@ const ProjectSection = ({ project, index }) => {
           }
         }
 
-        @media (max-width: 1270px) {
+        /* Fix for 1270px to 1100px */
+        @media (max-width: 1270px) and (min-width: 1101px) {
+          .pinned-project-img {
+            width: 100% !important;
+            height: 515px !important;
+            min-height: 515px !important;
+          }
           .fourth-right img {
-            width: 120px;
-            height: 127px;
+            width: auto;
+            height: 160px;
+          }
+          .video-play-icon {
+            width: 180px;
+            height: auto;
+          }
+        }
+
+        /* Fix for 1100px to 1025px */
+        @media (max-width: 1100px) and (min-width: 1025px) {
+          .pinned-project-img {
+            width: 100% !important;
+            height: 450px !important;
+            min-height: 450px !important;
+          }
+          .fourth-right img {
+            width: auto;
+            height: 135px;
           }
           .video-play-icon {
             width: 180px;
@@ -234,10 +257,6 @@ const ProjectSection = ({ project, index }) => {
         }
 
         @media (max-width: 1200px) {
-          .fourth-right img {
-            width: 100px;
-            height: 107px;
-          }
           .video-play-icon {
             width: 120px;
             height: auto;
