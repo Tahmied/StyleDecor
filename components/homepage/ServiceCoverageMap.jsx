@@ -1,5 +1,5 @@
 "use client";
-
+import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { ArrowRight, Clock, MapPin, Navigation, Star } from "lucide-react";
 import { useRef, useState } from "react";
@@ -61,7 +61,7 @@ export default function ServiceCoverageMap() {
         <div ref={mapRef} className="mb-12">
           <div className="bg-white rounded-3xl overflow-hidden shadow-xl h-[500px] md:h-[600px] relative">
             <MapContainer
-              center={[40.7128, -74.006]}
+              center={[23.1675203, 89.2217594]}
               zoom={11}
               scrollWheelZoom={false}
               dragging={true}
@@ -75,7 +75,7 @@ export default function ServiceCoverageMap() {
 
               <FlyToArea coords={activeCoords} />
 
-              <Marker icon={customIcon} position={[40.7128, -74.006]}>
+              <Marker icon={customIcon} position={[23.1675203, 89.2217594]}>
                 <Popup>
                   <div className="p-3">
                     <h3 className="font-bold text-gray-900 mb-1 text-lg">Main Office</h3>
