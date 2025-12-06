@@ -90,8 +90,8 @@ export default function LatestArticles() {
 
                         ))}
 
-                        <div className="flex justify-end pt-4">
-                            <Btn text={'View All'} link={'/'}/>
+                        <div className="flex justify-start pt-4">
+                            <Btn text={'View All'} link={'/'} />
                         </div>
                     </div>
 

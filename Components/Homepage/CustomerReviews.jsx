@@ -102,7 +102,7 @@ export default function CustomerReviews() {
              
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-start">
-                    {/* Left Column - Image and Rating with Slide Animation */}
+
                     <div 
                         className={`relative transition-all duration-600 ease-in-out ${
                             isTransitioning ? 'opacity-0 transform translate-x-[-20px]' : 'opacity-100 transform translate-x-0'
@@ -116,7 +116,6 @@ export default function CustomerReviews() {
                             />
                         </div>
 
-                        {/* Rating Badge */}
                         <div className="absolute bottom-6 left-6 bg-white rounded-2xl px-6 py-4 shadow-lg max-[426px]:hidden">
                             <div className="flex items-center gap-3 mb-2">
                                 <span className="text-5xl font-bold text-gray-900">4.5</span>
@@ -136,21 +135,18 @@ export default function CustomerReviews() {
                         </div>
                     </div>
 
-                    {/* Right Column - Reviews Carousel with Slide Animation */}
                     <div className="flex flex-col">
-                        {/* Title */}
                         <h2 className="text-4xl sm:text-5xl font-bold text-[#deebfacc] mb-4 leading-tight max-[1023px]:hidden">
                             Our Clients Share Their Design Journeys
                         </h2>
 
-                        {/* Review Card */}
                         <div className="relative">
                             <div 
                                 className={`bg-[#9fadbe] rounded-3xl p-8 mb-8 transition-all duration-600 ease-in-out ${
                                     isTransitioning ? 'opacity-0 transform translate-x-[20px]' : 'opacity-100 transform translate-x-0'
                                 }`}
                             >
-                                {/* Client Image and Stars */}
+                                
                                 <div className="flex items-start gap-6 mb-6 max-[400px]:flex-col max-[400px]:gap-2 max-[400px]:items-center">
                                     <img
                                         src={reviews[currentSlide].image}
@@ -173,12 +169,11 @@ export default function CustomerReviews() {
                                 </p>
                             </div>
 
-                            {/* Navigation Buttons */}
                             <div className="flex justify-end gap-3">
                                 <button
                                     onClick={prevSlide}
                                     disabled={isTransitioning}
-                                    className="w-12 h-12 rounded-full bg-[#9fadbe] hover:bg-[#8a9dae] flex items-center justify-center transition-colors disabled:opacity-50"
+                                    className="w-12 h-12 cursor-pointer rounded-full bg-[#9fadbe] hover:bg-[#8a9dae] flex items-center justify-center transition-colors disabled:opacity-50"
                                     aria-label="Previous review"
                                 >
                                     <svg className="w-6 h-6" fill="none" stroke="#0b141f" viewBox="0 0 24 24">
@@ -188,7 +183,7 @@ export default function CustomerReviews() {
                                 <button
                                     onClick={nextSlide}
                                     disabled={isTransitioning}
-                                    className="w-12 h-12 rounded-full bg-[#9fadbe] hover:bg-[#8a9dae] text-white flex items-center justify-center transition-colors disabled:opacity-50"
+                                    className="w-12 h-12 cursor-pointer rounded-full bg-[#9fadbe] hover:bg-[#8a9dae] text-white flex items-center justify-center transition-colors disabled:opacity-50"
                                     aria-label="Next review"
                                 >
                                     <svg className="w-6 h-6" fill="none" stroke="#0b141f" viewBox="0 0 24 24">
@@ -197,7 +192,7 @@ export default function CustomerReviews() {
                                 </button>
                             </div>
 
-                            {/* Slide Indicators */}
+
                             <div className="flex justify-center gap-2 mt-6">
                                 {reviews.map((_, index) => (
                                     <button

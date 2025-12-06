@@ -10,7 +10,6 @@ const Page = () => {
             <Packages />
             <CustomerReviews />
             <LatestArticles />
-
         </>
     );
 };
