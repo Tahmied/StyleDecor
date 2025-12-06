@@ -1,5 +1,6 @@
 'use client';
 
+import Heading from '@/Components/Utils/Heading';
 import { useState } from 'react';
 
 // Dummy data - replace with database fetch later
@@ -50,12 +51,11 @@ const ProjectSection = ({ project, index }) => {
 
   return (
     <section
-      className={`relative overflow-hidden py-8 ${
-        project.reversed ? 'bg-transparent pt-12' : 'bg-[#0B141F]'
-      }`}
+      className={`relative overflow-hidden pb-12 ${project.reversed ? 'bg-transparent pt-12 pb-12' : 'bg-[#0B141F]'
+        }`}
     >
       <div className="relative mx-auto w-[90%] overflow-hidden">
-        {/* Overlay Shadow - only for first section */}
+
         {!project.reversed && (
           <img
             src="/Images/section-four/fourth-overlay-shadow.png"
@@ -64,29 +64,17 @@ const ProjectSection = ({ project, index }) => {
           />
         )}
 
-        {/* Heading - only for first section */}
         {index === 0 && (
-          <h2
-            className="font-['Urbanist'] font-normal text-[40px] md:text-[60px] lg:text-[90px] text-center capitalize mb-8"
-            style={{
-              background:
-                'linear-gradient(90deg, #0B141F 0%, #BAC9DD 33.17%, #BAC9DD 60.1%, #0B141F 100%)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              backgroundClip: 'text',
-            }}
-          >
-            Featured Projects
-          </h2>
+          <div className='py-8'>
+            <Heading text={'Featured Packages'} />
+          </div>
+
         )}
 
-        {/* Project Container */}
         <div
-          className={`max-w-[1300px] mx-auto flex flex-col md:flex-row ${
-            project.reversed ? 'md:flex-row-reverse' : ''
-          } justify-around items-center gap-4`}
+          className={`max-w-[1300px] mx-auto flex flex-col md:flex-row ${project.reversed ? 'md:flex-row-reverse' : ''
+            } justify-around items-center gap-4`}
         >
-          {/* Left - Main Image */}
           <div className="relative w-full md:w-auto">
             <img
               src={activeImage}
@@ -97,7 +85,6 @@ const ProjectSection = ({ project, index }) => {
               }}
             />
 
-            {/* Package Info Button */}
             <button className="project-pinned-pic-btn flex flex-col items-center justify-center w-[31%] h-[16%] bg-[rgba(255,255,255,0.94)] rounded-[900px] absolute bottom-[13px] left-0 border-none outline-none cursor-pointer hover:scale-105 hover:brightness-110 transition-all">
               <p className="package-type font-['Urbanist'] font-semibold text-[#0B141F]">
                 {project.packageType}
@@ -107,7 +94,6 @@ const ProjectSection = ({ project, index }) => {
               </p>
             </button>
 
-            {/* Details Button */}
             <button className="project-details-page-indicator-btn absolute top-[10px] right-[10px] bg-[rgba(255,255,255,0.9)] border-none outline-none cursor-pointer px-[20px] py-[12px] rounded-[50px] flex items-center gap-[8px] z-[9999] hover:scale-105 hover:brightness-115 transition-all">
               <span className="project-button-text font-['Urbanist'] text-[14px] font-medium text-[#0B141F] relative right-[5px]">
                 Order Now
@@ -120,7 +106,6 @@ const ProjectSection = ({ project, index }) => {
             </button>
           </div>
 
-          {/* Right - Thumbnail Grid */}
           <div className="fourth-right grid grid-cols-2 items-center gap-4">
             {project.thumbnails.map((thumbnail, idx) => (
               <div
@@ -141,8 +126,7 @@ const ProjectSection = ({ project, index }) => {
           </div>
         </div>
 
-        {/* Video Container */}
-        <div className="fourth-video-container flex justify-center items-center rounded-[25px] max-w-[1300px] mx-auto mt-20 relative">
+        <div className="fourth-video-container flex justify-center items-center rounded-[25px] max-w-[1300px] mx-auto mt-8 relative">
           <img
             src={project.videoThumbnail}
             alt="Video"
@@ -187,7 +171,7 @@ const ProjectSection = ({ project, index }) => {
       </div>
 
       <style jsx>{`
-        /* Base styles for pinned image */
+       
         .pinned-project-img {
           width: 100%;
           height: 566px;
@@ -195,7 +179,8 @@ const ProjectSection = ({ project, index }) => {
           aspect-ratio: 985 / 566;
         }
 
-        /* Package info button base styles */
+     
+
         .package-type {
           font-size: 18px;
           line-height: 1.2;
@@ -206,7 +191,7 @@ const ProjectSection = ({ project, index }) => {
           line-height: 1.2;
         }
 
-        /* Responsive Styles */
+        
         @media (max-width: 1350px) {
           .fourth-video-thumbnail {
             width: 90%;
@@ -222,7 +207,7 @@ const ProjectSection = ({ project, index }) => {
           }
         }
 
-        /* Fix for 1270px to 1100px */
+        
         @media (max-width: 1270px) and (min-width: 1101px) {
           .pinned-project-img {
             width: 100% !important;
@@ -239,7 +224,6 @@ const ProjectSection = ({ project, index }) => {
           }
         }
 
-        /* Fix for 1100px to 1025px */
         @media (max-width: 1100px) and (min-width: 1025px) {
           .pinned-project-img {
             width: 100% !important;
@@ -449,7 +433,6 @@ const ProjectSection = ({ project, index }) => {
 export default function Packages() {
   return (
     <>
-      {/* SVG Clip Path Definition */}
       <svg width="0" height="0" style={{ position: 'absolute' }}>
         <defs>
           <clipPath id="projectClip" clipPathUnits="objectBoundingBox">
@@ -458,7 +441,6 @@ export default function Packages() {
         </defs>
       </svg>
 
-      {/* Render all projects */}
       {PROJECTS_DATA.map((project, index) => (
         <ProjectSection key={project.id} project={project} index={index} />
       ))}
