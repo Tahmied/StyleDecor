@@ -3,7 +3,6 @@ import Cta from '@/Components/Utils/Cta';
 import Link from "next/link";
 import { useState } from 'react';
 import styled from 'styled-components';
-import Hero from './Homepage/Hero';
 
 const menuItems = [
     { name: 'Services', Link: '/services' },
@@ -103,7 +102,7 @@ const MobileMenu = ({ menuOpen }) => {
 
 
 
-const Header = () => {
+const Header = ({children}) => {
     const [menuOpen, isMenuOpen] = useState(false)
     return (
         <>
@@ -149,7 +148,7 @@ const Header = () => {
                     <MobileMenu menuOpen={menuOpen} />
 
                 </header>
-                <Hero />
+                {children}
             </div>
 
         </>

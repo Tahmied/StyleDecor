@@ -1,9 +1,9 @@
-import Header from '@/Components/Header';
+import Packages from '@/Components/Homepage/Packages';
 
 const Page = () => {
     return (
         <>
-            <Header />
+            <Packages />
         </>
     );
 };

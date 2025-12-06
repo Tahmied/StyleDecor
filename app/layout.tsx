@@ -1,3 +1,5 @@
+import Header from "@/Components/Header";
+import Hero from "@/Components/Homepage/Hero";
 import type { Metadata } from "next";
 import { Geist_Mono, Urbanist } from "next/font/google";
 import localFont from 'next/font/local';
@@ -40,6 +42,7 @@ export default function RootLayout({
       <body
         className={`${urbanist.variable} ${geistMono.variable} ${logoFont.variable} antialiased`}
       >
+        <Header><Hero /></Header>
         {children}
       </body>
     </html>

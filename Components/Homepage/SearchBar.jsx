@@ -1,3 +1,4 @@
+'use client'
 import { ChevronDown, Search, X } from 'lucide-react';
 import { useState } from 'react';
 
