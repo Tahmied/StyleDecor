@@ -152,7 +152,6 @@ export default function TopDecorators() {
   );
 }
 
-// Dummy data - in production, this would come from your server
 const decorators = [
   {
     id: 1,
