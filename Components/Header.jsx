@@ -3,6 +3,7 @@ import Cta from '@/Components/Utils/Cta';
 import Link from "next/link";
 import { useState } from 'react';
 import styled from 'styled-components';
+import Hero from './Homepage/Hero';
 
 const menuItems = [
     { name: 'Services', Link: '/services' },
@@ -102,11 +103,11 @@ const MobileMenu = ({ menuOpen }) => {
 
 
 
-const HeaderToHero = () => {
+const Header = () => {
     const [menuOpen, isMenuOpen] = useState(false)
     return (
         <>
-            <div className="h-[60vh] bg-[#0B141F]">
+            <div className="h-[80vh] flex flex-col bg-[#0B141F]">
                 {/* desktop header */}
                 <header className="w-full max-md:hidden">
                     <div className="header-container flex justify-between max-w-[1300px] w-[90%] items-center mx-auto py-8">
@@ -134,7 +135,7 @@ const HeaderToHero = () => {
 
                     </div>
                 </header>
-
+                {/* mobile header */}
                 <header className='md:hidden w-full'>
                     <div className="m-header-container w-[90%] mx-auto flex justify-between items-center py-8">
                         <Link href={'/'}>
@@ -148,16 +149,11 @@ const HeaderToHero = () => {
                     <MobileMenu menuOpen={menuOpen} />
 
                 </header>
-
-                <section className="hero">
-                    <div className="hero-container">
-                        {/* adding letter */}
-                    </div>
-                </section>
+                <Hero />
             </div>
 
         </>
     );
 };
 
-export default HeaderToHero;
+export default Header;
