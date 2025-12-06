@@ -1,5 +1,9 @@
-@import url('https://fonts.googleapis.com/css2?family=Sora:wght@100..800&family=Urbanist:ital,wght@0,100..900;1,100..900&display=swap');
 @import "tailwindcss";
+
+@theme {
+  --font-logo: var(--font-custom);
+  --font-urbanist: var(--font-urbanist);
+}
 
 :root {
   --background: #ffffff;
@@ -15,7 +19,7 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
+    --background: #9FADBE;
     --foreground: #ededed;
   }
 }

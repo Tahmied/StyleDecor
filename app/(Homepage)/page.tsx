@@ -1,9 +1,9 @@
-import Header from '@/Components/Header';
+import HeaderToHero from '@/Components/Header';
 
 const Page = () => {
     return (
         <>
-            <Header />
+            <HeaderToHero />
         </>
     );
 };
