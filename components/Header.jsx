@@ -102,11 +102,11 @@ const MobileMenu = ({ menuOpen }) => {
 
 
 
-const Header = ({children}) => {
+const Header = ({children, height}) => {
     const [menuOpen, isMenuOpen] = useState(false)
     return (
         <>
-            <div className="h-[80vh] flex flex-col bg-[#0B141F]">
+            <div className={`h-[${height}] flex flex-col bg-[#0B141F]`}>
                 {/* desktop header */}
                 <header className="w-full max-md:hidden">
                     <div className="header-container flex justify-between max-w-[1300px] w-[90%] items-center mx-auto py-8">

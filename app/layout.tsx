@@ -42,7 +42,7 @@ export default function RootLayout({
       <body
         className={`${urbanist.variable} ${geistMono.variable} ${logoFont.variable} antialiased`}
       >
-        <Header><Hero /></Header>
+        <Header height={'90vh'}><Hero /></Header>
         {children}
       </body>
     </html>
