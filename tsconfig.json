@@ -29,6 +29,6 @@
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts",
     "**/*.mts"
-, "lib/Cloudinary.js", "app/(Homepage)/page.jsx"  ],
+, "lib/Cloudinary.js", "app/(Homepage)/page.jsx", "app/login/page.jsx"  ],
   "exclude": ["node_modules"]
 }

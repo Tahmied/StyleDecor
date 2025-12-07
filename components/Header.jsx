@@ -129,7 +129,7 @@ const Header = ({children, height}) => {
                             </nav>
                         </div>
                         <div>
-                            <Cta text={'Join Us'} href={'/'}></Cta>
+                            <Cta text={'Join Us'} href={'/register'}></Cta>
                         </div>
 
                     </div>

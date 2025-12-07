@@ -261,7 +261,7 @@ const Registration = () => {
                                     Continue with Google
                                 </button>
 
-                                <p className="text-center font-urbanist text-[13px] text-[rgba(222,235,250,0.70)] pt-2">
+                                <p className="text-center font-urbanist text-[18px] text-[rgba(222,235,250,0.70)] pt-2">
                                     Already have an account?{' '}
                                     <Link href="/login" className="text-[#C0DDFF] hover:text-[#DEEBFA] font-semibold transition-colors duration-300">
                                         Sign In

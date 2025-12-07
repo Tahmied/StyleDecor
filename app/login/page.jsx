@@ -1,0 +1,212 @@
+'use client'
+import { IconEye, IconEyeOff, IconLock, IconMail } from '@tabler/icons-react';
+import Link from 'next/link';
+import { useState } from 'react';
+
+const Login = () => {
+    const [formData, setFormData] = useState({
+        email: '',
+        password: ''
+    });
+    const [showPassword, setShowPassword] = useState(false);
+    const [rememberMe, setRememberMe] = useState(false);
+
+    const handleChange = (e) => {
+        setFormData({
+            ...formData,
+            [e.target.name]: e.target.value
+        });
+    };
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        console.log('Login submitted:', formData);
+    };
+
+    const handleGoogleSignIn = () => {
+        console.log('Google sign in');
+    };
+
+    return (
+        <div className="min-h-screen bg-[#0B141F] flex items-center justify-center py-16 px-4">
+            <div className="w-full max-w-5xl">
+
+                <div className="grid lg:grid-cols-2 gap-8 items-center">
+
+                    <div className="hidden lg:flex flex-col justify-center space-y-6 pr-12">
+                      
+                            <h1 className="font-logo text-[64px] font-bold text-[#DEEBFA] leading-tight">
+                                StyleDecor
+                            </h1>
+                     
+                        <p className="font-urbanist text-[24px] leading-relaxed bg-[linear-gradient(90.87deg,rgba(184,192,200,0.6)_-3.19%,#C0DDFF_29.28%,rgba(160,184,212,0.859813)_65.45%,rgba(184,192,200,0.6)_102.57%)] bg-clip-text text-transparent">
+                            Welcome back to your creative space
+                        </p>
+                        <div className="space-y-4 pt-8">
+                            <div className="flex items-start gap-4">
+                                <div className="w-2 h-2 rounded-full bg-[#C0DDFF] mt-2"></div>
+                                <p className="font-urbanist text-[16px] text-[rgba(222,235,250,0.80)]">
+                                    Access your ongoing projects and bookings
+                                </p>
+                            </div>
+                            <div className="flex items-start gap-4">
+                                <div className="w-2 h-2 rounded-full bg-[#C0DDFF] mt-2"></div>
+                                <p className="font-urbanist text-[16px] text-[rgba(222,235,250,0.80)]">
+                                    Manage your decoration services seamlessly
+                                </p>
+                            </div>
+                            <div className="flex items-start gap-4">
+                                <div className="w-2 h-2 rounded-full bg-[#C0DDFF] mt-2"></div>
+                                <p className="font-urbanist text-[16px] text-[rgba(222,235,250,0.80)]">
+                                    Connect with our expert design team
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="w-full">
+                        <div className="text-center mb-8 lg:hidden">
+
+                            <h1 className="font-logo text-[48px] font-bold text-[#DEEBFA] cursor-pointer mb-2">
+                                StyleDecor
+                            </h1>
+
+                            <p className="font-urbanist text-[16px] text-[rgba(222,235,250,0.80)]">
+                                Sign in to your account
+                            </p>
+                        </div>
+
+                        <div className="bg-[rgba(192,221,255,0.05)] backdrop-blur-sm border border-[rgba(192,221,255,0.15)] rounded-2xl p-8 shadow-2xl">
+
+                            <div className="hidden lg:block mb-6">
+                                <h2 className="font-urbanist text-[28px] font-bold text-[#DEEBFA] mb-2">
+                                    Welcome Back
+                                </h2>
+                                <p className="font-urbanist text-[14px] text-[rgba(222,235,250,0.70)]">
+                                    Sign in to continue to StyleDecor
+                                </p>
+                            </div>
+
+                            <div className="space-y-5">
+
+                                <div className="space-y-2">
+                                    <label
+                                        htmlFor="email"
+                                        className="font-urbanist text-[13px] font-medium text-[rgba(222,235,250,0.90)]"
+                                    >
+                                        Email Address
+                                    </label>
+                                    <div className="relative">
+                                        <div className="absolute left-4 top-1/2 -translate-y-1/2 text-[rgba(192,221,255,0.5)]">
+                                            <IconMail size={18} />
+                                        </div>
+                                        <input
+                                            type="email"
+                                            id="email"
+                                            name="email"
+                                            value={formData.email}
+                                            onChange={handleChange}
+                                            required
+                                            className="w-full bg-[rgba(11,20,31,0.6)] border border-[rgba(192,221,255,0.2)] rounded-lg py-2.5 pl-11 pr-4 text-[#DEEBFA] font-urbanist text-[14px] focus:outline-none focus:border-[#C0DDFF] focus:ring-1 focus:ring-[rgba(192,221,255,0.3)] transition-all duration-300"
+                                            placeholder="you@example.com"
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="space-y-2">
+                                    <label
+                                        htmlFor="password"
+                                        className="font-urbanist text-[13px] font-medium text-[rgba(222,235,250,0.90)]"
+                                    >
+                                        Password
+                                    </label>
+                                    <div className="relative">
+                                        <div className="absolute left-4 top-1/2 -translate-y-1/2 text-[rgba(192,221,255,0.5)]">
+                                            <IconLock size={18} />
+                                        </div>
+                                        <input
+                                            type={showPassword ? "text" : "password"}
+                                            id="password"
+                                            name="password"
+                                            value={formData.password}
+                                            onChange={handleChange}
+                                            required
+                                            className="w-full bg-[rgba(11,20,31,0.6)] border border-[rgba(192,221,255,0.2)] rounded-lg py-2.5 pl-11 pr-11 text-[#DEEBFA] font-urbanist text-[14px] focus:outline-none focus:border-[#C0DDFF] focus:ring-1 focus:ring-[rgba(192,221,255,0.3)] transition-all duration-300"
+                                            placeholder="••••••••"
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={() => setShowPassword(!showPassword)}
+                                            className="absolute right-4 top-1/2 -translate-y-1/2 text-[rgba(192,221,255,0.5)] hover:text-[#C0DDFF] transition-colors duration-300"
+                                        >
+                                            {showPassword ? <IconEyeOff size={18} /> : <IconEye size={18} />}
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div className="flex items-center justify-between">
+                                    <label className="flex items-center gap-2 cursor-pointer group">
+                                        <input
+                                            type="checkbox"
+                                            checked={rememberMe}
+                                            onChange={(e) => setRememberMe(e.target.checked)}
+                                            className="w-4 h-4 rounded border-2 border-[rgba(192,221,255,0.3)] bg-transparent checked:bg-[#C0DDFF] checked:border-[#C0DDFF] focus:ring-2 focus:ring-[rgba(192,221,255,0.2)] transition-all duration-300 cursor-pointer"
+                                        />
+                                        <span className="font-urbanist text-[13px] text-[rgba(222,235,250,0.80)] group-hover:text-[#C0DDFF] transition-colors duration-300">
+                                            Remember me
+                                        </span>
+                                    </label>
+                                    <Link
+                                        href="/forgot-password"
+                                        className="font-urbanist text-[13px] text-[#C0DDFF] hover:text-[#DEEBFA] font-semibold transition-colors duration-300"
+                                    >
+                                        Forgot Password?
+                                    </Link>
+                                </div>
+
+                                <button
+                                    onClick={handleSubmit}
+                                    className="w-full bg-gradient-to-r from-[#C0DDFF] to-[#A0B8D4] text-[#0B141F] font-urbanist font-bold text-[15px] py-3 rounded-lg hover:brightness-110 hover:shadow-lg hover:shadow-[rgba(192,221,255,0.3)] transition-all duration-300 transform hover:-translate-y-0.5 mt-2"
+                                >
+                                    Sign In
+                                </button>
+
+                                <div className="relative my-6">
+                                    <div className="absolute inset-0 flex items-center">
+                                        <div className="w-full border-t border-[rgba(192,221,255,0.15)]"></div>
+                                    </div>
+                                    <div className="relative flex justify-center text-sm">
+                                        <span className="px-4 bg-[rgba(192,221,255,0.05)] font-urbanist text-[12px] text-[rgba(222,235,250,0.60)] uppercase tracking-wider">
+                                            Or continue with
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <button
+                                    type="button"
+                                    onClick={handleGoogleSignIn}
+                                    className="w-full bg-transparent border-2 border-[rgba(192,221,255,0.25)] text-[#DEEBFA] font-urbanist font-semibold text-[15px] py-3 rounded-lg hover:border-[#C0DDFF] hover:bg-[rgba(192,221,255,0.08)] transition-all duration-300 flex items-center justify-center gap-3 group"
+                                >
+                                    <div className="w-5 h-5 rounded flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                                        <svg viewBox="-3 0 262 262" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid" fill="#a0b8d4"><g id="SVGRepo_bgCarrier" strokeWidth="0"></g><g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g><g id="SVGRepo_iconCarrier"><path d="M255.878 133.451c0-10.734-.871-18.567-2.756-26.69H130.55v48.448h71.947c-1.45 12.04-9.283 30.172-26.69 42.356l-.244 1.622 38.755 30.023 2.685.268c24.659-22.774 38.875-56.282 38.875-96.027" fill="#a0b8d4"></path><path d="M130.55 261.1c35.248 0 64.839-11.605 86.453-31.622l-41.196-31.913c-11.024 7.688-25.82 13.055-45.257 13.055-34.523 0-63.824-22.773-74.269-54.25l-1.531.13-40.298 31.187-.527 1.465C35.393 231.798 79.49 261.1 130.55 261.1" fill="#34A853#a0b8d4"></path><path d="M56.281 156.37c-2.756-8.123-4.351-16.827-4.351-25.82 0-8.994 1.595-17.697 4.206-25.82l-.073-1.73L15.26 71.312l-1.335.635C5.077 89.644 0 109.517 0 130.55s5.077 40.905 13.925 58.602l42.356-32.782" fill="#a0b8d4"></path><path d="M130.55 50.479c24.514 0 41.05 10.589 50.479 19.438l36.844-35.974C195.245 12.91 165.798 0 130.55 0 79.49 0 35.393 29.301 13.925 71.947l42.211 32.783c10.59-31.477 39.891-54.251 74.414-54.251" fill="#a0b8d4"></path></g></svg>
+                                    </div>
+                                    Continue with Google
+                                </button>
+
+                                <p className="text-center font-urbanist text-[13px] text-[rgba(222,235,250,0.70)] pt-2">
+                                    Dont have an account?{' '}
+                                    <Link href="/registration" className="text-[#C0DDFF] hover:text-[#DEEBFA] font-semibold transition-colors duration-300">
+                                        Sign Up
+                                    </Link>
+                                </p>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+export default Login;
