@@ -93,7 +93,7 @@ const MobileMenu = ({ menuOpen }) => {
                             </li>
                         </Link>
                     ))}
-                    <Cta text={'Join Us'} href={'/'} />
+                    <Cta text={'Join Us'} href={'/register'} />
                 </ul>
             </div>
         </>
@@ -102,12 +102,16 @@ const MobileMenu = ({ menuOpen }) => {
 
 
 
-const Header = ({ children, height='90vh', styles='' }) => {
+const Header = ({ children, height = '90vh', styles = '' }) => {
     const [menuOpen, isMenuOpen] = useState(false)
     return (
         <>
 
-            <div className={`flex flex-col bg-[#0B141F] h-[${height}] ${styles || ''}`}>
+            <div
+                className={`flex flex-col bg-[#0B141F] ${styles}`}
+                style={{ height }}
+            >
+
                 {/* desktop header */}
                 <header className="w-full max-md:hidden">
                     <div className="header-container flex justify-between max-w-[1300px] w-[90%] items-center mx-auto py-8">
