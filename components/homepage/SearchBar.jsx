@@ -368,7 +368,7 @@ export default function AirbnbSearchBar() {
                         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent opacity-0 group-hover:opacity-30 transition-opacity duration-500 transform -skew-x-12 group-hover:translate-x-full"></div>
 
                         <Sparkles className="h-5 w-5 sm:h-6 sm:w-6 animate-pulse flex-shrink-0" />
-                        <span className="relative z-10 whitespace-nowrap">Book Decoration Service</span>
+                        <span className="relative z-5 whitespace-nowrap">Book Decoration Service</span>
                         <svg
                             width="20"
                             height="20"
