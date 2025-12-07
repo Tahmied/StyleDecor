@@ -1,18 +1,22 @@
 'use client'
-import { IconEye, IconEyeOff, IconLock, IconMail, IconPhone, IconUser } from '@tabler/icons-react';
+import { IconEye, IconEyeOff, IconLock, IconMail, IconUpload, IconUser, IconX } from '@tabler/icons-react';
+import axios from 'axios';
 import Link from 'next/link';
 import { useState } from 'react';
+import Swal from 'sweetalert2';
 
 const Registration = () => {
     const [formData, setFormData] = useState({
         fullName: '',
         email: '',
-        phone: '',
         password: '',
-        confirmPassword: ''
+        confirmPassword: '',
     });
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+    const [profileImage, setProfileImage] = useState(null);
+    const [imagePreview, setImagePreview] = useState(null);
+
 
     const handleChange = (e) => {
         setFormData({
@@ -21,9 +25,48 @@ const Registration = () => {
         });
     };
 
-    const handleSubmit = (e) => {
+    const handleImageUpload = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            setProfileImage(file);
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setImagePreview(reader.result);
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
+    const removeImage = () => {
+        setProfileImage(null);
+        setImagePreview(null);
+    };
+
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log('Registration submitted:', formData);
+        const SubmittedFormData = new FormData();
+        SubmittedFormData.append('name', formData.fullName);
+        SubmittedFormData.append('email', formData.email);
+        SubmittedFormData.append('password', formData.password);
+        SubmittedFormData.append('image', profileImage)
+        try {
+            const res = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/users/register`, SubmittedFormData, {
+                headers: { 'Content-Type': 'multipart/form-data' }
+            })
+            Swal.fire({
+                title: 'Registration Successful!',
+                text: 'Your account has been created successfully',
+                icon: 'success',
+                showConfirmButton: false,
+                timer: 1500
+            }).then(() => {
+                // navigate(from, { replace: true });;
+            });
+            // router.push('/login')
+        } catch (error) {
+
+        }
+        // console.log('Registration submitted:', { ...formData, profileImage });
     };
 
     const handleGoogleSignUp = () => {
@@ -37,11 +80,11 @@ const Registration = () => {
                 <div className="grid lg:grid-cols-2 gap-8 items-center">
 
                     <div className="hidden lg:flex flex-col justify-center space-y-6 pr-12">
-
-                        <h1 className="font-logo text-[64px] font-bold text-[#DEEBFA] leading-tight">
-                            StyleDecor
-                        </h1>
-
+                        <Link href="/">
+                            <h1 className="font-logo text-[64px] font-bold text-[#DEEBFA] cursor-pointer leading-tight">
+                                StyleDecor
+                            </h1>
+                        </Link>
                         <p className="font-urbanist text-[24px] leading-relaxed bg-[linear-gradient(90.87deg,rgba(184,192,200,0.6)_-3.19%,#C0DDFF_29.28%,rgba(160,184,212,0.859813)_65.45%,rgba(184,192,200,0.6)_102.57%)] bg-clip-text text-transparent">
                             Join thousands of clients creating breathtaking events
                         </p>
@@ -68,18 +111,20 @@ const Registration = () => {
                     </div>
 
                     <div className="w-full">
+
                         <div className="text-center mb-8 lg:hidden">
-                            <Link href="/">
-                                <h1 className="font-logo text-[48px] font-bold text-[#DEEBFA] cursor-pointer mb-2">
-                                    StyleDecor
-                                </h1>
-                            </Link>
+
+                            <h1 className="font-logo text-[48px] font-bold text-[#DEEBFA] mb-2">
+                                StyleDecor
+                            </h1>
+
                             <p className="font-urbanist text-[16px] text-[rgba(222,235,250,0.80)]">
                                 Create your account to get started
                             </p>
                         </div>
 
                         <div className="bg-[rgba(192,221,255,0.05)] backdrop-blur-sm border border-[rgba(192,221,255,0.15)] rounded-2xl p-8 shadow-2xl">
+
 
                             <div className="hidden lg:block mb-6">
                                 <h2 className="font-urbanist text-[28px] font-bold text-[#DEEBFA] mb-2">
@@ -93,13 +138,62 @@ const Registration = () => {
                             <div className="space-y-5">
 
                                 <div className="space-y-2">
+                                    <label className="font-urbanist text-[15px] font-medium text-[rgba(222,235,250,0.90)]">
+                                        Profile Picture
+                                    </label>
+                                    <div className="flex items-center mt-2 gap-4">
+
+                                        <div className="relative">
+                                            {imagePreview ? (
+                                                <div className="relative w-20 h-20">
+                                                    <div className="w-full h-full rounded-full overflow-hidden border-2 border-[#C0DDFF] shadow-lg">
+                                                        <img
+                                                            src={imagePreview}
+                                                            alt="Profile preview"
+                                                            className="w-full h-full object-cover"
+                                                        />
+                                                    </div>
+                                                    <button
+                                                        type="button"
+                                                        onClick={removeImage}
+                                                        className="absolute cursor-pointer -top-1 -right-1 bg-[#0B141F] border-2 border-[#C0DDFF] rounded-full p-1 hover:bg-[rgba(192,221,255,0.2)] transition-all duration-300"
+                                                    >
+                                                        <IconX size={14} className="text-[#C0DDFF]" />
+                                                    </button>
+                                                </div>
+                                            ) : (
+                                                <div className="w-20 h-20 rounded-full bg-[rgba(11,20,31,0.6)] border-2 border-dashed border-[rgba(192,221,255,0.3)] flex items-center justify-center">
+                                                    <IconUser size={32} className="text-[rgba(192,221,255,0.4)]" />
+                                                </div>
+                                            )}
+                                        </div>
+
+                                        <label className="flex-1 cursor-pointer">
+                                            <div className="bg-[rgba(11,20,31,0.6)] border border-[rgba(192,221,255,0.2)] rounded-lg py-2.5 px-4 hover:border-[#C0DDFF] hover:bg-[rgba(192,221,255,0.05)] transition-all duration-300 flex items-center justify-center gap-2">
+                                                <IconUpload size={18} className="text-[rgba(192,221,255,0.7)]" />
+                                                <span className="font-urbanist text-[13px] text-[rgba(222,235,250,0.80)]">
+                                                    {imagePreview ? 'Change Photo' : 'Upload Photo'}
+                                                </span>
+                                            </div>
+                                            <input
+                                                type="file"
+                                                accept="image/*"
+                                                onChange={handleImageUpload}
+                                                className="hidden"
+                                            />
+                                        </label>
+                                    </div>
+
+                                </div>
+
+                                <div className="space-y-2">
                                     <label
                                         htmlFor="fullName"
                                         className="font-urbanist text-[13px] font-medium text-[rgba(222,235,250,0.90)]"
                                     >
                                         Full Name
                                     </label>
-                                    <div className="relative">
+                                    <div className="relative mt-1">
                                         <div className="absolute left-4 top-1/2 -translate-y-1/2 text-[rgba(192,221,255,0.5)]">
                                             <IconUser size={18} />
                                         </div>
@@ -116,59 +210,32 @@ const Registration = () => {
                                     </div>
                                 </div>
 
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-
-                                    <div className="space-y-2">
-                                        <label
-                                            htmlFor="email"
-                                            className="font-urbanist text-[13px] font-medium text-[rgba(222,235,250,0.90)]"
-                                        >
-                                            Email
-                                        </label>
-                                        <div className="relative">
-                                            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-[rgba(192,221,255,0.5)]">
-                                                <IconMail size={18} />
-                                            </div>
-                                            <input
-                                                type="email"
-                                                id="email"
-                                                name="email"
-                                                value={formData.email}
-                                                onChange={handleChange}
-                                                required
-                                                className="w-full bg-[rgba(11,20,31,0.6)] border border-[rgba(192,221,255,0.2)] rounded-lg py-2.5 pl-11 pr-4 text-[#DEEBFA] font-urbanist text-[14px] focus:outline-none focus:border-[#C0DDFF] focus:ring-1 focus:ring-[rgba(192,221,255,0.3)] transition-all duration-300"
-                                                placeholder="you@example.com"
-                                            />
+                                <div className="space-y-2">
+                                    <label
+                                        htmlFor="email"
+                                        className="font-urbanist text-[13px] font-medium text-[rgba(222,235,250,0.90)]"
+                                    >
+                                        Email Address
+                                    </label>
+                                    <div className="relative mt-2">
+                                        <div className="absolute left-4 top-1/2 -translate-y-1/2 text-[rgba(192,221,255,0.5)]">
+                                            <IconMail size={18} />
                                         </div>
-                                    </div>
-
-                                    <div className="space-y-2">
-                                        <label
-                                            htmlFor="phone"
-                                            className="font-urbanist text-[13px] font-medium text-[rgba(222,235,250,0.90)]"
-                                        >
-                                            Phone
-                                        </label>
-                                        <div className="relative">
-                                            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-[rgba(192,221,255,0.5)]">
-                                                <IconPhone size={18} />
-                                            </div>
-                                            <input
-                                                type="tel"
-                                                id="phone"
-                                                name="phone"
-                                                value={formData.phone}
-                                                onChange={handleChange}
-                                                required
-                                                className="w-full bg-[rgba(11,20,31,0.6)] border border-[rgba(192,221,255,0.2)] rounded-lg py-2.5 pl-11 pr-4 text-[#DEEBFA] font-urbanist text-[14px] focus:outline-none focus:border-[#C0DDFF] focus:ring-1 focus:ring-[rgba(192,221,255,0.3)] transition-all duration-300"
-                                                placeholder="+1 (234) 567-890"
-                                            />
-                                        </div>
+                                        <input
+                                            type="email"
+                                            id="email"
+                                            name="email"
+                                            value={formData.email}
+                                            onChange={handleChange}
+                                            required
+                                            className="w-full bg-[rgba(11,20,31,0.6)] border border-[rgba(192,221,255,0.2)] rounded-lg py-2.5 pl-11 pr-4 text-[#DEEBFA] font-urbanist text-[14px] focus:outline-none focus:border-[#C0DDFF] focus:ring-1 focus:ring-[rgba(192,221,255,0.3)] transition-all duration-300"
+                                            placeholder="you@example.com"
+                                        />
                                     </div>
                                 </div>
 
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
 
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                                     <div className="space-y-2">
                                         <label
                                             htmlFor="password"
@@ -176,7 +243,7 @@ const Registration = () => {
                                         >
                                             Password
                                         </label>
-                                        <div className="relative">
+                                        <div className="relative mt-1">
                                             <div className="absolute left-4 top-1/2 -translate-y-1/2 text-[rgba(192,221,255,0.5)]">
                                                 <IconLock size={18} />
                                             </div>
@@ -207,7 +274,7 @@ const Registration = () => {
                                         >
                                             Confirm Password
                                         </label>
-                                        <div className="relative">
+                                        <div className="relative mt-1">
                                             <div className="absolute left-4 top-1/2 -translate-y-1/2 text-[rgba(192,221,255,0.5)]">
                                                 <IconLock size={18} />
                                             </div>
@@ -239,12 +306,10 @@ const Registration = () => {
                                     Create Account
                                 </button>
 
-                                <div className="relative my-6">
-                                    <div className="absolute inset-0 flex items-center">
-                                        <div className="w-full border-t border-[rgba(192,221,255,0.15)]"></div>
-                                    </div>
+                                <div className="relative my-2">
+
                                     <div className="relative flex justify-center text-sm">
-                                        <span className="px-4 bg-[rgba(192,221,255,0.05)] font-urbanist text-[12px] text-[rgba(222,235,250,0.60)] uppercase tracking-wider">
+                                        <span className="px-4 font-urbanist text-[12px] text-[rgba(222,235,250,0.60)] uppercase tracking-wider">
                                             Or continue with
                                         </span>
                                     </div>
@@ -261,7 +326,7 @@ const Registration = () => {
                                     Continue with Google
                                 </button>
 
-                                <p className="text-center font-urbanist text-[18px] text-[rgba(222,235,250,0.70)] pt-2">
+                                <p className="text-center font-urbanist text-[15px] text-[rgba(222,235,250,0.70)] pt-2">
                                     Already have an account?{' '}
                                     <Link href="/login" className="text-[#C0DDFF] hover:text-[#DEEBFA] font-semibold transition-colors duration-300">
                                         Sign In
@@ -270,16 +335,6 @@ const Registration = () => {
                             </div>
                         </div>
 
-                        <p className="text-center mt-6 font-urbanist text-[11px] text-[rgba(222,235,250,0.50)] leading-relaxed">
-                            By signing up, you agree to our{' '}
-                            <Link href="/terms" className="text-[rgba(192,221,255,0.8)] hover:text-[#C0DDFF] transition-colors duration-300">
-                                Terms of Service
-                            </Link>
-                            {' '}and{' '}
-                            <Link href="/privacy" className="text-[rgba(192,221,255,0.8)] hover:text-[#C0DDFF] transition-colors duration-300">
-                                Privacy Policy
-                            </Link>
-                        </p>
                     </div>
                 </div>
             </div>
