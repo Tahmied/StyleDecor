@@ -102,7 +102,7 @@ const MobileMenu = ({ menuOpen }) => {
 
 
 
-const Header = ({ children, height, styles='' }) => {
+const Header = ({ children, height='90vh', styles='' }) => {
     const [menuOpen, isMenuOpen] = useState(false)
     return (
         <>
