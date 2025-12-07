@@ -107,7 +107,6 @@ const Footer = () => {
                         </ul>
                     </div>
 
-                    {/* Working Hours */}
                     <div className="space-y-4">
                         <h4 className="font-urbanist font-bold text-[18px] text-[#DEEBFA] uppercase tracking-wider">
                             Working Hours
@@ -127,9 +126,8 @@ const Footer = () => {
                     </div>
                 </div>
 
-                {/* Divider */}
                 <div className="border-t border-[rgba(192,221,255,0.15)] pt-8">
-                    {/* Copyright */}
+                  
                     <div className="flex flex-col md:flex-row justify-between items-center gap-4">
                         <p className="font-urbanist text-[13px] text-[rgba(222,235,250,0.70)] text-center md:text-left">
                             © {currentYear} StyleDecor. All rights reserved.
