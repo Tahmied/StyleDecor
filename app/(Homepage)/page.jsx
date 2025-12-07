@@ -1,5 +1,6 @@
 import CustomerReviews from '@/components/homepage/CustomerReviews';
 // import LatestArticles from '@/components/homepage/LatestArticles';
+import Footer from '@/components/Footer';
 import MapLoader from '@/components/homepage/MapLoader';
 import Packages from '@/components/homepage/Packages';
 import Services from '@/components/homepage/Services';
@@ -17,6 +18,7 @@ const Page = () => {
             <TopDecorators/>
             
             <MapLoader/>
+            <Footer/>
         </>
     );
 };
