@@ -2,10 +2,12 @@
 import { IconEye, IconEyeOff, IconLock, IconMail, IconUpload, IconUser, IconX } from '@tabler/icons-react';
 import axios from 'axios';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import Swal from 'sweetalert2';
 
 const Registration = () => {
+    const router = useRouter()
     const [formData, setFormData] = useState({
         fullName: '',
         email: '',
@@ -60,9 +62,9 @@ const Registration = () => {
                 showConfirmButton: false,
                 timer: 1500
             }).then(() => {
-                // navigate(from, { replace: true });;
+                router.push('/login')
             });
-            // router.push('/login')
+
         } catch (error) {
 
         }

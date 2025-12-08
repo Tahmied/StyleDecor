@@ -1,9 +1,13 @@
 'use client'
 import { IconEye, IconEyeOff, IconLock, IconMail } from '@tabler/icons-react';
+import { signIn } from 'next-auth/react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import Swal from 'sweetalert2';
 
 const Login = () => {
+    const router = useRouter()
     const [formData, setFormData] = useState({
         email: '',
         password: ''
@@ -18,9 +22,28 @@ const Login = () => {
         });
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log('Login submitted:', formData);
+        console.log('Login submitted:', formData.email, formData.password);
+        const res = await signIn('credentials', {
+            email: formData.email,
+            password: formData.password,
+            redirect: false,
+        });
+        if (res.error) {
+            console.log(res);
+            alert("Invalid Credentials");
+        } else {
+            Swal.fire({
+                title: 'Login Successfull',
+                text: 'You have been logged in properly',
+                icon: 'success',
+                showConfirmButton: false,
+                timer: 1500
+            }).then(() => {
+                router.push('/')
+            });
+        }
     };
 
     const handleGoogleSignIn = () => {
@@ -34,11 +57,11 @@ const Login = () => {
                 <div className="grid lg:grid-cols-2 gap-8 items-center">
 
                     <div className="hidden lg:flex flex-col justify-center space-y-6 pr-12">
-                      
-                            <h1 className="font-logo text-[64px] font-bold text-[#DEEBFA] leading-tight">
-                                StyleDecor
-                            </h1>
-                     
+
+                        <h1 className="font-logo text-[64px] font-bold text-[#DEEBFA] leading-tight">
+                            StyleDecor
+                        </h1>
+
                         <p className="font-urbanist text-[24px] leading-relaxed bg-[linear-gradient(90.87deg,rgba(184,192,200,0.6)_-3.19%,#C0DDFF_29.28%,rgba(160,184,212,0.859813)_65.45%,rgba(184,192,200,0.6)_102.57%)] bg-clip-text text-transparent">
                             Welcome back to your creative space
                         </p>

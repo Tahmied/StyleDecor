@@ -12,7 +12,8 @@ export const authOptions = {
       
       async authorize(credentials) {
         try {
-          const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/login`, {
+            console.log('login api calling');
+          const res = await fetch(`http://localhost:2000/api/v1/users/login`, {
             method: 'POST',
             body: JSON.stringify({
               email: credentials.email,
@@ -20,8 +21,11 @@ export const authOptions = {
             }),
             headers: { "Content-Type": "application/json" }
           });
-
+          console.log('api called');
+          
+          console.log(`raw res`, res);
           const response = await res.json();
+          console.log('api response' , response);
 
           if (response.statusCode === 200 && response.data) {
             return {
