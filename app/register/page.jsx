@@ -1,6 +1,7 @@
 'use client'
 import { IconEye, IconEyeOff, IconLock, IconMail, IconUpload, IconUser, IconX } from '@tabler/icons-react';
 import axios from 'axios';
+import { signIn } from 'next-auth/react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -72,7 +73,8 @@ const Registration = () => {
     };
 
     const handleGoogleSignUp = () => {
-        console.log('Google sign up');
+        
+        signIn('google', {callbackUrl : '/'})
     };
 
     return (

@@ -1,5 +1,6 @@
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
+import GoogleProvider from "next-auth/providers/google";
 
 export const authOptions = {
   providers: [
@@ -9,10 +10,11 @@ export const authOptions = {
         email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" }
       },
-      
+
+
       async authorize(credentials) {
         try {
-            console.log('login api calling');
+          
           const res = await fetch(`http://localhost:2000/api/v1/users/login`, {
             method: 'POST',
             body: JSON.stringify({
@@ -21,23 +23,19 @@ export const authOptions = {
             }),
             headers: { "Content-Type": "application/json" }
           });
-          console.log('api called');
           
-          console.log(`raw res`, res);
           const response = await res.json();
-          console.log('api response' , response);
-
           if (response.statusCode === 200 && response.data) {
             return {
               _id: response.data.user._id,
               email: response.data.user.email,
               name: response.data.user.fullName || response.data.user.name,
-              image: response.data.user.image, 
-              accessToken: response.data.accessToken, 
+              image: response.data.user.image,
+              accessToken: response.data.accessToken,
               refreshToken: response.data.refreshToken
             };
           }
-          
+
           return null;
 
         } catch (error) {
@@ -45,20 +43,57 @@ export const authOptions = {
           return null;
         }
       }
+    }),
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET
     })
+
   ],
-  
+
   callbacks: {
-    async jwt({ token, user }) {
+    
+    async jwt({ token, user, account }) {
       if (user) {
-        token._id = user._id;
-        token.accessToken = user.accessToken;
-        token.refreshToken = user.refreshToken;
-        token.image = user.image;
+
+        if (account?.provider === "google") {
+          console.log("1. Google Login Detected. Email:", user.email);
+          try {
+            const res = await fetch(`http://localhost:2000/api/v1/users/google-auth`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                name: user.name,
+                email: user.email,
+                image: user.image
+              })
+            });
+            console.log("3. Backend Status:", res.status);
+
+            const response = await res.json();
+
+            if (response.statusCode === 200 && response.data) {
+              console.log("✅ Backend Sync Success! Saving tokens.");
+              token._id = response.data.user._id;
+              token.accessToken = response.data.accessToken;
+              token.refreshToken = response.data.refreshToken;
+              token.image = response.data.user.image;
+            }
+          } catch (error) {
+            console.error("Google Sync Error:", error);
+          }
+        }
+        
+        else {
+          token._id = user._id;
+          token.accessToken = user.accessToken;
+          token.refreshToken = user.refreshToken;
+          token.image = user.image;
+        }
       }
       return token;
     },
-    
+
     async session({ session, token }) {
       session.user._id = token._id;
       session.user.accessToken = token.accessToken;
@@ -67,7 +102,7 @@ export const authOptions = {
       return session;
     }
   },
-  
+
   pages: {
     signIn: '/login',
   },

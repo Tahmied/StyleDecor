@@ -48,6 +48,7 @@ const Login = () => {
 
     const handleGoogleSignIn = () => {
         console.log('Google sign in');
+        signIn('google', { callbackUrl: '/' })
     };
 
     return (
