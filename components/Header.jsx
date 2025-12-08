@@ -1,15 +1,10 @@
 'use client'
 import Cta from '@/components/Utils/Cta';
-import { useSession } from 'next-auth/react';
+import { IconLayoutDashboard, IconLogout, IconUser } from '@tabler/icons-react';
+import { signOut, useSession } from 'next-auth/react';
 import Link from "next/link";
 import { useState } from 'react';
 import styled from 'styled-components';
-
-const menuItems = [
-    { name: 'Services', Link: '/services' },
-    { name: 'About', Link: '/about' },
-    { name: 'Contact', Link: '/contact' },
-]
 
 const Checkbox = ({ menuOpen, isMenuOpen }) => {
 
@@ -40,9 +35,7 @@ const StyledWrapper = styled.div`
   }
 
   .hamburger svg {
-    /* The size of the SVG defines the overall size */
     height: 3em;
-    /* Define the transition for transforming the SVG */
     transition: transform 600ms cubic-bezier(0.4, 0, 0.2, 1);
   }
 
@@ -52,7 +45,6 @@ const StyledWrapper = styled.div`
     stroke-linecap: round;
     stroke-linejoin: round;
     stroke-width: 3;
-    /* Define the transition for transforming the Stroke */
     transition: stroke-dasharray 600ms cubic-bezier(0.4, 0, 0.2, 1),
                 stroke-dashoffset 600ms cubic-bezier(0.4, 0, 0.2, 1);
   }
@@ -71,12 +63,101 @@ const StyledWrapper = styled.div`
   }
   @media (max-width: 375px) {
     .hamburger svg {
-      height: 2.4em;  /* smaller */
+      height: 2.4em;
     }
   }
   `;
 
-const MobileMenu = ({ menuOpen }) => {
+const ProfileDropdown = ({ session }) => {
+    const [isOpen, setIsOpen] = useState(false);
+
+    const handleLogout = async () => {
+        await signOut({ callbackUrl: '/' });
+    };
+
+    return (
+        <div className="relative">
+            <button
+                onClick={() => setIsOpen(!isOpen)}
+                className="group"
+            >
+                <div className="w-10 cursor-pointer h-10 rounded-full overflow-hidden border-2 border-[rgba(192,221,255,0.3)] group-hover:border-[#C0DDFF] transition-all duration-300">
+                    {session?.user?.image ? (
+                        <img
+                            src={session.user.image}
+                            alt="Profile"
+                            className="w-full h-full object-cover"
+                        />
+                    ) : (
+                        <div className="w-full h-full bg-[rgba(192,221,255,0.1)] flex items-center justify-center">
+                            <IconUser size={20} className="text-[#C0DDFF]" />
+                        </div>
+                    )}
+                </div>
+            </button>
+
+            {isOpen && (
+                <>
+                    <div
+                        className="fixed inset-0 z-10"
+                        onClick={() => setIsOpen(false)}
+                    />
+                    
+                    <div className="absolute right-0 w-56 bg-[rgba(11,20,31,0.95)] backdrop-blur-sm border border-[rgba(192,221,255,0.2)] rounded-lg shadow-2xl z-20 overflow-hidden">
+                        <div className="px-4 py-3 border-b border-[rgba(192,221,255,0.15)]">
+                            <p className="font-urbanist text-[14px] font-semibold text-[#DEEBFA] truncate">
+                                {session?.user?.name || 'User'}
+                            </p>
+                            <p className="font-urbanist text-[12px] text-[rgba(222,235,250,0.60)] truncate">
+                                {session?.user?.email}
+                            </p>
+                        </div>
+
+                        <div className="py-2">
+                            <Link href="/profile">
+                                <button
+                                    onClick={() => setIsOpen(false)}
+                                    className="w-full cursor-pointer px-4 py-2.5 flex items-center gap-3 hover:bg-[rgba(192,221,255,0.08)] transition-all duration-300 group"
+                                >
+                                    <IconUser size={18} className="text-[rgba(192,221,255,0.7)] group-hover:text-[#C0DDFF]" />
+                                    <span className="font-urbanist text-[14px] text-[rgba(222,235,250,0.90)] group-hover:text-[#DEEBFA]">
+                                        My Profile
+                                    </span>
+                                </button>
+                            </Link>
+
+                            <Link href="/dashboard">
+                                <button
+                                    onClick={() => setIsOpen(false)}
+                                    className="w-full cursor-pointer px-4 py-2.5 flex items-center gap-3 hover:bg-[rgba(192,221,255,0.08)] transition-all duration-300 group"
+                                >
+                                    <IconLayoutDashboard size={18} className="text-[rgba(192,221,255,0.7)] group-hover:text-[#C0DDFF]" />
+                                    <span className="font-urbanist text-[14px] text-[rgba(222,235,250,0.90)] group-hover:text-[#DEEBFA]">
+                                        Dashboard
+                                    </span>
+                                </button>
+                            </Link>
+
+                            <div className="border-t border-[rgba(192,221,255,0.15)] my-2"></div>
+
+                            <button
+                                onClick={handleLogout}
+                                className="w-full px-4 py-2.5 flex items-center gap-3 hover:bg-[rgba(255,82,82,0.1)] transition-all duration-300 group"
+                            >
+                                <IconLogout size={18} className="text-[rgba(255,82,82,0.8)] group-hover:text-[#ff5252]" />
+                                <span className="font-urbanist text-[14px] text-[rgba(255,82,82,0.9)] group-hover:text-[#ff5252] font-semibold">
+                                    Logout
+                                </span>
+                            </button>
+                        </div>
+                    </div>
+                </>
+            )}
+        </div>
+    );
+};
+
+const MobileMenu = ({ menuOpen, MenuItems }) => {
     return (
         <>
             <div
@@ -87,7 +168,7 @@ const MobileMenu = ({ menuOpen }) => {
             `}
             >
                 <ul className="flex flex-col gap-8 justify-center items-center">
-                    {menuItems.map(menu => (
+                    {MenuItems.map(menu => (
                         <Link key={menu.name} href={menu.Link}>
                             <li className="--font-urbanist font-extrabold text-[14px] uppercase text-[#DEEBFA] cursor-pointer hover:-translate-y-[2px] transition">
                                 {menu.name}
@@ -101,11 +182,20 @@ const MobileMenu = ({ menuOpen }) => {
     )
 }
 
-
-
 const Header = ({ children, height = '90vh', styles = '' }) => {
     const { data: session, status } = useSession();
-    console.log(session);
+    console.log(session?.user);
+    console.log(status);
+    const MenuItems = session?.user
+        ? [
+            { name: 'Services', Link: '/services' },
+            { name: 'Dashboard', Link: '/dashboard' },
+            { name: 'Contact', Link: '/contact' },
+        ] : [
+            { name: 'Services', Link: '/services' },
+            { name: 'About', Link: '/about' },
+            { name: 'Contact', Link: '/contact' },
+        ]
     const [menuOpen, isMenuOpen] = useState(false)
     return (
         <>
@@ -115,7 +205,6 @@ const Header = ({ children, height = '90vh', styles = '' }) => {
                 style={{ height }}
             >
 
-                {/* desktop header */}
                 <header className="w-full max-md:hidden">
                     <div className="header-container flex justify-between max-w-[1300px] w-[90%] items-center mx-auto py-8">
 
@@ -129,7 +218,7 @@ const Header = ({ children, height = '90vh', styles = '' }) => {
                             <nav>
                                 <ul className="flex justify-center items-center gap-8 list-none">
                                     {
-                                        menuItems.map((menu) => {
+                                        MenuItems.map((menu) => {
                                             return <Link key={menu.name} href={menu.Link}> <li className="--font-urbanist font-extrabold text-[14px] uppercase text-[#DEEBFA] cursor-pointer transition-all duration-300 ease hover:-translate-y-[2px] hover:brightness-[2.2]">{menu.name}</li> </Link>
                                         })
                                     }
@@ -137,12 +226,16 @@ const Header = ({ children, height = '90vh', styles = '' }) => {
                             </nav>
                         </div>
                         <div>
-                            <Cta text={'Join Us'} href={'/register'}></Cta>
+                            {status === 'authenticated' ? (
+                                <ProfileDropdown session={session} />
+                            ) : (
+                                <Cta text={'Join Us'} href={'/register'} />
+                            )}
                         </div>
 
                     </div>
                 </header>
-                {/* mobile header */}
+                
                 <header className='md:hidden w-full'>
                     <div className="m-header-container w-[90%] mx-auto flex justify-between items-center py-8">
                         <Link href={'/'}>
@@ -150,10 +243,15 @@ const Header = ({ children, height = '90vh', styles = '' }) => {
                                 <p className="font-logo text-[40px] font-bold max-[375px]:text-[25px]">StyleDecor</p>
                             </div>
                         </Link>
-                        <Checkbox menuOpen={menuOpen} isMenuOpen={isMenuOpen} />
+                        <div className="flex items-center gap-4">
+                            {status === 'authenticated' && (
+                                <ProfileDropdown session={session} />
+                            )}
+                            <Checkbox menuOpen={menuOpen} isMenuOpen={isMenuOpen} />
+                        </div>
                     </div>
 
-                    <MobileMenu menuOpen={menuOpen} />
+                    <MobileMenu MenuItems={MenuItems} menuOpen={menuOpen} />
 
                 </header>
                 {children}
