@@ -1,3 +1,4 @@
+import Footer from "@/components/Footer";
 import Header from "@/components/Header";
 import Hero from "@/components/homepage/Hero";
 export default function HomepageLayout({
@@ -9,6 +10,7 @@ export default function HomepageLayout({
         <>
             <Header height={'90vh'}><Hero /></Header>
             <main>{children}</main>
+            <Footer />
         </>
     );
 }

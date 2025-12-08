@@ -15,7 +15,7 @@ export const authOptions = {
       async authorize(credentials) {
         try {
           
-          const res = await fetch(`http://localhost:2000/api/v1/users/login`, {
+          const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/users/login`, {
             method: 'POST',
             body: JSON.stringify({
               email: credentials.email,
@@ -59,7 +59,7 @@ export const authOptions = {
         if (account?.provider === "google") {
           console.log("1. Google Login Detected. Email:", user.email);
           try {
-            const res = await fetch(`http://localhost:2000/api/v1/users/google-auth`, {
+            const res = await fetch(`${NEXT_PUBLIC_API_URL}/api/v1/users/google-auth`, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({

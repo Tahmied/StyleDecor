@@ -1,3 +1,4 @@
+import Footer from "@/components/Footer";
 import Header from "@/components/Header";
 export default function HomepageLayout({
     children,
@@ -10,6 +11,7 @@ export default function HomepageLayout({
                 <p></p>
             </Header>
             <main>{children}</main>
+            <Footer />
         </>
     );
 }
