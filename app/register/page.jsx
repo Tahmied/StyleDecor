@@ -53,7 +53,7 @@ const Registration = () => {
         SubmittedFormData.append('password', formData.password);
         SubmittedFormData.append('image', profileImage)
         try {
-            const res = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/users/register`, SubmittedFormData, {
+            const res = await axios.post(`${process.env.BACKEND_URI}/api/v1/users/register`, SubmittedFormData, {
                 headers: { 'Content-Type': 'multipart/form-data' }
             })
             Swal.fire({

@@ -1,8 +1,10 @@
 'use client'
 import { ChevronDown, Search, Sparkles, X } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 export default function AirbnbSearchBar() {
+    const router = useRouter()
     const [serviceType, setServiceType] = useState('');
     const [date, setDate] = useState('');
     const [budget, setBudget] = useState('');
@@ -16,9 +18,19 @@ export default function AirbnbSearchBar() {
     const budgetRanges = ['$0 - $500', '$500 - $1000', '$1000 - $2500', '$2500+'];
 
     const handleSearch = () => {
-        console.log('Search clicked', { serviceType, date, budget });
+        const params = new URLSearchParams();
+
+        if (serviceType) {
+            params.append('serviceType', serviceType);
+        }
+        if (budget) {
+            params.append('budget', budget);
+        }
+        if (date) {
+            params.append('date', date);
+        }
         handleClosePopup();
-        // API call will go here
+        router.push(`/services?${params.toString()}`);
     };
 
     const handleClosePopup = () => {
@@ -159,8 +171,8 @@ export default function AirbnbSearchBar() {
                             </div>
 
                             <div className="p-6 space-y-6">
-                             
-                             
+
+
                                 <div className="relative">
                                     <label className="block text-sm font-semibold text-[#DEEBFA] mb-2">
                                         Service Type
@@ -266,7 +278,7 @@ export default function AirbnbSearchBar() {
 
                 <div className="hidden md:block">
                     <div className="flex bg-[#1a2937] rounded-full shadow-2xl border-2 border-[#9FADBE] items-center transition-all hover:shadow-xl hover:border-[#DEEBFA] animate-glow">
-                        
+
                         <div className="relative flex-1 border-r-2 border-[#9FADBE]">
                             <button
                                 onClick={() => {

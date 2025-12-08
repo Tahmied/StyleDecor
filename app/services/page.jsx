@@ -337,8 +337,8 @@ const ServicesPage = () => {
                                         </span>
                                     </div>
 
-                                    <Link href={`/services/${service.id}${selectedDate ? `?date=${selectedDate}` : ''}`}>
-                                        <button className="w-full bg-gradient-to-r from-[#C0DDFF] to-[#A0B8D4] text-[#0B141F] font-urbanist font-bold text-[14px] py-3 rounded-lg hover:brightness-110 hover:shadow-lg hover:shadow-[rgba(192,221,255,0.3)] transition-all duration-300 transform hover:-translate-y-0.5">
+                                    <Link href={`/service/${service.id}${selectedDate ? `?date=${selectedDate}` : ''}`}>
+                                        <button className="w-full bg-gradient-to-r from-[#C0DDFF] to-[#A0B8D4] text-[#0B141F] font-urbanist font-bold cursor-pointer text-[14px] py-3 rounded-lg hover:brightness-110 hover:shadow-lg hover:shadow-[rgba(192,221,255,0.3)] transition-all duration-300 transform hover:-translate-y-0.5">
                                             View Details
                                         </button>
                                     </Link>
