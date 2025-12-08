@@ -1,5 +1,6 @@
 'use client'
 import Cta from '@/components/Utils/Cta';
+import { useSession } from 'next-auth/react';
 import Link from "next/link";
 import { useState } from 'react';
 import styled from 'styled-components';
@@ -103,6 +104,8 @@ const MobileMenu = ({ menuOpen }) => {
 
 
 const Header = ({ children, height = '90vh', styles = '' }) => {
+    const { data: session, status } = useSession();
+    console.log(session);
     const [menuOpen, isMenuOpen] = useState(false)
     return (
         <>

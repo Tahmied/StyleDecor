@@ -1,3 +1,4 @@
+import Providers from '@/lib/providers';
 import type { Metadata } from "next";
 import { Geist_Mono, Urbanist } from "next/font/google";
 import localFont from 'next/font/local';
@@ -40,7 +41,10 @@ export default function RootLayout({
       <body
         className={`${urbanist.variable} ${geistMono.variable} ${logoFont.variable} antialiased`}
       >
-        {children}
+        <Providers>
+          {children}
+        </Providers>
+
       </body>
     </html>
   );
