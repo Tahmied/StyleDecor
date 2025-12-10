@@ -1,3 +1,5 @@
+import Header from "@/components/admin/Header";
+
 export default function HomepageLayout({
     children,
 }: {
@@ -5,6 +7,7 @@ export default function HomepageLayout({
 }) {
     return (
         <>
+            <Header />
             <main>{children}</main>
         </>
     );
