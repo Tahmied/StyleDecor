@@ -9,7 +9,7 @@ import {
     IconUsers,
     IconX
 } from '@tabler/icons-react';
-import { signOut, useSession } from 'next-auth/react';
+import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState } from 'react';
@@ -20,16 +20,13 @@ const AdminHeader = () => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
     const navItems = [
-        { name: 'Dashboard', href: '/admin/dashboard', icon: IconLayoutDashboard },
+        { name: 'Dashboard', href: '/admin', icon: IconLayoutDashboard },
         { name: 'Manage Decorators', href: '/admin/decorators', icon: IconUsers },
         { name: 'Manage Services', href: '/admin/services', icon: IconPackage },
         { name: 'Manage Bookings', href: '/admin/bookings', icon: IconCalendarEvent },
         { name: 'Analytics', href: '/admin/analytics', icon: IconChartBar },
     ];
 
-    const handleLogout = async () => {
-        await signOut({ callbackUrl: '/' });
-    };
 
     return (
         <>
