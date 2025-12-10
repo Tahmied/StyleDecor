@@ -1,6 +1,6 @@
 'use client'
 import Cta from '@/components/Utils/Cta';
-import { IconLayoutDashboard, IconLogout, IconUser } from '@tabler/icons-react';
+import { IconLayoutDashboard, IconLogout, IconSettings, IconUser } from '@tabler/icons-react';
 import { signOut, useSession } from 'next-auth/react';
 import Link from "next/link";
 import { useState } from 'react';
@@ -70,7 +70,6 @@ const StyledWrapper = styled.div`
 
 const ProfileDropdown = ({ session }) => {
     const [isOpen, setIsOpen] = useState(false);
-
     const handleLogout = async () => {
         await signOut({ callbackUrl: '/' });
     };
@@ -102,7 +101,7 @@ const ProfileDropdown = ({ session }) => {
                         className="fixed inset-0 z-10"
                         onClick={() => setIsOpen(false)}
                     />
-                    
+
                     <div className="absolute right-0 w-56 bg-[rgba(11,20,31,0.95)] backdrop-blur-sm border border-[rgba(192,221,255,0.2)] rounded-lg shadow-2xl z-20 overflow-hidden">
                         <div className="px-4 py-3 border-b border-[rgba(192,221,255,0.15)]">
                             <p className="font-urbanist text-[14px] font-semibold text-[#DEEBFA] truncate">
@@ -137,6 +136,22 @@ const ProfileDropdown = ({ session }) => {
                                     </span>
                                 </button>
                             </Link>
+
+                            {
+                                session?.user.role == 'admin' ? (
+                                    <Link href="/admin">
+                                        <button
+                                            onClick={() => setIsOpen(false)}
+                                            className="w-full cursor-pointer px-4 py-2.5 flex items-center gap-3 hover:bg-[rgba(192,221,255,0.08)] transition-all duration-300 group"
+                                        >
+                                            <IconSettings size={18} className="text-[rgba(192,221,255,0.7)] group-hover:text-[#C0DDFF]" />
+                                            <span className="font-urbanist text-[14px] text-[rgba(222,235,250,0.90)] group-hover:text-[#DEEBFA]">
+                                                Admin Panel
+                                            </span>
+                                        </button>
+                                    </Link>
+                                ) : ''
+                            }
 
                             <div className="border-t border-[rgba(192,221,255,0.15)] my-2"></div>
 
@@ -185,7 +200,7 @@ const MobileMenu = ({ menuOpen, MenuItems }) => {
 const Header = ({ children, height = '90vh', styles = '' }) => {
     const { data: session, status } = useSession();
     console.log(session?.user);
-    console.log(status);
+    // console.log(status);
     const MenuItems = session?.user
         ? [
             { name: 'Services', Link: '/services' },
@@ -235,7 +250,7 @@ const Header = ({ children, height = '90vh', styles = '' }) => {
 
                     </div>
                 </header>
-                
+
                 <header className='md:hidden w-full'>
                     <div className="m-header-container w-[90%] mx-auto flex justify-between items-center py-8">
                         <Link href={'/'}>

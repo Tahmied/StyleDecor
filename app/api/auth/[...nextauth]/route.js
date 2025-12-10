@@ -32,7 +32,8 @@ export const authOptions = {
               name: response.data.user.fullName || response.data.user.name,
               image: response.data.user.image,
               accessToken: response.data.accessToken,
-              refreshToken: response.data.refreshToken
+              refreshToken: response.data.refreshToken,
+              role: response.data.user.role
             };
           }
 
@@ -78,6 +79,7 @@ export const authOptions = {
               token.accessToken = response.data.accessToken;
               token.refreshToken = response.data.refreshToken;
               token.image = response.data.user.image;
+              token.role = response.data.user.role
             }
           } catch (error) {
             console.error("Google Sync Error:", error);
@@ -89,6 +91,7 @@ export const authOptions = {
           token.accessToken = user.accessToken;
           token.refreshToken = user.refreshToken;
           token.image = user.image;
+          token.role = user.role;
         }
       }
       return token;
@@ -99,6 +102,7 @@ export const authOptions = {
       session.user.accessToken = token.accessToken;
       session.user.refreshToken = token.refreshToken;
       session.user.image = token.image;
+      session.user.role = token.role
       return session;
     }
   },

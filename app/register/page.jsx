@@ -69,7 +69,6 @@ const Registration = () => {
         } catch (error) {
 
         }
-        // console.log('Registration submitted:', { ...formData, profileImage });
     };
 
     const handleGoogleSignUp = () => {

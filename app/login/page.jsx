@@ -24,14 +24,14 @@ const Login = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log('Login submitted:', formData.email, formData.password);
+        
         const res = await signIn('credentials', {
             email: formData.email,
             password: formData.password,
             redirect: false,
         });
         if (res.error) {
-            console.log(res);
+            
             alert("Invalid Credentials");
         } else {
             Swal.fire({
@@ -47,7 +47,6 @@ const Login = () => {
     };
 
     const handleGoogleSignIn = () => {
-        console.log('Google sign in');
         signIn('google', { callbackUrl: '/' })
     };
 

@@ -374,7 +374,6 @@ export default function AirbnbSearchBar() {
                 <div className="mt-8 flex flex-col items-center gap-4">
 
                     <button
-                        onClick={() => console.log('Book service clicked')}
                         className="group cursor-pointer relative bg-gradient-to-r from-[#9FADBE] to-[#DEEBFA] text-[#0B141F] px-6 sm:px-8 py-3 sm:py-4 rounded-full font-bold text-sm sm:text-base lg:text-lg shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105 flex items-center gap-2 sm:gap-3 overflow-hidden border-2 border-transparent hover:border-[#DEEBFA] w-full sm:w-auto justify-center"
                     >
                         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent opacity-0 group-hover:opacity-30 transition-opacity duration-500 transform -skew-x-12 group-hover:translate-x-full"></div>
