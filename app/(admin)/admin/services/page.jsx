@@ -2,7 +2,70 @@
 import { IconEdit, IconPhoto, IconPlus, IconTrash, IconUpload, IconX } from '@tabler/icons-react';
 import { useState } from 'react';
 
+const DynamicInputList = ({ label, placeholder, items, setItems }) => {
+    const addItem = () => {
+        setItems([...items, '']);
+    };
+
+    const removeItem = (index) => {
+        setItems(items.filter((_, i) => i !== index));
+    };
+
+    const updateItem = (index, value) => {
+        const newItems = [...items];
+        newItems[index] = value;
+        setItems(newItems);
+    };
+
+    return (
+        <div className="space-y-2">
+            <label className="block font-urbanist text-[14px] font-semibold text-[#DEEBFA]">
+                {label}
+            </label>
+            <p className="font-urbanist text-[12px] text-[rgba(222,235,250,0.60)] mb-3">
+                Add items one by one for better organization
+            </p>
+
+            <div className="space-y-2">
+                {items.map((item, index) => (
+                    <div key={index} className="flex gap-2">
+                        <div className="flex-1 relative">
+                            <input
+                                type="text"
+                                value={item}
+                                onChange={(e) => updateItem(index, e.target.value)}
+                                placeholder={`${placeholder} ${index + 1}`}
+                                className="w-full bg-[rgba(11,20,31,0.6)] border border-[rgba(192,221,255,0.2)] rounded-lg py-3 pl-10 pr-4 text-[#DEEBFA] font-urbanist text-[14px] focus:outline-none focus:border-[#C0DDFF] focus:ring-2 focus:ring-[rgba(192,221,255,0.2)] transition-all duration-300 placeholder:text-[rgba(192,221,255,0.4)]"
+                            />
+                            <span className="absolute left-4 top-1/2 -translate-y-1/2 font-urbanist text-[13px] font-semibold text-[rgba(192,221,255,0.5)]">
+                                {index + 1}.
+                            </span>
+                        </div>
+                        <button
+                            onClick={() => removeItem(index)}
+                            className="p-3 bg-[rgba(255,82,82,0.1)] border border-[rgba(255,82,82,0.3)] text-[#ff5252] rounded-lg hover:bg-[rgba(255,82,82,0.15)] hover:border-[#ff5252] transition-all duration-300"
+                            title="Remove item"
+                        >
+                            <IconTrash size={18} />
+                        </button>
+                    </div>
+                ))}
+
+                <button
+                    onClick={addItem}
+                    className="w-full bg-[rgba(192,221,255,0.05)] border-2 border-dashed border-[rgba(192,221,255,0.3)] text-[#C0DDFF] font-urbanist font-semibold text-[14px] py-3 rounded-lg hover:bg-[rgba(192,221,255,0.1)] hover:border-[#C0DDFF] transition-all duration-300 flex items-center justify-center gap-2"
+                >
+                    <IconPlus size={18} />
+                    Add {label.includes('Features') ? 'Feature' : 'Item'}
+                </button>
+            </div>
+        </div>
+    );
+};
+
 const ManageServices = () => {
+    const [features, setFeatures] = useState(['']);
+    const [includes, setIncludes] = useState(['']);
     const [showModal, setShowModal] = useState(false);
     const [modalMode, setModalMode] = useState('add');
     const [searchQuery, setSearchQuery] = useState('');
@@ -74,19 +137,23 @@ const ManageServices = () => {
     const openAddModal = () => {
         setModalMode('add');
         setSelectedImages([]);
+        setFeatures(['']);
+        setIncludes(['']);
         setShowModal(true);
     };
 
     const openEditModal = () => {
         setModalMode('edit');
         setSelectedImages([]);
+        setFeatures(['Premium floral arrangements', 'Custom color schemes']);
+        setIncludes(['Initial design consultation', 'All decorative materials']); 
         setShowModal(true);
     };
 
     return (
         <div className="min-h-screen bg-[#0B141F] lg:pl-64 pt-16">
             <div className="p-4 sm:p-6 lg:p-8">
-                
+
                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
                     <div>
                         <h1 className="font-urbanist text-[32px] md:text-[40px] font-bold text-[#DEEBFA] mb-2">
@@ -174,7 +241,7 @@ const ManageServices = () => {
                         </div>
 
                         <div className="p-6 space-y-6">
-                            
+
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                                 <div className="space-y-2">
                                     <label className="block font-urbanist text-[14px] font-semibold text-[#DEEBFA]">
@@ -255,7 +322,7 @@ const ManageServices = () => {
                                 <p className="font-urbanist text-[12px] text-[rgba(222,235,250,0.60)] mb-3">
                                     Upload multiple images (JPG, PNG, or GIF - Max 5MB each)
                                 </p>
-                                
+
                                 <div className="space-y-3">
                                     {selectedImages.length === 0 ? (
                                         <label className="block">
@@ -339,33 +406,19 @@ const ManageServices = () => {
                                 </div>
                             </div>
 
-                            <div className="space-y-2">
-                                <label className="block font-urbanist text-[14px] font-semibold text-[#DEEBFA]">
-                                    Key Features
-                                </label>
-                                <p className="font-urbanist text-[12px] text-[rgba(222,235,250,0.60)] mb-2">
-                                    Separate each feature with a comma
-                                </p>
-                                <textarea
-                                    rows={3}
-                                    placeholder="Premium floral arrangements, Custom color schemes, Professional setup team"
-                                    className="w-full bg-[rgba(11,20,31,0.6)] border border-[rgba(192,221,255,0.2)] rounded-lg py-3 px-4 text-[#DEEBFA] font-urbanist text-[14px] focus:outline-none focus:border-[#C0DDFF] focus:ring-2 focus:ring-[rgba(192,221,255,0.2)] transition-all duration-300 resize-none placeholder:text-[rgba(192,221,255,0.4)]"
-                                />
-                            </div>
+                            <DynamicInputList
+                                label="Key Features"
+                                placeholder="Enter feature"
+                                items={features}
+                                setItems={setFeatures}
+                            />
 
-                            <div className="space-y-2">
-                                <label className="block font-urbanist text-[14px] font-semibold text-[#DEEBFA]">
-                                    Whats Included
-                                </label>
-                                <p className="font-urbanist text-[12px] text-[rgba(222,235,250,0.60)] mb-2">
-                                    Separate each item with a comma
-                                </p>
-                                <textarea
-                                    rows={3}
-                                    placeholder="Initial design consultation, All decorative materials, Professional installation"
-                                    className="w-full bg-[rgba(11,20,31,0.6)] border border-[rgba(192,221,255,0.2)] rounded-lg py-3 px-4 text-[#DEEBFA] font-urbanist text-[14px] focus:outline-none focus:border-[#C0DDFF] focus:ring-2 focus:ring-[rgba(192,221,255,0.2)] transition-all duration-300 resize-none placeholder:text-[rgba(192,221,255,0.4)]"
-                                />
-                            </div>
+                            <DynamicInputList
+                                label="What's Included"
+                                placeholder="Enter item"
+                                items={includes}
+                                setItems={setIncludes}
+                            />
 
                             <div className="flex gap-3 pt-4">
                                 <button
