@@ -136,7 +136,7 @@ const Modal = ({ modalMode, selectedImages, handleImageSelect, features, setFeat
     if (formLoading) {
         return (
             <div className="fixed inset-0 bg-black bg-opacity-70 z-50 flex items-center justify-center p-4">
-                
+
                 <div className="bg-[#0B141F] border-2 border-[rgba(192,221,255,0.2)] rounded-2xl max-w-4xl w-full min-h-[600px] flex flex-col max-h-[90vh] overflow-hidden">
 
                     <div className="sticky top-0 bg-[#0B141F] border-b border-[rgba(192,221,255,0.15)] px-6 py-4 flex items-center justify-between rounded-t-2xl z-10">
@@ -145,7 +145,7 @@ const Modal = ({ modalMode, selectedImages, handleImageSelect, features, setFeat
                         </h3>
                     </div>
 
-                  
+
                     <div className="p-6 flex-1 flex flex-col items-center justify-center space-y-4">
                         <Loader />
                         <div className="text-center mt-4">
@@ -429,6 +429,7 @@ const ManageServices = () => {
     const [selectedImages, setSelectedImages] = useState([]);
     const [imageFiles, setImageFiles] = useState([]);
     const [dummyServices, setServices] = useState([])
+    const [loading, setLoading] = useState(true)
 
     useEffect(() => {
         const services = async () => {
@@ -436,9 +437,11 @@ const ManageServices = () => {
                 const services = await api.get(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/admin/services`)
                 console.log(services.data.data);
                 setServices(services.data.data)
+                setLoading(false)
                 return services.data.data
             } catch (error) {
                 console.log(`failed to fetch services due to ${error}`);
+                setLoading(false)
             }
         }
         services()
@@ -471,6 +474,46 @@ const ManageServices = () => {
         setIncludes(['Initial design consultation', 'All decorative materials']);
         setShowModal(true);
     };
+
+    if (loading) {
+        return (
+            <div className="min-h-screen bg-[#0B141F] lg:pl-64 pt-16">
+                <div className="p-4 sm:p-6 lg:p-8">
+
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
+                        <div>
+                            <h1 className="font-urbanist text-[32px] md:text-[40px] font-bold text-[#DEEBFA] mb-2">
+                                Manage Services
+                            </h1>
+                            <p className="font-urbanist text-[16px] text-[rgba(222,235,250,0.70)]">
+                                Add, edit, or remove decoration services
+                            </p>
+                        </div>
+                        <button
+                            onClick={openAddModal}
+                            className="bg-gradient-to-r from-[#C0DDFF] to-[#A0B8D4] text-[#0B141F] font-urbanist font-bold text-[14px] px-6 py-3 rounded-lg hover:brightness-110 hover:shadow-lg hover:shadow-[rgba(192,221,255,0.3)] transition-all duration-300 flex items-center gap-2"
+                        >
+                            <IconPlus size={20} />
+                            Add New Service
+                        </button>
+                    </div>
+
+                    <div className="w-full min-h-[60vh] flex flex-col items-center justify-center rounded-2xl border border-[rgba(192,221,255,0.1)] bg-[rgba(192,221,255,0.02)]">
+                        <Loader />
+                        <div className="text-center mt-6">
+                            <h4 className="font-urbanist text-[20px] font-bold text-[#DEEBFA]">
+                                Loading Services
+                            </h4>
+                            <p className="font-urbanist text-[15px] text-[rgba(222,235,250,0.60)] mt-2">
+                                Please wait, getting your data...
+                            </p>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        )
+    }
 
     return (
         <div className="min-h-screen bg-[#0B141F] lg:pl-64 pt-16">
