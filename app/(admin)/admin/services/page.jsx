@@ -47,7 +47,7 @@ const DynamicInputList = ({ label, placeholder, items, setItems }) => {
                         </div>
                         <button
                             onClick={() => removeItem(index)}
-                            className="p-3 bg-[rgba(255,82,82,0.1)] border border-[rgba(255,82,82,0.3)] text-[#ff5252] rounded-lg hover:bg-[rgba(255,82,82,0.15)] hover:border-[#ff5252] transition-all duration-300"
+                            className="p-3 cursor-pointer bg-[rgba(255,82,82,0.1)] border border-[rgba(255,82,82,0.3)] text-[#ff5252] rounded-lg hover:bg-[rgba(255,82,82,0.15)] hover:border-[#ff5252] transition-all duration-300"
                             title="Remove item"
                         >
                             <IconTrash size={18} />
@@ -57,7 +57,7 @@ const DynamicInputList = ({ label, placeholder, items, setItems }) => {
 
                 <button
                     onClick={addItem} type='button'
-                    className="w-full bg-[rgba(192,221,255,0.05)] border-2 border-dashed border-[rgba(192,221,255,0.3)] text-[#C0DDFF] font-urbanist font-semibold text-[14px] py-3 rounded-lg hover:bg-[rgba(192,221,255,0.1)] hover:border-[#C0DDFF] transition-all duration-300 flex items-center justify-center gap-2"
+                    className="w-full cursor-pointer bg-[rgba(192,221,255,0.05)] border-2 border-dashed border-[rgba(192,221,255,0.3)] text-[#C0DDFF] font-urbanist font-semibold text-[14px] py-3 rounded-lg hover:bg-[rgba(192,221,255,0.1)] hover:border-[#C0DDFF] transition-all duration-300 flex items-center justify-center gap-2"
                 >
                     <IconPlus size={18} />
                     Add {label.includes('Features') ? 'Feature' : 'Item'}
@@ -173,7 +173,7 @@ const Modal = ({ modalMode, selectedImages, handleImageSelect, features, setFeat
                     </h3>
                     <button
                         onClick={() => setShowModal(false)}
-                        className="p-2 hover:bg-[rgba(192,221,255,0.1)] rounded-full transition-colors"
+                        className="p-2 hover:bg-[rgba(192,221,255,0.1)] rounded-full cursor-pointer transition-colors"
                     >
                         <IconX size={24} className="text-[#DEEBFA]" />
                     </button>
@@ -345,7 +345,7 @@ const Modal = ({ modalMode, selectedImages, handleImageSelect, features, setFeat
                                         </p>
                                         <button
                                             onClick={() => setSelectedImages([])}
-                                            className="font-urbanist text-[12px] text-[#ff5252] hover:text-[#ff7070] transition-colors font-semibold"
+                                            className="font-urbanist cursor-pointer text-[12px] text-[#ff5252] hover:text-[#ff7070] transition-colors font-semibold"
                                         >
                                             Clear All
                                         </button>
@@ -362,11 +362,11 @@ const Modal = ({ modalMode, selectedImages, handleImageSelect, features, setFeat
                                                 </div>
                                                 <button
                                                     onClick={() => removeImage(index)}
-                                                    className="absolute -top-2 -right-2 p-1.5 bg-[#ff5252] rounded-full hover:bg-[#ff7070] transition-colors shadow-lg border-2 border-[#0B141F]"
+                                                    className="absolute cursor-pointer -top-2 -right-2 p-1.5 bg-[#ff5252] rounded-full hover:bg-[#ff7070] transition-colors shadow-lg border-2 border-[#0B141F]"
                                                 >
                                                     <IconX size={14} className="text-white" />
                                                 </button>
-                                                <p className="font-urbanist text-[11px] text-[rgba(222,235,250,0.60)] text-center mt-1">
+                                                <p className="font-urbanist cursor-pointer text-[11px] text-[rgba(222,235,250,0.60)] text-center mt-1">
                                                     Image {index + 1}
                                                 </p>
                                             </div>
@@ -406,13 +406,13 @@ const Modal = ({ modalMode, selectedImages, handleImageSelect, features, setFeat
                         <button
                             type='button'
                             onClick={() => setShowModal(false)}
-                            className="flex-1 bg-[rgba(192,221,255,0.1)] border-2 border-[rgba(192,221,255,0.2)] text-[#DEEBFA] font-urbanist font-semibold text-[15px] py-3.5 rounded-lg hover:bg-[rgba(192,221,255,0.15)] hover:border-[rgba(192,221,255,0.3)] transition-all duration-300"
+                            className="flex-1 cursor-pointer bg-[rgba(192,221,255,0.1)] border-2 border-[rgba(192,221,255,0.2)] text-[#DEEBFA] font-urbanist font-semibold text-[15px] py-3.5 rounded-lg hover:bg-[rgba(192,221,255,0.15)] hover:border-[rgba(192,221,255,0.3)] transition-all duration-300"
                         >
                             Cancel
                         </button>
                         <button
                             type='submit'
-                            className="flex-1 bg-gradient-to-r from-[#C0DDFF] to-[#A0B8D4] text-[#0B141F] font-urbanist font-bold text-[15px] py-3.5 rounded-lg hover:brightness-110 hover:shadow-lg hover:shadow-[rgba(192,221,255,0.3)] transition-all duration-300 transform hover:-translate-y-0.5"
+                            className="flex-1 cursor-pointer bg-gradient-to-r from-[#C0DDFF] to-[#A0B8D4] text-[#0B141F] font-urbanist font-bold text-[15px] py-3.5 rounded-lg hover:brightness-110 hover:shadow-lg hover:shadow-[rgba(192,221,255,0.3)] transition-all duration-300 transform hover:-translate-y-0.5"
                         >
                             {modalMode === 'add' ? 'Add Service' : 'Update Service'}
                         </button>
@@ -479,7 +479,7 @@ const ManageServices = () => {
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-[#0B141F] lg:pl-64 pt-16">
+            <div className="min-h-screen bg-[#0B141F] lg:pl-64">
                 <div className="p-4 sm:p-6 lg:p-8">
 
                     <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
@@ -518,7 +518,7 @@ const ManageServices = () => {
     }
 
     return (
-        <div className="min-h-screen bg-[#0B141F] lg:pl-64 pt-16">
+        <div className="min-h-screen bg-[#0B141F] lg:pl-64">
             <div className="p-4 sm:p-6 lg:p-8">
 
                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
@@ -532,7 +532,7 @@ const ManageServices = () => {
                     </div>
                     <button
                         onClick={openAddModal}
-                        className="bg-gradient-to-r from-[#C0DDFF] to-[#A0B8D4] text-[#0B141F] font-urbanist font-bold text-[14px] px-6 py-3 rounded-lg hover:brightness-110 hover:shadow-lg hover:shadow-[rgba(192,221,255,0.3)] transition-all duration-300 flex items-center gap-2"
+                        className="bg-gradient-to-r cursor-pointer from-[#C0DDFF] to-[#A0B8D4] text-[#0B141F] font-urbanist font-bold text-[14px] px-6 py-3 rounded-lg hover:brightness-110 hover:shadow-lg hover:shadow-[rgba(192,221,255,0.3)] transition-all duration-300 flex items-center gap-2"
                     >
                         <IconPlus size={20} />
                         Add New Service
@@ -575,13 +575,13 @@ const ManageServices = () => {
                                     <div className="flex gap-2">
                                         <button
                                             onClick={openEditModal}
-                                            className="flex-1 bg-[rgba(192,221,255,0.1)] border border-[rgba(192,221,255,0.2)] text-[#DEEBFA] font-urbanist font-semibold text-[13px] py-2.5 rounded-lg hover:bg-[rgba(192,221,255,0.15)] hover:border-[rgba(192,221,255,0.3)] transition-all duration-300 flex items-center justify-center gap-2"
+                                            className="flex-1 cursor-pointer bg-[rgba(192,221,255,0.1)] border border-[rgba(192,221,255,0.2)] text-[#DEEBFA] font-urbanist font-semibold text-[13px] py-2.5 rounded-lg hover:bg-[rgba(192,221,255,0.15)] hover:border-[rgba(192,221,255,0.3)] transition-all duration-300 flex items-center justify-center gap-2"
                                         >
                                             <IconEdit size={16} />
                                             Edit
                                         </button>
                                         <button
-                                            className="flex-1 bg-[rgba(255,82,82,0.1)] border border-[rgba(255,82,82,0.3)] text-[#ff5252] font-urbanist font-semibold text-[13px] py-2.5 rounded-lg hover:bg-[rgba(255,82,82,0.15)] hover:border-[#ff5252] transition-all duration-300 flex items-center justify-center gap-2"
+                                            className="flex-1 cursor-pointer bg-[rgba(255,82,82,0.1)] border border-[rgba(255,82,82,0.3)] text-[#ff5252] font-urbanist font-semibold text-[13px] py-2.5 rounded-lg hover:bg-[rgba(255,82,82,0.15)] hover:border-[#ff5252] transition-all duration-300 flex items-center justify-center gap-2"
                                         >
                                             <IconTrash size={16} />
                                             Delete

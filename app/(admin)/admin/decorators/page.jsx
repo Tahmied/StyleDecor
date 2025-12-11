@@ -82,7 +82,7 @@ const ManageDecorators = () => {
     }
 
     return (
-        <div className="min-h-screen bg-[#0b141f] lg:pl-64 pt-16">
+        <div className="min-h-screen bg-[#0b141f] lg:pl-64 pt-0">
             <div className="p-4 sm:p-6 lg:p-8">
                 <div className="mb-8">
                     <h1 className="font-urbanist text-[28px] sm:text-[32px] font-bold text-[#DEEBFA] mb-2">
@@ -98,7 +98,7 @@ const ManageDecorators = () => {
                         <button
                             key={option.value}
                             onClick={() => setFilter(option.value)}
-                            className={`px-4 py-2.5 rounded-lg font-urbanist text-[14px] font-semibold transition-all duration-300 ${
+                            className={`px-4 cursor-pointer py-2.5 rounded-lg font-urbanist text-[14px] font-semibold transition-all duration-300 ${
                                 filter === option.value
                                     ? 'bg-gradient-to-r from-[#C0DDFF] to-[#A0B8D4] text-[#0B141F] shadow-lg'
                                     : 'bg-[rgba(192,221,255,0.05)] border border-[rgba(192,221,255,0.15)] text-[rgba(222,235,250,0.80)] hover:bg-[rgba(192,221,255,0.1)]'
@@ -151,7 +151,7 @@ const ManageDecorators = () => {
                                 <div className="flex gap-2">
                                     <button
                                         onClick={() => setSelectedUser(user)}
-                                        className="flex-1 px-3 py-2 bg-[rgba(192,221,255,0.1)] border border-[rgba(192,221,255,0.2)] text-[#DEEBFA] rounded-lg hover:bg-[rgba(192,221,255,0.15)] transition-all duration-300 font-urbanist text-[13px] font-semibold"
+                                        className="flex-1 cursor-pointer px-3 py-2 bg-[rgba(192,221,255,0.1)] border border-[rgba(192,221,255,0.2)] text-[#DEEBFA] rounded-lg hover:bg-[rgba(192,221,255,0.15)] transition-all duration-300 font-urbanist text-[13px] font-semibold"
                                     >
                                         View Details
                                     </button>
@@ -159,7 +159,7 @@ const ManageDecorators = () => {
                                         <button
                                             onClick={() => handleRoleUpdate(user._id, user.role)}
                                             disabled={processingId === user._id}
-                                            className={`flex-1 px-3 py-2 rounded-lg transition-all duration-300 font-urbanist text-[13px] font-semibold disabled:opacity-50 disabled:cursor-not-allowed ${
+                                            className={`flex-1 cursor-pointer px-3 py-2 rounded-lg transition-all duration-300 font-urbanist text-[13px] font-semibold disabled:opacity-50 disabled:cursor-not-allowed ${
                                                 user.role === 'decorator'
                                                     ? 'bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white'
                                                     : 'bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white'

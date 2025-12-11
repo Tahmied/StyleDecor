@@ -105,14 +105,14 @@ const ManageBookings = () => {
                         <button
                             key={option.value}
                             onClick={() => setFilter(option.value)}
-                            className={`px-4 py-2.5 rounded-lg font-urbanist text-[14px] font-semibold transition-all duration-300 ${
+                            className={`px-4 cursor-pointer py-2.5 rounded-lg font-urbanist text-[14px] font-semibold transition-all duration-300 ${
                                 filter === option.value
                                     ? 'bg-gradient-to-r from-[#C0DDFF] to-[#A0B8D4] text-[#0B141F] shadow-lg'
                                     : 'bg-[rgba(192,221,255,0.05)] border border-[rgba(192,221,255,0.15)] text-[rgba(222,235,250,0.80)] hover:bg-[rgba(192,221,255,0.1)]'
                             }`}
                         >
                             {option.label}
-                            <span className={`ml-2 px-2 py-0.5 rounded-full text-[11px] ${
+                            <span className={`ml-2 cursor-pointer px-2 py-0.5 rounded-full text-[11px] ${
                                 filter === option.value
                                     ? 'bg-[rgba(11,20,31,0.2)]'
                                     : 'bg-[rgba(192,221,255,0.1)]'
@@ -239,13 +239,12 @@ const ManageBookings = () => {
                                         )}
                                     </div>
 
-                                    {/* Action Buttons */}
                                     {booking.status.toLowerCase() === 'pending' && (
                                         <div className="flex lg:flex-col gap-3 lg:min-w-[120px]">
                                             <button
                                                 onClick={() => handleStatusUpdate(booking._id, 'approve')}
                                                 disabled={processingId === booking._id}
-                                                className="flex-1 lg:flex-none flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white rounded-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed font-urbanist text-[14px] font-semibold"
+                                                className="flex-1 cursor-pointer lg:flex-none flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white rounded-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed font-urbanist text-[14px] font-semibold"
                                             >
                                                 <IconCheck size={18} />
                                                 Approve
@@ -253,7 +252,7 @@ const ManageBookings = () => {
                                             <button
                                                 onClick={() => handleStatusUpdate(booking._id, 'reject')}
                                                 disabled={processingId === booking._id}
-                                                className="flex-1 lg:flex-none flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white rounded-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed font-urbanist text-[14px] font-semibold"
+                                                className="flex-1 cursor-pointer lg:flex-none flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white rounded-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed font-urbanist text-[14px] font-semibold"
                                             >
                                                 <IconX size={18} />
                                                 Reject
