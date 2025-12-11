@@ -1,6 +1,8 @@
 'use client'
 import { IconEdit, IconPhoto, IconPlus, IconTrash, IconUpload, IconX } from '@tabler/icons-react';
 import { useEffect, useState } from 'react';
+import Swal from 'sweetalert2';
+import Loader from '../../../../components/Utils/Loader';
 import api from '../../../../lib/axios';
 
 const DynamicInputList = ({ label, placeholder, items, setItems }) => {
@@ -65,6 +67,7 @@ const DynamicInputList = ({ label, placeholder, items, setItems }) => {
 };
 
 const Modal = ({ modalMode, selectedImages, handleImageSelect, features, setFeatures, includes, setIncludes, setShowModal, removeImage, setSelectedImages, imageFiles }) => {
+    const [formLoading, setFormLoading] = useState(false)
     const [formData, setFormData] = useState({
         serviceName: '',
         category: '',
@@ -72,7 +75,8 @@ const Modal = ({ modalMode, selectedImages, handleImageSelect, features, setFeat
         longDescription: '',
         cost: '',
         duration: '',
-        serviceType: ''
+        serviceType: 'onsite',
+        unit: 'per-service'
     });
 
     const handleChange = (e) => {
@@ -85,6 +89,7 @@ const Modal = ({ modalMode, selectedImages, handleImageSelect, features, setFeat
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setFormLoading(true)
         const data = new FormData();
 
         data.append('serviceName', formData.serviceName);
@@ -97,26 +102,65 @@ const Modal = ({ modalMode, selectedImages, handleImageSelect, features, setFeat
         data.append('features', JSON.stringify(features));
         data.append('includes', JSON.stringify(includes));
         data.append('serviceType', formData.serviceType)
-        data.append('unit', 'per service')
+        data.append('unit', formData.unit)
         imageFiles.forEach((file) => {
             data.append('images', file);
         });
 
-        console.log('Sending FormData...', data);
+        for (var pair of data.entries()) {
+            console.log(pair[0] + ', ' + pair[1]);
+        }
 
         try {
-            const response = await api.post(`/api/v1/admin/add-service`, data, {
+            await api.post(`/api/v1/admin/add-service`, data, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
             });
-            console.log('Success:', response.data);
-            setShowModal(false);
+            setFormLoading(false)
+            Swal.fire({
+                title: 'Service Added!',
+                text: 'Your service has been added successfully',
+                icon: 'success',
+                showConfirmButton: false,
+                timer: 1500
+            }).then(() => {
+                setShowModal(false);
+            })
         } catch (error) {
             console.error('Upload failed:', error);
+            setFormLoading(false)
         }
     }
 
+    if (formLoading) {
+        return (
+            <div className="fixed inset-0 bg-black bg-opacity-70 z-50 flex items-center justify-center p-4">
+                
+                <div className="bg-[#0B141F] border-2 border-[rgba(192,221,255,0.2)] rounded-2xl max-w-4xl w-full min-h-[600px] flex flex-col max-h-[90vh] overflow-hidden">
+
+                    <div className="sticky top-0 bg-[#0B141F] border-b border-[rgba(192,221,255,0.15)] px-6 py-4 flex items-center justify-between rounded-t-2xl z-10">
+                        <h3 className="font-urbanist text-[24px] font-bold text-[#DEEBFA]">
+                            {modalMode === 'add' ? 'Add New Service' : 'Edit Service'}
+                        </h3>
+                    </div>
+
+                  
+                    <div className="p-6 flex-1 flex flex-col items-center justify-center space-y-4">
+                        <Loader />
+                        <div className="text-center mt-4">
+                            <h4 className="font-urbanist text-[18px] font-bold text-[#DEEBFA]">
+                                {modalMode === 'add' ? 'Creating Service...' : 'Updating Service...'}
+                            </h4>
+                            <p className="font-urbanist text-[14px] text-[rgba(222,235,250,0.60)] mt-1">
+                                Please wait while we process your request
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        )
+    }
 
     return (
         <div className="fixed inset-0 bg-black bg-opacity-70 z-50 flex items-center justify-center p-4">
@@ -223,15 +267,33 @@ const Modal = ({ modalMode, selectedImages, handleImageSelect, features, setFeat
                         </div>
                     </div>
 
-                    <div className="space-y-2">
-                        <label className="block font-urbanist text-[14px] font-semibold text-[#DEEBFA]">
-                            Service Type <span className="text-[#ff5252]">*</span>
-                        </label>
-                        <select value={formData.serviceType} onChange={handleChange} name='serviceType' className="w-full bg-[rgba(11,20,31,0.6)] border border-[rgba(192,221,255,0.2)] rounded-lg py-3 px-4 text-[#DEEBFA] font-urbanist text-[14px] focus:outline-none focus:border-[#C0DDFF] focus:ring-2 focus:ring-[rgba(192,221,255,0.2)] transition-all duration-300">
-                            <option value="onsite">On Site</option>
-                            <option value="online">Online</option>
-                        </select>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                        <div className="space-y-2">
+                            <label className="block font-urbanist text-[14px] font-semibold text-[#DEEBFA]">
+                                Service Type <span className="text-[#ff5252]">*</span>
+                            </label>
+                            <select value={formData.serviceType} onChange={handleChange} name='serviceType' className="w-full bg-[rgba(11,20,31,0.6)] border border-[rgba(192,221,255,0.2)] rounded-lg py-3 px-4 text-[#DEEBFA] font-urbanist text-[14px] focus:outline-none focus:border-[#C0DDFF] focus:ring-2 focus:ring-[rgba(192,221,255,0.2)] transition-all duration-300">
+                                <option value="onsite">On Site</option>
+                                <option value="online">Online</option>
+                            </select>
+                        </div>
+
+                        <div className="space-y-2">
+                            <label className="block font-urbanist text-[14px] font-semibold text-[#DEEBFA]">
+                                Unit <span className="text-[#ff5252]">*</span>
+                            </label>
+                            <select value={formData.unit} onChange={handleChange} name='unit' className="w-full bg-[rgba(11,20,31,0.6)] border border-[rgba(192,221,255,0.2)] rounded-lg py-3 px-4 text-[#DEEBFA] font-urbanist text-[14px] focus:outline-none focus:border-[#C0DDFF] focus:ring-2 focus:ring-[rgba(192,221,255,0.2)] transition-all duration-300">
+                                <option value="meter">per-service</option>
+                                <option value="sqft">sqrt-ft</option>
+                                <option value="floor">per-floor</option>
+                                <option value="meter">per-meter</option>
+                                <option value="meter">per-room</option>
+                            </select>
+                        </div>
+
                     </div>
+
+
 
                     <div className="space-y-2">
                         <label className="block font-urbanist text-[14px] font-semibold text-[#DEEBFA]">
