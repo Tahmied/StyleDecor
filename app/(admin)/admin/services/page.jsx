@@ -53,7 +53,7 @@ const DynamicInputList = ({ label, placeholder, items, setItems }) => {
                 ))}
 
                 <button
-                    onClick={addItem}
+                    onClick={addItem} type='button'
                     className="w-full bg-[rgba(192,221,255,0.05)] border-2 border-dashed border-[rgba(192,221,255,0.3)] text-[#C0DDFF] font-urbanist font-semibold text-[14px] py-3 rounded-lg hover:bg-[rgba(192,221,255,0.1)] hover:border-[#C0DDFF] transition-all duration-300 flex items-center justify-center gap-2"
                 >
                     <IconPlus size={18} />
@@ -64,14 +64,15 @@ const DynamicInputList = ({ label, placeholder, items, setItems }) => {
     );
 };
 
-const Modal = ({ modalMode, selectedImages, handleImageSelect, features, setFeatures, includes, setIncludes, setShowModal, removeImage, setSelectedImages }) => {
+const Modal = ({ modalMode, selectedImages, handleImageSelect, features, setFeatures, includes, setIncludes, setShowModal, removeImage, setSelectedImages, imageFiles }) => {
     const [formData, setFormData] = useState({
         serviceName: '',
         category: '',
         shortDescription: '',
         longDescription: '',
         cost: '',
-        duration: ''
+        duration: '',
+        serviceType: ''
     });
 
     const handleChange = (e) => {
@@ -84,16 +85,39 @@ const Modal = ({ modalMode, selectedImages, handleImageSelect, features, setFeat
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const finalData = {
-            ...formData,
-            features: features,
-            includes: includes,
-            images: selectedImages,
-            mode: modalMode
-        };
-        console.log('Submitting this data:', finalData);
-        setShowModal(false);
+        const data = new FormData();
+
+        data.append('serviceName', formData.serviceName);
+        data.append('serviceCategory', formData.category);
+        data.append('description', formData.shortDescription);
+        data.append('longDescription', formData.longDescription);
+        data.append('cost', formData.cost);
+        data.append('duration', formData.duration);
+        data.append('mode', modalMode);
+        data.append('features', JSON.stringify(features));
+        data.append('includes', JSON.stringify(includes));
+        data.append('serviceType', formData.serviceType)
+        data.append('unit', 'per service')
+        imageFiles.forEach((file) => {
+            data.append('images', file);
+        });
+
+        console.log('Sending FormData...', data);
+
+        try {
+            const response = await api.post(`/api/v1/admin/add-service`, data, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            });
+            console.log('Success:', response.data);
+            setShowModal(false);
+        } catch (error) {
+            console.error('Upload failed:', error);
+        }
     }
+
+
     return (
         <div className="fixed inset-0 bg-black bg-opacity-70 z-50 flex items-center justify-center p-4">
             <div className="bg-[#0B141F] border-2 border-[rgba(192,221,255,0.2)] rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-[rgba(192,221,255,0.05)] [&::-webkit-scrollbar-thumb]:bg-[rgba(192,221,255,0.2)] [&::-webkit-scrollbar-thumb]:rounded-full">
@@ -197,6 +221,16 @@ const Modal = ({ modalMode, selectedImages, handleImageSelect, features, setFeat
                                 className="w-full bg-[rgba(11,20,31,0.6)] border border-[rgba(192,221,255,0.2)] rounded-lg py-3 px-4 text-[#DEEBFA] font-urbanist text-[14px] focus:outline-none focus:border-[#C0DDFF] focus:ring-2 focus:ring-[rgba(192,221,255,0.2)] transition-all duration-300 placeholder:text-[rgba(192,221,255,0.4)]"
                             />
                         </div>
+                    </div>
+
+                    <div className="space-y-2">
+                        <label className="block font-urbanist text-[14px] font-semibold text-[#DEEBFA]">
+                            Service Type <span className="text-[#ff5252]">*</span>
+                        </label>
+                        <select value={formData.serviceType} onChange={handleChange} name='serviceType' className="w-full bg-[rgba(11,20,31,0.6)] border border-[rgba(192,221,255,0.2)] rounded-lg py-3 px-4 text-[#DEEBFA] font-urbanist text-[14px] focus:outline-none focus:border-[#C0DDFF] focus:ring-2 focus:ring-[rgba(192,221,255,0.2)] transition-all duration-300">
+                            <option value="onsite">On Site</option>
+                            <option value="online">Online</option>
+                        </select>
                     </div>
 
                     <div className="space-y-2">
@@ -331,6 +365,7 @@ const ManageServices = () => {
     const [showModal, setShowModal] = useState(false);
     const [modalMode, setModalMode] = useState('add');
     const [selectedImages, setSelectedImages] = useState([]);
+    const [imageFiles, setImageFiles] = useState([]);
     const [dummyServices, setServices] = useState([])
 
     useEffect(() => {
@@ -351,10 +386,12 @@ const ManageServices = () => {
         const files = Array.from(e.target.files);
         const newPreviews = files.map(file => URL.createObjectURL(file));
         setSelectedImages([...selectedImages, ...newPreviews]);
+        setImageFiles([...imageFiles, ...files])
     };
 
     const removeImage = (index) => {
         setSelectedImages(selectedImages.filter((_, i) => i !== index));
+        setImageFiles(imageFiles.filter((_, i) => i !== index))
     };
 
     const openAddModal = () => {
@@ -396,60 +433,74 @@ const ManageServices = () => {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {dummyServices.map((service) => (
-                        <div
-                            key={service._id}
-                            className="bg-[rgba(192,221,255,0.05)] backdrop-blur-sm border border-[rgba(192,221,255,0.15)] rounded-2xl overflow-hidden hover:border-[#C0DDFF] transition-all duration-300 group"
-                        >
-                            <div className="relative h-48 overflow-hidden">
-                                <img
-                                    src={service.images?.[0] || 'https://via.placeholder.com/400'}
-                                    alt={service.serviceName}
-                                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                                />
-                                <div className="absolute top-4 right-4 bg-[rgba(11,20,31,0.9)] backdrop-blur-sm px-3 py-1.5 rounded-full border border-[rgba(192,221,255,0.2)]">
-                                    <span className="font-urbanist text-[14px] font-bold text-[#C0DDFF]">
-                                        ৳{service.cost}
-                                    </span>
+                    {
+                        dummyServices.length > 0 ? (dummyServices.map((service) => (
+                            <div
+                                key={service._id}
+                                className="bg-[rgba(192,221,255,0.05)] backdrop-blur-sm border border-[rgba(192,221,255,0.15)] rounded-2xl overflow-hidden hover:border-[#C0DDFF] transition-all duration-300 group"
+                            >
+                                <div className="relative h-48 overflow-hidden">
+                                    <img
+                                        src={service.images?.[0] || 'https://via.placeholder.com/400'}
+                                        alt={service.serviceName}
+                                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                    />
+                                    <div className="absolute top-4 right-4 bg-[rgba(11,20,31,0.9)] backdrop-blur-sm px-3 py-1.5 rounded-full border border-[rgba(192,221,255,0.2)]">
+                                        <span className="font-urbanist text-[14px] font-bold text-[#C0DDFF]">
+                                            ৳{service.cost}
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <div className="p-6">
+                                    <div className="mb-3">
+                                        <span className="px-3 py-1 bg-[rgba(192,221,255,0.1)] border border-[rgba(192,221,255,0.25)] rounded-full font-urbanist text-[11px] font-semibold text-[#C0DDFF]">
+                                            {service.serviceCategory}
+                                        </span>
+                                    </div>
+                                    <h3 className="font-urbanist text-[18px] font-bold text-[#DEEBFA] mb-2">
+                                        {service.serviceName}
+                                    </h3>
+                                    <p className="font-urbanist text-[13px] text-[rgba(222,235,250,0.80)] mb-5 line-clamp-2">
+                                        {service.description}
+                                    </p>
+
+                                    <div className="flex gap-2">
+                                        <button
+                                            onClick={openEditModal}
+                                            className="flex-1 bg-[rgba(192,221,255,0.1)] border border-[rgba(192,221,255,0.2)] text-[#DEEBFA] font-urbanist font-semibold text-[13px] py-2.5 rounded-lg hover:bg-[rgba(192,221,255,0.15)] hover:border-[rgba(192,221,255,0.3)] transition-all duration-300 flex items-center justify-center gap-2"
+                                        >
+                                            <IconEdit size={16} />
+                                            Edit
+                                        </button>
+                                        <button
+                                            className="flex-1 bg-[rgba(255,82,82,0.1)] border border-[rgba(255,82,82,0.3)] text-[#ff5252] font-urbanist font-semibold text-[13px] py-2.5 rounded-lg hover:bg-[rgba(255,82,82,0.15)] hover:border-[#ff5252] transition-all duration-300 flex items-center justify-center gap-2"
+                                        >
+                                            <IconTrash size={16} />
+                                            Delete
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
-
-                            <div className="p-6">
-                                <div className="mb-3">
-                                    <span className="px-3 py-1 bg-[rgba(192,221,255,0.1)] border border-[rgba(192,221,255,0.25)] rounded-full font-urbanist text-[11px] font-semibold text-[#C0DDFF]">
-                                        {service.serviceCategory}
-                                    </span>
-                                </div>
-                                <h3 className="font-urbanist text-[18px] font-bold text-[#DEEBFA] mb-2">
-                                    {service.serviceName}
-                                </h3>
-                                <p className="font-urbanist text-[13px] text-[rgba(222,235,250,0.80)] mb-5 line-clamp-2">
-                                    {service.description}
-                                </p>
-
-                                <div className="flex gap-2">
-                                    <button
-                                        onClick={openEditModal}
-                                        className="flex-1 bg-[rgba(192,221,255,0.1)] border border-[rgba(192,221,255,0.2)] text-[#DEEBFA] font-urbanist font-semibold text-[13px] py-2.5 rounded-lg hover:bg-[rgba(192,221,255,0.15)] hover:border-[rgba(192,221,255,0.3)] transition-all duration-300 flex items-center justify-center gap-2"
-                                    >
-                                        <IconEdit size={16} />
-                                        Edit
-                                    </button>
-                                    <button
-                                        className="flex-1 bg-[rgba(255,82,82,0.1)] border border-[rgba(255,82,82,0.3)] text-[#ff5252] font-urbanist font-semibold text-[13px] py-2.5 rounded-lg hover:bg-[rgba(255,82,82,0.15)] hover:border-[#ff5252] transition-all duration-300 flex items-center justify-center gap-2"
-                                    >
-                                        <IconTrash size={16} />
-                                        Delete
-                                    </button>
-                                </div>
+                        ))) : (
+                            <div className='flex flex-col gap-4'>
+                                <p className=''>No services found</p>
+                                <button
+                                    onClick={openAddModal}
+                                    className="bg-gradient-to-r cusror-pointer max-w-[190px] from-[#C0DDFF] to-[#A0B8D4] text-[#0B141F] font-urbanist font-bold text-[14px] px-6 py-3 rounded-lg hover:brightness-110 hover:shadow-lg hover:shadow-[rgba(192,221,255,0.3)] transition-all duration-300 flex items-center gap-2"
+                                >
+                                    <IconPlus size={20} />
+                                    Add New Service
+                                </button>
                             </div>
-                        </div>
-                    ))}
+                        )
+
+                    }
                 </div>
             </div>
 
             {showModal && (
-                <Modal modalMode={modalMode} selectedImages={selectedImages} handleImageSelect={handleImageSelect} features={features} setFeatures={setFeatures} includes={includes} setIncludes={setIncludes} setShowModal={setShowModal} removeImage={removeImage} setSelectedImages={setSelectedImages} />
+                <Modal modalMode={modalMode} selectedImages={selectedImages} handleImageSelect={handleImageSelect} features={features} setFeatures={setFeatures} includes={includes} setIncludes={setIncludes} setShowModal={setShowModal} removeImage={removeImage} setSelectedImages={setSelectedImages} imageFiles={imageFiles} />
             )}
         </div>
     );
