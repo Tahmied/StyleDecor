@@ -2,7 +2,9 @@
 import { IconAdjustmentsHorizontal, IconClock, IconMapPin, IconSearch, IconStar, IconX } from '@tabler/icons-react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import Loader from '../../components/Utils/Loader';
+import api from '../../lib/axios';
 
 const ServicesPage = () => {
     const searchParams = useSearchParams();
@@ -39,8 +41,24 @@ const ServicesPage = () => {
     const [budgetRange, setBudgetRange] = useState(getInitialState.budget);
     const [selectedDate, setSelectedDate] = useState(getInitialState.date);
     const [showFilters, setShowFilters] = useState(false);
+    const [allServices, setServices] = useState([])
+    const [loading, setLoading] = useState(true);
 
-    const serviceTypes = [
+    useEffect(() => {
+        const fetchServices = async () => {
+            try {
+                const res = await api.get('/api/v1/admin/services')
+                setServices(res.data.data)
+            } catch (error) {
+                console.error("Failed to fetch services", error);
+            } finally {
+                setLoading(false);
+            }
+        }
+        fetchServices()
+    }, [])
+
+    const serviceCategory = [
         { value: 'all', label: 'All Services' },
         { value: 'wedding', label: 'Wedding Decoration' },
         { value: 'corporate', label: 'Corporate Events' },
@@ -49,112 +67,19 @@ const ServicesPage = () => {
         { value: 'seasonal', label: 'Seasonal Decoration' },
     ];
 
-    const allServices = [
-        {
-            id: 1,
-            name: 'Elegant Wedding Decoration',
-            type: 'wedding',
-            description: 'Transform your special day with stunning floral arrangements and elegant setups',
-            price: 2500,
-            duration: '8-10 hours',
-            location: 'On-site',
-            rating: 4.9,
-            reviews: 124,
-            image: 'https://images.unsplash.com/photo-1519225421980-715cb0215aed?w=500'
-        },
-        {
-            id: 2,
-            name: 'Corporate Gala Setup',
-            type: 'corporate',
-            description: 'Professional event decoration for corporate gatherings and galas',
-            price: 3500,
-            duration: '6-8 hours',
-            location: 'On-site',
-            rating: 4.8,
-            reviews: 89,
-            image: 'https://images.unsplash.com/photo-1511578314322-379afb476865?w=500'
-        },
-        {
-            id: 3,
-            name: 'Birthday Party Package',
-            type: 'birthday',
-            description: 'Fun and vibrant decorations for unforgettable birthday celebrations',
-            price: 800,
-            duration: '4-5 hours',
-            location: 'On-site',
-            rating: 4.7,
-            reviews: 156,
-            image: 'https://images.unsplash.com/photo-1530103862676-de8c9debad1d?w=500'
-        },
-        {
-            id: 4,
-            name: 'Luxury Home Makeover',
-            type: 'home',
-            description: 'Complete home decoration consultation and installation service',
-            price: 5000,
-            duration: '2-3 days',
-            location: 'Residential',
-            rating: 5.0,
-            reviews: 67,
-            image: 'https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?w=500'
-        },
-        {
-            id: 5,
-            name: 'Holiday Season Decor',
-            type: 'seasonal',
-            description: 'Festive decorations for Christmas, New Year, and other celebrations',
-            price: 1200,
-            duration: '5-6 hours',
-            location: 'On-site',
-            rating: 4.8,
-            reviews: 203,
-            image: 'https://images.unsplash.com/photo-1512389142860-9c449e58a543?w=500'
-        },
-        {
-            id: 6,
-            name: 'Garden Wedding Setup',
-            type: 'wedding',
-            description: 'Beautiful outdoor wedding decoration with natural elements',
-            price: 3200,
-            duration: '10-12 hours',
-            location: 'Outdoor',
-            rating: 4.9,
-            reviews: 98,
-            image: 'https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?w=500'
-        },
-        {
-            id: 7,
-            name: 'Kids Birthday Extravaganza',
-            type: 'birthday',
-            description: 'Themed party decorations with balloons, banners, and props',
-            price: 600,
-            duration: '3-4 hours',
-            location: 'On-site',
-            rating: 4.6,
-            reviews: 187,
-            image: 'https://images.unsplash.com/photo-1513885535751-8b9238bd345a?w=500'
-        },
-        {
-            id: 8,
-            name: 'Office Space Redesign',
-            type: 'corporate',
-            description: 'Modern and professional workspace decoration solutions',
-            price: 4200,
-            duration: '1-2 days',
-            location: 'Commercial',
-            rating: 4.7,
-            reviews: 54,
-            image: 'https://images.unsplash.com/photo-1497366216548-37526070297c?w=500'
-        },
-    ];
-
     const filteredServices = allServices.filter(service => {
-        const matchesSearch = service.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            service.description.toLowerCase().includes(searchQuery.toLowerCase());
-        const matchesType = selectedType === 'all' || service.type === selectedType;
+
+        const name = service.serviceName || '';
+        const desc = service.description || '';
+        const category = service.serviceCategory ? service.serviceCategory.toLowerCase() : '';
+        const price = service.cost || 0;
+
+        const matchesSearch = name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            desc.toLowerCase().includes(searchQuery.toLowerCase());
+        const matchesType = selectedType === 'all' || category === selectedType.toLowerCase();
         const matchesBudget =
-            (!budgetRange.min || service.price >= Number(budgetRange.min)) &&
-            (!budgetRange.max || service.price <= Number(budgetRange.max));
+            (!budgetRange.min || price >= Number(budgetRange.min)) &&
+            (!budgetRange.max || price <= Number(budgetRange.max));
 
         return matchesSearch && matchesType && matchesBudget;
     });
@@ -199,21 +124,21 @@ const ServicesPage = () => {
                         <button
                             onClick={() => setShowFilters(!showFilters)}
                             className={`flex items-center gap-2 px-4 py-2.5 rounded-lg font-urbanist font-semibold text-[14px] transition-all duration-300 ${showFilters
-                                    ? 'bg-[#C0DDFF] text-[#0B141F]'
-                                    : 'bg-[rgba(192,221,255,0.1)] border-2 border-[rgba(192,221,255,0.25)] text-[#DEEBFA] hover:border-[#C0DDFF]'
+                                ? 'bg-[#C0DDFF] text-[#0B141F]'
+                                : 'bg-[rgba(192,221,255,0.1)] border-2 border-[rgba(192,221,255,0.25)] text-[#DEEBFA] hover:border-[#C0DDFF]'
                                 }`}
                         >
                             <IconAdjustmentsHorizontal size={18} />
                             Filters
                         </button>
 
-                        {serviceTypes.slice(1).map(type => (
+                        {serviceCategory.slice(1).map(type => (
                             <button
                                 key={type.value}
                                 onClick={() => setSelectedType(selectedType === type.value ? 'all' : type.value)}
                                 className={`px-4 py-2.5 rounded-lg font-urbanist font-medium text-[14px] transition-all duration-300 ${selectedType === type.value
-                                        ? 'bg-gradient-to-r from-[#C0DDFF] to-[#A0B8D4] text-[#0B141F]'
-                                        : 'bg-[rgba(192,221,255,0.08)] border border-[rgba(192,221,255,0.2)] text-[rgba(222,235,250,0.90)] hover:border-[#C0DDFF] hover:bg-[rgba(192,221,255,0.12)]'
+                                    ? 'bg-gradient-to-r from-[#C0DDFF] to-[#A0B8D4] text-[#0B141F]'
+                                    : 'bg-[rgba(192,221,255,0.08)] border border-[rgba(192,221,255,0.2)] text-[rgba(222,235,250,0.90)] hover:border-[#C0DDFF] hover:bg-[rgba(192,221,255,0.12)]'
                                     }`}
                             >
                                 {type.label}
@@ -286,29 +211,47 @@ const ServicesPage = () => {
                     </p>
                 </div>
 
-                {filteredServices.length > 0 ? (
+                {loading ? (
+                    <div className="mt-6">
+                        <div className="">
+
+                            <div className="w-full mt-4 flex flex-col items-center justify-center rounded-2xl">
+                                <Loader/>
+                                <div className="text-center mt-6">
+                                    <h4 className="font-urbanist text-[20px] font-bold text-[#DEEBFA]">
+                                        Loading Services
+                                    </h4>
+                                    <p className="font-urbanist text-[15px] text-[rgba(222,235,250,0.60)] mt-2">
+                                        Please wait, getting your data...
+                                    </p>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                ) : filteredServices.length > 0 ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {filteredServices.map(service => (
                             <div
-                                key={service.id}
+                                key={service._id}
                                 className="bg-[rgba(192,221,255,0.05)] backdrop-blur-sm border border-[rgba(192,221,255,0.15)] rounded-2xl overflow-hidden hover:border-[#C0DDFF] transition-all duration-300 group"
                             >
                                 <div className="relative h-48 overflow-hidden">
                                     <img
-                                        src={service.image}
-                                        alt={service.name}
+                                        src={service.images && service.images.length > 0 ? service.images[0] : 'https://via.placeholder.com/400'}
+                                        alt={service.serviceName}
                                         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                                     />
                                     <div className="absolute top-4 right-4 bg-[rgba(11,20,31,0.9)] backdrop-blur-sm px-3 py-1 rounded-full">
                                         <span className="font-urbanist text-[14px] font-bold text-[#C0DDFF]">
-                                            ${service.price}
+                                            ৳{service.cost}
                                         </span>
                                     </div>
                                 </div>
 
                                 <div className="p-6">
                                     <h3 className="font-urbanist text-[20px] font-bold text-[#DEEBFA] mb-2">
-                                        {service.name}
+                                        {service.serviceName}
                                     </h3>
 
                                     <p className="font-urbanist text-[14px] text-[rgba(222,235,250,0.80)] mb-4 line-clamp-2">
@@ -316,12 +259,14 @@ const ServicesPage = () => {
                                     </p>
 
                                     <div className="flex items-center gap-4 mb-4 text-[rgba(222,235,250,0.70)]">
+
                                         <div className="flex items-center gap-1">
                                             <IconStar size={16} className="text-[#FFD700]" fill="#FFD700" />
                                             <span className="font-urbanist text-[13px]">
-                                                {service.rating} ({service.reviews})
+                                                {service.rating || 0} ({service.reviews || 0})
                                             </span>
                                         </div>
+
                                         <div className="flex items-center gap-1">
                                             <IconClock size={16} />
                                             <span className="font-urbanist text-[13px]">
@@ -332,12 +277,12 @@ const ServicesPage = () => {
 
                                     <div className="flex items-center gap-2 mb-4 text-[rgba(222,235,250,0.70)]">
                                         <IconMapPin size={16} />
-                                        <span className="font-urbanist text-[13px]">
-                                            {service.location}
+                                        <span className="font-urbanist text-[13px] capitalize">
+                                            {service.serviceType || 'On-site'}
                                         </span>
                                     </div>
 
-                                    <Link href={`/service/${service.id}${selectedDate ? `?date=${selectedDate}` : ''}`}>
+                                    <Link href={`/service/${service._id}${selectedDate ? `?date=${selectedDate}` : ''}`}>
                                         <button className="w-full bg-gradient-to-r from-[#C0DDFF] to-[#A0B8D4] text-[#0B141F] font-urbanist font-bold cursor-pointer text-[14px] py-3 rounded-lg hover:brightness-110 hover:shadow-lg hover:shadow-[rgba(192,221,255,0.3)] transition-all duration-300 transform hover:-translate-y-0.5">
                                             View Details
                                         </button>

@@ -1,5 +1,6 @@
 'use client'
 import { IconEdit, IconPhoto, IconPlus, IconTrash, IconUpload, IconX } from '@tabler/icons-react';
+import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import Swal from 'sweetalert2';
 import Loader from '../../../../components/Utils/Loader';
@@ -67,6 +68,7 @@ const DynamicInputList = ({ label, placeholder, items, setItems }) => {
 };
 
 const Modal = ({ modalMode, selectedImages, handleImageSelect, features, setFeatures, includes, setIncludes, setShowModal, removeImage, setSelectedImages, imageFiles }) => {
+    const router = useRouter()
     const [formLoading, setFormLoading] = useState(false)
     const [formData, setFormData] = useState({
         serviceName: '',
@@ -125,7 +127,7 @@ const Modal = ({ modalMode, selectedImages, handleImageSelect, features, setFeat
                 showConfirmButton: false,
                 timer: 1500
             }).then(() => {
-                setShowModal(false);
+                router.refresh()
             })
         } catch (error) {
             console.error('Upload failed:', error);
@@ -283,11 +285,11 @@ const Modal = ({ modalMode, selectedImages, handleImageSelect, features, setFeat
                                 Unit <span className="text-[#ff5252]">*</span>
                             </label>
                             <select value={formData.unit} onChange={handleChange} name='unit' className="w-full bg-[rgba(11,20,31,0.6)] border border-[rgba(192,221,255,0.2)] rounded-lg py-3 px-4 text-[#DEEBFA] font-urbanist text-[14px] focus:outline-none focus:border-[#C0DDFF] focus:ring-2 focus:ring-[rgba(192,221,255,0.2)] transition-all duration-300">
-                                <option value="meter">per-service</option>
+                                <option value="service">per-service</option>
                                 <option value="sqft">sqrt-ft</option>
                                 <option value="floor">per-floor</option>
                                 <option value="meter">per-meter</option>
-                                <option value="meter">per-room</option>
+                                <option value="room">per-room</option>
                             </select>
                         </div>
 
