@@ -1,9 +1,11 @@
 'use client'
-import { IconCalendar, IconCheck, IconClock, IconMapPin, IconMapPinFilled, IconStar, IconUsers, IconX } from '@tabler/icons-react';
+import api from '@/lib/axios';
+import { IconCalendar, IconCheck, IconClock, IconMapPin, IconMapPinFilled, IconStar, IconX } from '@tabler/icons-react';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import Swal from 'sweetalert2';
 
 const ServiceDetailsPage = () => {
     const { data: session } = useSession();
@@ -15,107 +17,78 @@ const ServiceDetailsPage = () => {
     const [showBookingModal, setShowBookingModal] = useState(false);
     const [showDecoratorSelection, setShowDecoratorSelection] = useState(false);
     const [selectedDecorator, setSelectedDecorator] = useState(null);
+    const [serviceDetails, setServiceDetails] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [availableDecorators, setAvailableDecorators] = useState([]);
+    const [loadingDecorators, setLoadingDecorators] = useState(false);
     const [bookingData, setBookingData] = useState({
         email: session?.user?.email || '',
         name: session?.user?.name || '',
         date: date || '',
+        time: '',
         location: '',
         additionalNotes: ''
     });
 
-    const serviceDetails = {
-        id: 1,
-        name: 'Elegant Wedding Decoration',
-        type: 'Wedding Decoration',
-        description: 'Transform your special day with our stunning floral arrangements and elegant setups. Our expert team brings years of experience in creating unforgettable wedding atmospheres that perfectly match your vision and style.',
-        longDescription: 'Our Elegant Wedding Decoration service offers a comprehensive package designed to make your special day truly magical. We specialize in creating sophisticated and romantic environments that reflect your unique love story. From the initial consultation to the final setup, our dedicated team works closely with you to ensure every detail is perfect. We use premium quality materials, fresh flowers, and elegant decorative elements to transform your venue into a breathtaking space.',
-        price: 2500,
-        duration: '8-10 hours',
-        location: 'On-site Service',
-        rating: 4.9,
-        reviews: 124,
-        image: 'https://images.unsplash.com/photo-1519225421980-715cb0215aed?w=800',
-        gallery: [
-            'https://images.unsplash.com/photo-1519225421980-715cb0215aed?w=400',
-            'https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?w=400',
-            'https://images.unsplash.com/photo-1522673607212-f2e66d7c2776?w=400',
-            'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?w=400'
-        ],
-        features: [
-            'Premium floral arrangements',
-            'Custom color schemes',
-            'Professional setup team',
-            'Venue consultation included',
-            'Day-of coordination',
-            'Cleanup service included'
-        ],
-        includes: [
-            'Initial design consultation',
-            'Mood board creation',
-            'All decorative materials',
-            'Professional installation',
-            'On-site supervision',
-            'Post-event cleanup'
-        ]
-    };
+    useEffect(() => {
+        const fetchServiceDetails = async () => {
+            try {
+                setLoading(true);
+                const response = await api.get(`/api/v1/admin/service/${serviceId}`);
+                if (response.data.success) {
+                    setServiceDetails(response.data.data);
+                }
+            } catch (error) {
+                console.error('Error fetching service details:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
 
-    const availableDecorators = [
-        {
-            id: 1,
-            name: "Jhankar Mahbub",
-            title: "Wedding Decoration Expert",
-            image: "/Images/decorators/jhankar.jpg",
-            rating: 4.9,
-            reviews: 127,
-            specialties: ["Weddings", "Floral Design", "Luxury Events"],
-        },
-        {
-            id: 2,
-            name: "Azizul Islam Milton",
-            title: "Event Specialist",
-            image: "/Images/decorators/milton.jpg",
-            rating: 4.8,
-            reviews: 98,
-            specialties: ["Corporate Events", "Stage Design", "Lighting"],
-        },
-        {
-            id: 3,
-            name: "Sumaiya Kabir",
-            title: "Luxury Wedding Designer",
-            image: "/Images/decorators/tandra.jpg",
-            rating: 4.9,
-            reviews: 156,
-            specialties: ["Destination Weddings", "Luxury Setups", "Beach Themes"],
-        },
-        {
-            id: 4,
-            name: "Ahmad Tarique",
-            title: "Cultural Event Specialist",
-            image: "/Images/decorators/tarique.jpg",
-            rating: 4.7,
-            reviews: 89,
-            specialties: ["Traditional Ceremonies", "Cultural Fusion", "Vibrant Colors"],
+        if (serviceId) {
+            fetchServiceDetails();
         }
-    ];
+    }, [serviceId]);
+
+    const fetchAvailableDecorators = async (date) => {
+        try {
+            setLoadingDecorators(true);
+            const response = await api.post('/api/v1/booking/get-available-decors', { date });
+
+            if (response.data.success && response.data.data) {
+                setAvailableDecorators(response.data.data);
+            } else {
+                setAvailableDecorators([]);
+            }
+        } catch (error) {
+            console.error('Error fetching decorators:', error);
+            setAvailableDecorators([]);
+        } finally {
+            setLoadingDecorators(false);
+        }
+    };
 
     const renderStars = (rating) => {
         return Array.from({ length: 5 }, (_, i) => (
             <IconStar
                 key={i}
                 size={16}
-                className={`${
-                    i < Math.floor(rating)
-                        ? "text-[#FFD700]"
-                        : "text-[rgba(192,221,255,0.3)]"
-                }`}
+                className={`${i < Math.floor(rating)
+                    ? "text-[#FFD700]"
+                    : "text-[rgba(192,221,255,0.3)]"
+                    }`}
                 fill={i < Math.floor(rating) ? "#FFD700" : "none"}
             />
         ));
     };
 
-    const handleContinueToDecorators = (e) => {
+    const handleContinueToDecorators = async (e) => {
         e.preventDefault();
-        if (bookingData.date && bookingData.location) {
+        const isOnlineService = serviceDetails?.serviceType === 'online';
+        const hasRequiredFields = bookingData.date && bookingData.time && (isOnlineService || bookingData.location);
+
+        if (hasRequiredFields) {
+            await fetchAvailableDecorators(bookingData.date);
             setShowDecoratorSelection(true);
         }
     };
@@ -124,15 +97,43 @@ const ServiceDetailsPage = () => {
         setSelectedDecorator(decorator);
     };
 
-    const handleFinalBooking = () => {
-        console.log('Final booking submitted:', {
-            ...bookingData,
-            decorator: selectedDecorator
-        });
-        setShowBookingModal(false);
-        setShowDecoratorSelection(false);
-        setSelectedDecorator(null);
+    const handleFinalBooking = async () => {
+        try {
+            const bookingPayload = {
+                decoratorId: selectedDecorator._id,
+                serviceId: serviceDetails._id,
+                eventDate: bookingData.date,
+                eventTime: bookingData.time,
+                eventLocation: bookingData.location,
+                bookingNotes: bookingData.additionalNotes
+            };
+
+            console.log('Booking Payload:', bookingPayload);
+
+            const res = await api.post('/api/v1/booking/book-service', bookingPayload);
+
+            console.log('Booking Response:', res.data);
+
+            if (res.data.success) {
+                Swal.fire({
+                    title: 'Service Added!',
+                    text: 'Your service has been added successfully',
+                    icon: 'success',
+                    showConfirmButton: false,
+                    timer: 1500
+                }).then(()=>{
+                    router.push('/dashboard')
+                })
+            }
+
+            setShowBookingModal(false);
+            setShowDecoratorSelection(false);
+            setSelectedDecorator(null);
+        } catch (error) {
+            console.error('Booking Error:', error);
+        }
     };
+
 
     const handleBookNowClick = () => {
         if (!session?.user) {
@@ -153,6 +154,37 @@ const ServiceDetailsPage = () => {
         setShowDecoratorSelection(false);
         setSelectedDecorator(null);
     };
+
+    const parseArrayString = (str) => {
+        try {
+            if (typeof str === 'string' && str.startsWith('[')) {
+                return JSON.parse(str);
+            }
+            return Array.isArray(str) ? str : [];
+        } catch (error) {
+            return [];
+        }
+    };
+
+    if (loading) {
+        return (
+            <div className="min-h-screen bg-[#0B141F] flex items-center justify-center">
+                <div className="text-[#C0DDFF] font-urbanist text-[18px]">Loading...</div>
+            </div>
+        );
+    }
+
+    if (!serviceDetails) {
+        return (
+            <div className="min-h-screen bg-[#0B141F] flex items-center justify-center">
+                <div className="text-[#C0DDFF] font-urbanist text-[18px]">Service not found</div>
+            </div>
+        );
+    }
+
+    const features = parseArrayString(serviceDetails.features[0]);
+    const includes = parseArrayString(serviceDetails.includes[0]);
+    const isOnlineService = serviceDetails.serviceType === 'online';
 
     return (
         <div className="min-h-screen bg-[#0B141F] py-16 px-4">
@@ -176,13 +208,13 @@ const ServiceDetailsPage = () => {
                         <div className="bg-[rgba(192,221,255,0.05)] backdrop-blur-sm border border-[rgba(192,221,255,0.15)] rounded-2xl overflow-hidden">
                             <div className="relative h-96 overflow-hidden">
                                 <img
-                                    src={serviceDetails.image}
-                                    alt={serviceDetails.name}
+                                    src={serviceDetails.images[0] || 'https://images.unsplash.com/photo-1519225421980-715cb0215aed?w=800'}
+                                    alt={serviceDetails.serviceName}
                                     className="w-full h-full object-cover"
                                 />
                                 <div className="absolute top-6 right-6 bg-[rgba(11,20,31,0.9)] backdrop-blur-sm px-4 py-2 rounded-full">
                                     <span className="font-urbanist text-[18px] font-bold text-[#C0DDFF]">
-                                        ${serviceDetails.price}
+                                        ${serviceDetails.cost}
                                     </span>
                                 </div>
                             </div>
@@ -190,21 +222,21 @@ const ServiceDetailsPage = () => {
                             <div className="p-8">
                                 <div className="flex flex-wrap items-center gap-3 mb-4">
                                     <span className="px-3 py-1 bg-[rgba(192,221,255,0.15)] border border-[rgba(192,221,255,0.3)] rounded-full font-urbanist text-[12px] font-semibold text-[#C0DDFF]">
-                                        {serviceDetails.type}
+                                        {serviceDetails.serviceCategory}
                                     </span>
                                     <div className="flex items-center gap-1">
                                         <IconStar size={18} className="text-[#FFD700]" fill="#FFD700" />
                                         <span className="font-urbanist text-[14px] text-[rgba(222,235,250,0.90)] font-semibold">
-                                            {serviceDetails.rating}
+                                            4.9
                                         </span>
                                         <span className="font-urbanist text-[14px] text-[rgba(222,235,250,0.60)]">
-                                            ({serviceDetails.reviews} reviews)
+                                            (124 reviews)
                                         </span>
                                     </div>
                                 </div>
 
                                 <h1 className="font-urbanist text-[32px] md:text-[40px] font-bold text-[#DEEBFA] mb-4">
-                                    {serviceDetails.name}
+                                    {serviceDetails.serviceName}
                                 </h1>
 
                                 <p className="font-urbanist text-[16px] text-[rgba(222,235,250,0.80)] mb-6 leading-relaxed">
@@ -218,12 +250,9 @@ const ServiceDetailsPage = () => {
                                     </div>
                                     <div className="flex items-center gap-2 text-[rgba(222,235,250,0.80)]">
                                         <IconMapPin size={20} className="text-[#C0DDFF]" />
-                                        <span className="font-urbanist text-[14px]">{serviceDetails.location}</span>
+                                        <span className="font-urbanist text-[14px] capitalize">{serviceDetails.unit}</span>
                                     </div>
-                                    <div className="flex items-center gap-2 text-[rgba(222,235,250,0.80)]">
-                                        <IconUsers size={20} className="text-[#C0DDFF]" />
-                                        <span className="font-urbanist text-[14px]">Professional Team</span>
-                                    </div>
+
                                 </div>
 
                                 <div className="mb-8">
@@ -241,7 +270,7 @@ const ServiceDetailsPage = () => {
                                             Key Features
                                         </h3>
                                         <ul className="space-y-3">
-                                            {serviceDetails.features.map((feature, index) => (
+                                            {features.map((feature, index) => (
                                                 <li key={index} className="flex items-start gap-3">
                                                     <IconCheck size={20} className="text-[#C0DDFF] flex-shrink-0 mt-0.5" />
                                                     <span className="font-urbanist text-[14px] text-[rgba(222,235,250,0.80)]">
@@ -257,7 +286,7 @@ const ServiceDetailsPage = () => {
                                             Whats Included
                                         </h3>
                                         <ul className="space-y-3">
-                                            {serviceDetails.includes.map((item, index) => (
+                                            {includes.map((item, index) => (
                                                 <li key={index} className="flex items-start gap-3">
                                                     <IconCheck size={20} className="text-[#C0DDFF] flex-shrink-0 mt-0.5" />
                                                     <span className="font-urbanist text-[14px] text-[rgba(222,235,250,0.80)]">
@@ -274,7 +303,7 @@ const ServiceDetailsPage = () => {
                                         Gallery
                                     </h3>
                                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                                        {serviceDetails.gallery.map((img, index) => (
+                                        {serviceDetails.images.map((img, index) => (
                                             <div key={index} className="relative h-40 rounded-lg overflow-hidden border border-[rgba(192,221,255,0.2)] hover:border-[#C0DDFF] transition-all duration-300">
                                                 <img
                                                     src={img}
@@ -294,7 +323,7 @@ const ServiceDetailsPage = () => {
                             <div className="mb-6">
                                 <div className="flex items-baseline gap-2 mb-2">
                                     <span className="font-urbanist text-[36px] font-bold text-[#C0DDFF]">
-                                        ${serviceDetails.price}
+                                        ${serviceDetails.cost}
                                     </span>
                                     <span className="font-urbanist text-[14px] text-[rgba(222,235,250,0.60)]">
                                         per service
@@ -325,11 +354,11 @@ const ServiceDetailsPage = () => {
                                 </div>
                                 <div className="flex items-center justify-between">
                                     <span className="font-urbanist text-[14px] text-[rgba(222,235,250,0.80)]">Service Type</span>
-                                    <span className="font-urbanist text-[14px] font-semibold text-[#DEEBFA]">On-site</span>
+                                    <span className="font-urbanist text-[14px] font-semibold text-[#DEEBFA] capitalize">{serviceDetails.unit}</span>
                                 </div>
                                 <div className="flex items-center justify-between">
                                     <span className="font-urbanist text-[14px] text-[rgba(222,235,250,0.80)]">Rating</span>
-                                    <span className="font-urbanist text-[14px] font-semibold text-[#DEEBFA]">{serviceDetails.rating}/5.0</span>
+                                    <span className="font-urbanist text-[14px] font-semibold text-[#DEEBFA]">4.9/5.0</span>
                                 </div>
                             </div>
                         </div>
@@ -361,10 +390,10 @@ const ServiceDetailsPage = () => {
                                 <>
                                     <div className="mb-6 p-4 bg-[rgba(192,221,255,0.08)] border border-[rgba(192,221,255,0.2)] rounded-lg">
                                         <h4 className="font-urbanist text-[16px] font-semibold text-[#DEEBFA] mb-2">
-                                            {serviceDetails.name}
+                                            {serviceDetails.serviceName}
                                         </h4>
                                         <p className="font-urbanist text-[14px] text-[rgba(222,235,250,0.70)]">
-                                            ${serviceDetails.price} • {serviceDetails.duration}
+                                            ${serviceDetails.cost} • {serviceDetails.duration}
                                         </p>
                                     </div>
 
@@ -416,22 +445,43 @@ const ServiceDetailsPage = () => {
 
                                         <div className="space-y-2">
                                             <label className="block font-urbanist text-[14px] font-semibold text-[#DEEBFA]">
-                                                Service Location
+                                                Booking Time
                                             </label>
                                             <div className="relative">
                                                 <div className="absolute left-4 top-1/2 -translate-y-1/2 text-[rgba(192,221,255,0.5)]">
-                                                    <IconMapPinFilled size={18} />
+                                                    <IconClock size={18} />
                                                 </div>
                                                 <input
-                                                    type="text"
-                                                    value={bookingData.location}
-                                                    onChange={(e) => setBookingData({ ...bookingData, location: e.target.value })}
-                                                    placeholder="Enter the event location"
+                                                    type="time"
+                                                    value={bookingData.time}
+                                                    onChange={(e) => setBookingData({ ...bookingData, time: e.target.value })}
                                                     required
-                                                    className="w-full bg-[rgba(11,20,31,0.6)] border border-[rgba(192,221,255,0.2)] rounded-lg py-3 pl-11 pr-4 text-[#DEEBFA] font-urbanist text-[14px] focus:outline-none focus:border-[#C0DDFF] focus:ring-1 focus:ring-[rgba(192,221,255,0.3)] transition-all duration-300 placeholder:text-[rgba(192,221,255,0.4)]"
+                                                    className="w-full bg-[rgba(11,20,31,0.6)] border border-[rgba(192,221,255,0.2)] rounded-lg py-3 pl-11 pr-4 text-[#DEEBFA] font-urbanist text-[14px] focus:outline-none focus:border-[#C0DDFF] focus:ring-1 focus:ring-[rgba(192,221,255,0.3)] transition-all duration-300"
+                                                    style={{ colorScheme: 'dark' }}
                                                 />
                                             </div>
                                         </div>
+
+                                        {!isOnlineService && (
+                                            <div className="space-y-2">
+                                                <label className="block font-urbanist text-[14px] font-semibold text-[#DEEBFA]">
+                                                    Service Location
+                                                </label>
+                                                <div className="relative">
+                                                    <div className="absolute left-4 top-1/2 -translate-y-1/2 text-[rgba(192,221,255,0.5)]">
+                                                        <IconMapPinFilled size={18} />
+                                                    </div>
+                                                    <input
+                                                        type="text"
+                                                        value={bookingData.location}
+                                                        onChange={(e) => setBookingData({ ...bookingData, location: e.target.value })}
+                                                        placeholder="Enter the event location"
+                                                        required
+                                                        className="w-full bg-[rgba(11,20,31,0.6)] border border-[rgba(192,221,255,0.2)] rounded-lg py-3 pl-11 pr-4 text-[#DEEBFA] font-urbanist text-[14px] focus:outline-none focus:border-[#C0DDFF] focus:ring-1 focus:ring-[rgba(192,221,255,0.3)] transition-all duration-300 placeholder:text-[rgba(192,221,255,0.4)]"
+                                                    />
+                                                </div>
+                                            </div>
+                                        )}
 
                                         <div className="space-y-2">
                                             <label className="block font-urbanist text-[14px] font-semibold text-[#DEEBFA]">
@@ -448,7 +498,7 @@ const ServiceDetailsPage = () => {
 
                                         <button
                                             onClick={handleContinueToDecorators}
-                                            disabled={!bookingData.date || !bookingData.location}
+                                            disabled={!bookingData.date || !bookingData.time || (!isOnlineService && !bookingData.location)}
                                             className="w-full bg-gradient-to-r from-[#C0DDFF] to-[#A0B8D4] text-[#0B141F] font-urbanist font-bold text-[16px] py-4 cursor-pointer rounded-lg hover:brightness-110 hover:shadow-lg hover:shadow-[rgba(192,221,255,0.3)] transition-all duration-300 transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:brightness-100 disabled:hover:shadow-none disabled:hover:translate-y-0"
                                         >
                                             Continue
@@ -469,84 +519,99 @@ const ServiceDetailsPage = () => {
 
                                     <div className="mb-6 p-4 bg-[rgba(192,221,255,0.08)] border border-[rgba(192,221,255,0.2)] rounded-lg">
                                         <p className="font-urbanist text-[14px] text-[rgba(222,235,250,0.80)] mb-1">
-                                            Available decorators for <span className="font-semibold text-[#C0DDFF]">{bookingData.date}</span>
+                                            Available decorators for <span className="font-semibold text-[#C0DDFF]">{bookingData.date}</span> at <span className="font-semibold text-[#C0DDFF]">{bookingData.time}</span>
                                         </p>
-                                        <p className="font-urbanist text-[13px] text-[rgba(222,235,250,0.60)]">
-                                            at {bookingData.location}
-                                        </p>
+                                        {!isOnlineService && (
+                                            <p className="font-urbanist text-[13px] text-[rgba(222,235,250,0.60)]">
+                                                at {bookingData.location}
+                                            </p>
+                                        )}
                                     </div>
 
-                                    <div className="space-y-4 mb-6">
-                                        {availableDecorators.map((decorator) => (
-                                            <div
-                                                key={decorator.id}
-                                                onClick={() => handleDecoratorSelect(decorator)}
-                                                className={`cursor-pointer bg-[rgba(192,221,255,0.05)] border-2 rounded-xl p-4 transition-all duration-300 hover:bg-[rgba(192,221,255,0.08)] ${
-                                                    selectedDecorator?.id === decorator.id
-                                                        ? 'border-[#C0DDFF] shadow-lg shadow-[rgba(192,221,255,0.2)]'
-                                                        : 'border-[rgba(192,221,255,0.15)] hover:border-[rgba(192,221,255,0.3)]'
-                                                }`}
-                                            >
-                                                <div className="flex gap-4">
-                                                    <div className="flex-shrink-0">
-                                                        <div className="w-20 h-20 rounded-lg overflow-hidden border border-[rgba(192,221,255,0.2)]">
-                                                            <img
-                                                                src={decorator.image}
-                                                                alt={decorator.name}
-                                                                className="w-full h-full object-cover"
-                                                            />
-                                                        </div>
-                                                    </div>
-                                                    <div className="flex-1 min-w-0">
-                                                        <div className="flex items-start justify-between gap-2 mb-2">
-                                                            <div>
-                                                                <h4 className="font-urbanist text-[16px] font-bold text-[#DEEBFA] mb-1">
-                                                                    {decorator.name}
-                                                                </h4>
-                                                                <p className="font-urbanist text-[13px] text-[rgba(192,221,255,0.8)]">
-                                                                    {decorator.title}
-                                                                </p>
-                                                            </div>
-                                                            {selectedDecorator?.id === decorator.id && (
-                                                                <div className="flex-shrink-0 w-6 h-6 bg-[#C0DDFF] rounded-full flex items-center justify-center">
-                                                                    <IconCheck size={16} className="text-[#0B141F]" />
+                                    {loadingDecorators ? (
+                                        <div className="text-center py-8">
+                                            <div className="text-[#C0DDFF] font-urbanist text-[16px]">Loading decorators...</div>
+                                        </div>
+                                    ) : availableDecorators.length === 0 ? (
+                                        <div className="text-center py-8">
+                                            <div className="text-[rgba(222,235,250,0.70)] font-urbanist text-[16px]">No decorators available for this date</div>
+                                        </div>
+                                    ) : (
+                                        <>
+                                            <div className="space-y-4 mb-6">
+                                                {availableDecorators.map((decorator) => (
+                                                    <div
+                                                        key={decorator._id}
+                                                        onClick={() => handleDecoratorSelect(decorator)}
+                                                        className={`cursor-pointer bg-[rgba(192,221,255,0.05)] border-2 rounded-xl p-4 transition-all duration-300 hover:bg-[rgba(192,221,255,0.08)] ${selectedDecorator?._id === decorator._id
+                                                            ? 'border-[#C0DDFF] shadow-lg shadow-[rgba(192,221,255,0.2)]'
+                                                            : 'border-[rgba(192,221,255,0.15)] hover:border-[rgba(192,221,255,0.3)]'
+                                                            }`}
+                                                    >
+                                                        <div className="flex gap-4">
+                                                            <div className="flex-shrink-0">
+                                                                <div className="w-20 h-20 rounded-lg overflow-hidden border border-[rgba(192,221,255,0.2)]">
+                                                                    <img
+                                                                        src={decorator.image || decorator.profileImage || '/Images/decorators/default.jpg'}
+                                                                        alt={decorator.name || decorator.fullName}
+                                                                        className="w-full h-full object-cover"
+                                                                    />
                                                                 </div>
-                                                            )}
-                                                        </div>
-                                                        <div className="flex items-center gap-2 mb-3">
-                                                            <div className="flex gap-0.5">
-                                                                {renderStars(decorator.rating)}
                                                             </div>
-                                                            <span className="font-urbanist text-[13px] text-[rgba(222,235,250,0.90)] font-semibold">
-                                                                {decorator.rating}
-                                                            </span>
-                                                            <span className="font-urbanist text-[12px] text-[rgba(222,235,250,0.60)]">
-                                                                ({decorator.reviews} reviews)
-                                                            </span>
-                                                        </div>
-                                                        <div className="flex flex-wrap gap-2">
-                                                            {decorator.specialties.map((specialty, idx) => (
-                                                                <span
-                                                                    key={idx}
-                                                                    className="px-2.5 py-1 bg-[rgba(192,221,255,0.15)] border border-[rgba(192,221,255,0.25)] rounded-full font-urbanist text-[11px] font-medium text-[rgba(222,235,250,0.80)]"
-                                                                >
-                                                                    {specialty}
-                                                                </span>
-                                                            ))}
+                                                            <div className="flex-1 min-w-0">
+                                                                <div className="flex items-start justify-between gap-2 mb-2">
+                                                                    <div>
+                                                                        <h4 className="font-urbanist text-[16px] font-bold text-[#DEEBFA] mb-1">
+                                                                            {decorator.name || decorator.fullName}
+                                                                        </h4>
+                                                                        <p className="font-urbanist text-[13px] text-[rgba(192,221,255,0.8)]">
+                                                                            {decorator.title || decorator.role || 'Event Decorator'}
+                                                                        </p>
+                                                                    </div>
+                                                                    {selectedDecorator?._id === decorator._id && (
+                                                                        <div className="flex-shrink-0 w-6 h-6 bg-[#C0DDFF] rounded-full flex items-center justify-center">
+                                                                            <IconCheck size={16} className="text-[#0B141F]" />
+                                                                        </div>
+                                                                    )}
+                                                                </div>
+                                                                <div className="flex items-center gap-2 mb-3">
+                                                                    <div className="flex gap-0.5">
+                                                                        {renderStars(decorator.rating || 4.5)}
+                                                                    </div>
+                                                                    <span className="font-urbanist text-[13px] text-[rgba(222,235,250,0.90)] font-semibold">
+                                                                        {decorator.rating || 4.5}
+                                                                    </span>
+                                                                    <span className="font-urbanist text-[12px] text-[rgba(222,235,250,0.60)]">
+                                                                        ({decorator.reviews || 0} reviews)
+                                                                    </span>
+                                                                </div>
+                                                                {decorator.specialties && decorator.specialties.length > 0 && (
+                                                                    <div className="flex flex-wrap gap-2">
+                                                                        {decorator.specialties.map((specialty, idx) => (
+                                                                            <span
+                                                                                key={idx}
+                                                                                className="px-2.5 py-1 bg-[rgba(192,221,255,0.15)] border border-[rgba(192,221,255,0.25)] rounded-full font-urbanist text-[11px] font-medium text-[rgba(222,235,250,0.80)]"
+                                                                            >
+                                                                                {specialty}
+                                                                            </span>
+                                                                        ))}
+                                                                    </div>
+                                                                )}
+                                                            </div>
                                                         </div>
                                                     </div>
-                                                </div>
+                                                ))}
                                             </div>
-                                        ))}
-                                    </div>
 
-                                    <button
-                                        onClick={handleFinalBooking}
-                                        disabled={!selectedDecorator}
-                                        className="w-full cursor-pointer bg-gradient-to-r from-[#C0DDFF] to-[#A0B8D4] text-[#0B141F] font-urbanist font-bold text-[16px] py-4 rounded-lg hover:brightness-110 hover:shadow-lg hover:shadow-[rgba(192,221,255,0.3)] transition-all duration-300 transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:brightness-100 disabled:hover:shadow-none disabled:hover:translate-y-0"
-                                    >
-                                        Confirm Booking
-                                    </button>
+                                            <button
+                                                onClick={handleFinalBooking}
+                                                disabled={!selectedDecorator}
+                                                className="w-full cursor-pointer bg-gradient-to-r from-[#C0DDFF] to-[#A0B8D4] text-[#0B141F] font-urbanist font-bold text-[16px] py-4 rounded-lg hover:brightness-110 hover:shadow-lg hover:shadow-[rgba(192,221,255,0.3)] transition-all duration-300 transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:brightness-100 disabled:hover:shadow-none disabled:hover:translate-y-0"
+                                            >
+                                                Confirm Booking
+                                            </button>
+                                        </>
+                                    )}
                                 </>
                             )}
                         </div>
