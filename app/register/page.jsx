@@ -1,11 +1,11 @@
 'use client'
 import { IconEye, IconEyeOff, IconLock, IconMail, IconUpload, IconUser, IconX } from '@tabler/icons-react';
-import axios from 'axios';
 import { signIn } from 'next-auth/react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import Swal from 'sweetalert2';
+import api from '../../lib/axios';
 
 const Registration = () => {
     const router = useRouter()
@@ -53,7 +53,7 @@ const Registration = () => {
         SubmittedFormData.append('password', formData.password);
         SubmittedFormData.append('image', profileImage)
         try {
-            const res = await axios.post(`${process.env.BACKEND_URI}/api/v1/users/register`, SubmittedFormData, {
+            const res = await api.post(`/api/v1/users/register`, SubmittedFormData, {
                 headers: { 'Content-Type': 'multipart/form-data' }
             })
             Swal.fire({
