@@ -7,10 +7,8 @@ import {
     IconMapPin,
     IconPackage,
     IconStar,
-    IconTrendingUp,
     IconUser
 } from '@tabler/icons-react';
-import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import Swal from 'sweetalert2';
 import api from '../../lib/axios';
@@ -19,17 +17,24 @@ const DecoratorDashboard = () => {
     const [selectedProject, setSelectedProject] = useState(null);
     const [showStatusModal, setShowStatusModal] = useState(false);
     const [assignedProjects, setProjects] = useState([])
-    const router = useRouter()
+    const [earningsData, setEarningData] = useState({})
 
     useEffect(() => {
         const getAssignedProjects = async () => {
             const res = await api.get('/api/v1/booking/MyServiceBookings')
-            console.log(res.data.data)
             setProjects(res.data.data)
             return res.data.data
         }
+        const getDecorStates = async ()=>{
+            const res = await api.get('/api/v1/users/getDecorStates')
+            setEarningData(res.data.data)
+            return res.data.data
+        }
         getAssignedProjects()
+        getDecorStates()
     }, [])
+
+    console.log(earningsData);
 
     const todaySchedule = [
         {
@@ -54,13 +59,6 @@ const DecoratorDashboard = () => {
             type: 'meeting'
         }
     ];
-
-    const earningsData = {
-        thisMonth: 128000,
-        lastMonth: 95000,
-        pending: 45000,
-        completed: 7
-    };
 
     const statusOptions = [
         'Assigned',
@@ -117,7 +115,6 @@ const DecoratorDashboard = () => {
         })
     };
 
-    const growthPercentage = ((earningsData.thisMonth - earningsData.lastMonth) / earningsData.lastMonth * 100).toFixed(1);
 
     return (
         <div className="min-h-screen bg-[#0B141F] py-8 px-4">
@@ -133,19 +130,16 @@ const DecoratorDashboard = () => {
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+
                     <div className="bg-[rgba(192,221,255,0.05)] backdrop-blur-sm border border-[rgba(192,221,255,0.15)] rounded-xl p-5">
                         <div className="flex items-center justify-between mb-3">
                             <div className="p-2.5 bg-gradient-to-r from-[#4CAF50] to-[#45a049] rounded-lg">
                                 <IconCurrencyTaka size={24} className="text-white" />
                             </div>
-                            <div className="flex items-center gap-1 text-[#4CAF50]">
-                                <IconTrendingUp size={16} />
-                                <span className="font-urbanist text-[12px] font-semibold">+{growthPercentage}%</span>
-                            </div>
                         </div>
-                        <p className="font-urbanist text-[13px] text-[rgba(222,235,250,0.70)] mb-1">This Month</p>
+                        <p className="font-urbanist text-[13px] text-[rgba(222,235,250,0.70)] mb-1">Total Earnings</p>
                         <p className="font-urbanist text-[24px] font-bold text-[#DEEBFA]">
-                            ৳{earningsData.thisMonth}
+                            ৳{earningsData.totalEarnings}
                         </p>
                     </div>
 
@@ -153,19 +147,9 @@ const DecoratorDashboard = () => {
                         <div className="p-2.5 bg-gradient-to-r from-[#2196F3] to-[#1976D2] rounded-lg w-fit mb-3">
                             <IconCurrencyTaka size={24} className="text-white" />
                         </div>
-                        <p className="font-urbanist text-[13px] text-[rgba(222,235,250,0.70)] mb-1">Last Month</p>
+                        <p className="font-urbanist text-[13px] text-[rgba(222,235,250,0.70)] mb-1">This Month</p>
                         <p className="font-urbanist text-[24px] font-bold text-[#DEEBFA]">
-                            ৳{earningsData.lastMonth}
-                        </p>
-                    </div>
-
-                    <div className="bg-[rgba(192,221,255,0.05)] backdrop-blur-sm border border-[rgba(192,221,255,0.15)] rounded-xl p-5">
-                        <div className="p-2.5 bg-gradient-to-r from-[#FF9800] to-[#F57C00] rounded-lg w-fit mb-3">
-                            <IconClock size={24} className="text-white" />
-                        </div>
-                        <p className="font-urbanist text-[13px] text-[rgba(222,235,250,0.70)] mb-1">Pending Payment</p>
-                        <p className="font-urbanist text-[24px] font-bold text-[#DEEBFA]">
-                            ৳{earningsData.pending}
+                            ৳{earningsData.thisMonthEarnings}
                         </p>
                     </div>
 
@@ -175,7 +159,7 @@ const DecoratorDashboard = () => {
                         </div>
                         <p className="font-urbanist text-[13px] text-[rgba(222,235,250,0.70)] mb-1">Completed Projects</p>
                         <p className="font-urbanist text-[24px] font-bold text-[#DEEBFA]">
-                            {earningsData.completed}
+                            {earningsData.completedProjectsCount}
                         </p>
                     </div>
                 </div>
