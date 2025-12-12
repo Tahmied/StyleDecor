@@ -18,6 +18,7 @@ const DecoratorDashboard = () => {
     const [showStatusModal, setShowStatusModal] = useState(false);
     const [assignedProjects, setProjects] = useState([])
     const [earningsData, setEarningData] = useState({})
+    const [todaySchedule, setTodaysSchedule] = useState([])
 
     useEffect(() => {
         const getAssignedProjects = async () => {
@@ -30,35 +31,17 @@ const DecoratorDashboard = () => {
             setEarningData(res.data.data)
             return res.data.data
         }
+        const getTodaysSchedule = async ()=>{
+            const res = await api.get('/api/v1/booking/getTodaysDecorSchedule')
+            setTodaysSchedule(res.data.data)
+            return res.data.data
+        }
         getAssignedProjects()
         getDecorStates()
+        getTodaysSchedule()
     }, [])
 
-    console.log(earningsData);
-
-    const todaySchedule = [
-        {
-            id: 1,
-            time: '09:00 AM',
-            task: 'Site Visit - The Grand Ballroom',
-            client: 'Sarah & John',
-            type: 'meeting'
-        },
-        {
-            id: 2,
-            time: '02:00 PM',
-            task: 'Materials Shopping',
-            client: 'Birthday Party Setup',
-            type: 'preparation'
-        },
-        {
-            id: 3,
-            time: '05:00 PM',
-            task: 'Client Consultation Call',
-            client: 'Tech Solutions Ltd.',
-            type: 'meeting'
-        }
-    ];
+    console.log(todaySchedule);
 
     const statusOptions = [
         'Assigned',
@@ -269,22 +252,19 @@ const DecoratorDashboard = () => {
                             <div className="space-y-3">
                                 {todaySchedule.map((item) => (
                                     <div
-                                        key={item.id}
+                                        key={item._id}
                                         className="bg-[rgba(11,20,31,0.6)] border border-[rgba(192,221,255,0.15)] rounded-lg p-4 hover:border-[rgba(192,221,255,0.3)] transition-all duration-300"
                                     >
                                         <div className="flex items-start gap-3">
-                                            <div className="flex-shrink-0 w-10 h-10 bg-[rgba(192,221,255,0.1)] border border-[rgba(192,221,255,0.2)] rounded-lg flex items-center justify-center">
-                                                <span className="text-[20px]">{getTaskTypeIcon(item.type)}</span>
-                                            </div>
                                             <div className="flex-1 min-w-0">
                                                 <p className="font-urbanist text-[14px] font-semibold text-[#C0DDFF] mb-1">
-                                                    {item.time}
+                                                    {item.eventTime}
                                                 </p>
                                                 <h4 className="font-urbanist text-[15px] font-bold text-[#DEEBFA] mb-1">
-                                                    {item.task}
+                                                    {item.serviceName}
                                                 </h4>
                                                 <p className="font-urbanist text-[12px] text-[rgba(222,235,250,0.60)]">
-                                                    {item.client}
+                                                    {item.customerName}
                                                 </p>
                                             </div>
                                         </div>
