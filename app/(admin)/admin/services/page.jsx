@@ -207,6 +207,7 @@ const Modal = ({ modalMode, selectedImages, handleImageSelect, features, setFeat
                                 <option value="Birthday">Birthday Party</option>
                                 <option value="Home">Home Decoration</option>
                                 <option value="Seasonal">Seasonal</option>
+                                <option value="consultancy">consultancy</option>
                             </select>
                         </div>
                     </div>
@@ -344,7 +345,7 @@ const Modal = ({ modalMode, selectedImages, handleImageSelect, features, setFeat
                                             Selected Images ({selectedImages.length})
                                         </p>
                                         <button
-                                            onClick={() => setSelectedImages([])}
+                                            onClick={() => setSelectedImages([])} type='button'
                                             className="font-urbanist cursor-pointer text-[12px] text-[#ff5252] hover:text-[#ff7070] transition-colors font-semibold"
                                         >
                                             Clear All
@@ -361,7 +362,7 @@ const Modal = ({ modalMode, selectedImages, handleImageSelect, features, setFeat
                                                     />
                                                 </div>
                                                 <button
-                                                    onClick={() => removeImage(index)}
+                                                    onClick={() => removeImage(index)} type='button'
                                                     className="absolute cursor-pointer -top-2 -right-2 p-1.5 bg-[#ff5252] rounded-full hover:bg-[#ff7070] transition-colors shadow-lg border-2 border-[#0B141F]"
                                                 >
                                                     <IconX size={14} className="text-white" />
