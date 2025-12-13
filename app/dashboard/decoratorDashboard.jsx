@@ -6,7 +6,6 @@ import {
     IconCurrencyTaka,
     IconMapPin,
     IconPackage,
-    IconStar,
     IconUser
 } from '@tabler/icons-react';
 import { useEffect, useState } from 'react';
@@ -62,10 +61,6 @@ const DecoratorDashboard = () => {
             'Completed': 'bg-[rgba(76,175,80,0.15)] border-[rgba(76,175,80,0.3)] text-[#4CAF50]'
         };
         return colors[status] || colors['Assigned'];
-    };
-
-    const getTaskTypeIcon = (type) => {
-        return type === 'meeting' ? '👥' : '📦';
     };
 
     const handleUpdateStatus = (project) => {
@@ -280,40 +275,6 @@ const DecoratorDashboard = () => {
                                     </p>
                                 </div>
                             )}
-                        </div>
-
-                        {/* Quick Stats */}
-                        <div className="bg-[rgba(192,221,255,0.05)] backdrop-blur-sm border border-[rgba(192,221,255,0.15)] rounded-2xl p-6">
-                            <div className="flex items-center gap-2 mb-6">
-                                <IconStar size={24} className="text-[#FFD700]" fill="#FFD700" />
-                                <h2 className="font-urbanist text-[20px] font-bold text-[#DEEBFA]">
-                                    Performance
-                                </h2>
-                            </div>
-
-                            <div className="space-y-4">
-                                <div className="flex items-center justify-between">
-                                    <span className="font-urbanist text-[14px] text-[rgba(222,235,250,0.70)]">
-                                        Average Rating
-                                    </span>
-                                    <div className="flex items-center gap-1">
-                                        <IconStar size={16} className="text-[#FFD700]" fill="#FFD700" />
-                                        <span className="font-urbanist text-[16px] font-bold text-[#DEEBFA]">4.9</span>
-                                    </div>
-                                </div>
-                                <div className="flex items-center justify-between">
-                                    <span className="font-urbanist text-[14px] text-[rgba(222,235,250,0.70)]">
-                                        Total Reviews
-                                    </span>
-                                    <span className="font-urbanist text-[16px] font-bold text-[#DEEBFA]">127</span>
-                                </div>
-                                <div className="flex items-center justify-between">
-                                    <span className="font-urbanist text-[14px] text-[rgba(222,235,250,0.70)]">
-                                        Success Rate
-                                    </span>
-                                    <span className="font-urbanist text-[16px] font-bold text-[#4CAF50]">98%</span>
-                                </div>
-                            </div>
                         </div>
                     </div>
                 </div>

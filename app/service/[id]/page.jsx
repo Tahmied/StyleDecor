@@ -110,19 +110,19 @@ const ServiceDetailsPage = () => {
 
             console.log('Booking Payload:', bookingPayload);
 
-            const res = await api.post('/api/v1/booking/book-service', bookingPayload);
+            const res = await api.post('/api/v1/payment/create-checkout-session', bookingPayload);
 
             console.log('Booking Response:', res.data);
 
-            if (res.data.success) {
+            if (res.data && res.data.url) {
                 Swal.fire({
-                    title: 'Service Added!',
-                    text: 'Your service has been added successfully',
+                    title: 'Please pay for the service',
+                    text: 'You will be redirected to the payment page',
                     icon: 'success',
                     showConfirmButton: false,
                     timer: 1500
                 }).then(()=>{
-                    router.push('/dashboard')
+                    router.push(res.data.url)
                 })
             }
 
