@@ -1,5 +1,5 @@
 'use client'
-import { IconAdjustmentsHorizontal, IconClock, IconMapPin, IconSearch, IconStar, IconX } from '@tabler/icons-react';
+import { IconAdjustmentsHorizontal, IconClock, IconMapPin, IconSearch, IconSortDescending, IconStar, IconX } from '@tabler/icons-react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
@@ -43,6 +43,7 @@ const ServicesPage = () => {
     const [showFilters, setShowFilters] = useState(false);
     const [allServices, setServices] = useState([])
     const [loading, setLoading] = useState(true);
+    const [sortBy, setSortBy] = useState('newest');
 
     useEffect(() => {
         const fetchServices = async () => {
@@ -69,26 +70,41 @@ const ServicesPage = () => {
 
     const filteredServices = allServices.filter(service => {
 
-        const name = service.serviceName || '';
-        const desc = service.description || '';
-        const category = service.serviceCategory ? service.serviceCategory.toLowerCase() : '';
-        const price = service.cost || 0;
+        const name = service.serviceName || ''
+        const desc = service.description || ''
+        const category = service.serviceCategory ? service.serviceCategory.toLowerCase() : ''
+        const price = service.cost || 0
 
         const matchesSearch = name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            desc.toLowerCase().includes(searchQuery.toLowerCase());
-        const matchesType = selectedType === 'all' || category === selectedType.toLowerCase();
+            desc.toLowerCase().includes(searchQuery.toLowerCase())
+        const matchesType = selectedType === 'all' || category === selectedType.toLowerCase()
         const matchesBudget =
             (!budgetRange.min || price >= Number(budgetRange.min)) &&
-            (!budgetRange.max || price <= Number(budgetRange.max));
+            (!budgetRange.max || price <= Number(budgetRange.max))
 
         return matchesSearch && matchesType && matchesBudget;
-    });
+    })
+
+        .sort((a, b) => {
+            switch (sortBy) {
+                case 'price-asc':
+                    return (a.cost || 0) - (b.cost || 0);
+                case 'price-desc':
+                    return (b.cost || 0) - (a.cost || 0);
+                case 'rating':
+                    return (b.rating || 0) - (a.rating || 0);
+                case 'newest':
+                    return new Date(b.createdAt || 0) - new Date(a.createdAt || 0);
+                default:
+                    return 0;
+            }
+        })
 
     const clearFilters = () => {
-        setSearchQuery('');
-        setSelectedType('all');
-        setBudgetRange({ min: '', max: '' });
-        setSelectedDate('');
+        setSearchQuery('')
+        setSelectedType('all')
+        setBudgetRange({ min: '', max: '' })
+        setSelectedDate('')
     };
 
     const hasActiveFilters = searchQuery || selectedType !== 'all' || budgetRange.min || budgetRange.max || selectedDate;
@@ -144,6 +160,20 @@ const ServicesPage = () => {
                                 {type.label}
                             </button>
                         ))}
+
+                        <div className="relative">
+                            <select
+                                value={sortBy}
+                                onChange={(e) => setSortBy(e.target.value)}
+                                className="appearance-none bg-[rgba(192,221,255,0.1)] border-2 border-[rgba(192,221,255,0.25)] text-[#DEEBFA] rounded-lg pl-4 pr-10 py-2.5 font-urbanist font-medium text-[14px] focus:outline-none focus:border-[#C0DDFF] cursor-pointer hover:border-[#C0DDFF] transition-all"
+                            >
+                                <option value="newest" className="bg-[#0B141F]">Newest Arrivals</option>
+                                <option value="price-asc" className="bg-[#0B141F]">Price: Low to High</option>
+                                <option value="price-desc" className="bg-[#0B141F]">Price: High to Low</option>
+                                <option value="rating" className="bg-[#0B141F]">Top Rated</option>
+                            </select>
+                            <IconSortDescending size={18} className="absolute right-3 top-1/2 -translate-y-1/2 text-[rgba(192,221,255,0.5)] pointer-events-none" />
+                        </div>
 
                         {hasActiveFilters && (
                             <button
@@ -216,7 +246,7 @@ const ServicesPage = () => {
                         <div className="">
 
                             <div className="w-full mt-4 flex flex-col items-center justify-center rounded-2xl">
-                                <Loader/>
+                                <Loader />
                                 <div className="text-center mt-6">
                                     <h4 className="font-urbanist text-[20px] font-bold text-[#DEEBFA]">
                                         Loading Services
