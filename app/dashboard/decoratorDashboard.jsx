@@ -167,8 +167,22 @@ const DecoratorDashboard = () => {
                             </div>
 
                             <div className="space-y-4">
+                                {
+                                    assignedProjects.length === 0 ? (
+                                        <div className="flex flex-col items-center justify-center py-12 px-4 border-2 border-dashed border-[rgba(192,221,255,0.15)] rounded-xl bg-[rgba(192,221,255,0.02)]">
+                                        <div className="p-4 bg-[rgba(192,221,255,0.05)] rounded-full mb-4">
+                                            <IconPackage size={48} className="text-[rgba(192,221,255,0.3)]" />
+                                        </div>
+                                        <h3 className="font-urbanist text-[18px] font-bold text-[#DEEBFA] mb-1">
+                                            No Projects Assigned
+                                        </h3>
+                                        <p className="font-urbanist text-[14px] text-[rgba(222,235,250,0.60)] text-center max-w-xs">
+                                            You don't have any active decoration projects at the moment. New assignments will appear here.
+                                        </p>
+                                    </div>
+                                    ): ('')
+                                }
                                 {assignedProjects.map((project) => (
-
                                     <div
                                         key={project._id}
                                         className="bg-[rgba(11,20,31,0.6)] border border-[rgba(192,221,255,0.15)] rounded-xl overflow-hidden hover:border-[rgba(192,221,255,0.3)] transition-all duration-300"
