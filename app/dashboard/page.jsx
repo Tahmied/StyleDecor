@@ -24,10 +24,13 @@ const UserDashboard = () => {
     const [bookings, setBookings] = useState([]);
     const [loading, setLoading] = useState(true);
     const [cancelling, setCancelling] = useState(false);
+    const [paymentHistory, setPayment] = useState([])
 
     useEffect(() => {
         if (activeTab === 'bookings') {
             fetchBookings();
+        } else if (activeTab === 'payments') {
+            fetchPayments();
         }
     }, [activeTab]);
 
@@ -49,28 +52,21 @@ const UserDashboard = () => {
         } finally {
             setLoading(false);
         }
-    };
+    }
 
-    const paymentHistory = [
-        {
-            id: 1,
-            serviceName: 'Elegant Wedding Decoration',
-            amount: 50000,
-            paymentDate: '2025-12-10',
-            paymentMethod: 'Stripe',
-            transactionId: 'TXN123456789',
-            status: 'completed'
-        },
-        {
-            id: 2,
-            serviceName: 'Home Interior Decoration',
-            amount: 25000,
-            paymentDate: '2025-12-01',
-            paymentMethod: 'Stripe',
-            transactionId: 'TXN987654321',
-            status: 'completed'
+    const fetchPayments = async () => {
+        try {
+            setLoading(true);
+            const response = await api.get('/api/v1/payment/myPayments');
+            if (response.data.success) {
+                setPayment(response.data.data);
+            }
+        } catch (err) {
+            console.error('Error fetching payments:', err);
+        } finally {
+            setLoading(false);
         }
-    ];
+    }
 
     const getStatusBadge = (status) => {
         const statusStyles = {
@@ -167,7 +163,7 @@ const UserDashboard = () => {
     return (
         <>
             {
-                session?.user.role == 'decorator' ? (<DecoratorDashboard/>) : ''
+                session?.user.role == 'decorator' ? (<DecoratorDashboard />) : ''
             }
             <div className="min-h-screen bg-[#0B141F] py-16 px-4">
                 <div className="max-w-7xl mx-auto">
@@ -398,7 +394,7 @@ const UserDashboard = () => {
                                             <tbody>
                                                 {paymentHistory.map((payment, index) => (
                                                     <tr
-                                                        key={payment.id}
+                                                        key={payment._id}
                                                         className={`border-t border-[rgba(192,221,255,0.1)] hover:bg-[rgba(192,221,255,0.05)] transition-colors ${index % 2 === 0 ? 'bg-[rgba(192,221,255,0.02)]' : ''
                                                             }`}
                                                     >

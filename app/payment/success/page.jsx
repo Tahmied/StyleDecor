@@ -30,8 +30,7 @@ const PaymentSuccess = () => {
                 });
 
                 console.log("Full Backend Response:", response.data);
-                setBookingData(response.data.data);
-
+                setBookingData(response.data.data.newBooking);
             } catch (error) {
                 console.error("Verification failed:", error);
             } finally {
@@ -100,7 +99,7 @@ const PaymentSuccess = () => {
                             </div>
                             <div className="flex flex-wrap gap-2">
                                 <span className="px-4 py-2 bg-[rgba(76,175,80,0.15)] border border-[rgba(76,175,80,0.3)] rounded-full font-urbanist text-[12px] font-semibold text-[#4CAF50]">
-                                    {bookingData.status.toUpperCase()}
+                                    {bookingData.status?.toUpperCase() || 'Pending'}
                                 </span>
                                 <span className="px-4 py-2 bg-[rgba(76,175,80,0.15)] border border-[rgba(76,175,80,0.3)] rounded-full font-urbanist text-[12px] font-semibold text-[#4CAF50]">
                                     PAID

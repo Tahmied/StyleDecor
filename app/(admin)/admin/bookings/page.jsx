@@ -1,6 +1,6 @@
 'use client'
 import api from '@/lib/axios';
-import { IconCalendar, IconCheck, IconClock, IconCurrencyDollar, IconMapPin, IconX } from '@tabler/icons-react';
+import { IconCalendar, IconCheck, IconClock, IconCoin, IconCurrencyDollar, IconMapPin, IconX } from '@tabler/icons-react';
 import { useEffect, useState } from 'react';
 
 const ManageBookings = () => {
@@ -138,7 +138,7 @@ const ManageBookings = () => {
                             >
                                 <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
                                     <div className="flex-1 space-y-4">
-                                        {/* Service & Status */}
+                                      
                                         <div className="flex items-start justify-between gap-3">
                                             <div>
                                                 <h3 className="font-urbanist text-[18px] sm:text-[20px] font-semibold text-[#DEEBFA] mb-1">
@@ -147,7 +147,7 @@ const ManageBookings = () => {
                                                 <div className="flex items-center gap-2 text-[#C0DDFF]">
                                                     <IconCurrencyDollar size={16} />
                                                     <span className="font-urbanist text-[14px] font-medium">
-                                                        ${booking.servicePrice}
+                                                        {booking.servicePrice}
                                                     </span>
                                                 </div>
                                             </div>
@@ -205,7 +205,6 @@ const ManageBookings = () => {
                                             </div>
                                         </div>
 
-                                        {/* Event Details */}
                                         <div className="flex flex-wrap gap-4 text-[rgba(222,235,250,0.70)]">
                                             <div className="flex items-center gap-2">
                                                 <IconCalendar size={16} />
@@ -223,6 +222,12 @@ const ManageBookings = () => {
                                                 <IconMapPin size={16} />
                                                 <span className="font-urbanist text-[13px]">
                                                     {booking.eventLocation}
+                                                </span>
+                                            </div>
+                                            <div className="flex items-center gap-2">
+                                                <IconCoin size={16} />
+                                                <span className="font-urbanist text-[13px]">
+                                                    {booking.paymentStatus}
                                                 </span>
                                             </div>
                                         </div>
@@ -247,7 +252,7 @@ const ManageBookings = () => {
                                                 className="flex-1 cursor-pointer lg:flex-none flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white rounded-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed font-urbanist text-[14px] font-semibold"
                                             >
                                                 <IconCheck size={18} />
-                                                Approve
+                                                Assign To Decorator
                                             </button>
                                             <button
                                                 onClick={() => handleStatusUpdate(booking._id, 'reject')}
