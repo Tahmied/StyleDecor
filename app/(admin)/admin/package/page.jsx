@@ -21,7 +21,7 @@ const ImageUploader = ({ label, subLabel, image, onImageSelect, onRemove, id, is
                     <button
                         onClick={onRemove}
                         type="button"
-                        className="absolute top-2 right-2 p-2 bg-[#ff5252] rounded-full hover:bg-[#ff7070] transition-colors shadow-lg border-2 border-[#0B141F] cursor-pointer"
+                        className="absolute top-2 right-2 p-2 bg-[#ff5252] rounded-full hover:bg-[#ff7070] transition-colors shadow-lg cursor-pointer"
                     >
                         <IconX size={16} className="text-white" />
                     </button>
@@ -292,22 +292,6 @@ const PackageModal = ({ modalMode, packageData, setShowModal, refreshPackages })
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                         <div className="space-y-2">
                             <label className="block font-urbanist text-[14px] font-semibold text-[#DEEBFA]">
-                                Video URL (YouTube)
-                            </label>
-                            <div className="relative">
-                                <input
-                                    type="text"
-                                    name="videoUrl"
-                                    value={formData.videoUrl}
-                                    onChange={handleChange}
-                                    placeholder="https://..."
-                                    className="w-full bg-[rgba(11,20,31,0.6)] border border-[rgba(192,221,255,0.2)] rounded-lg py-3 pl-10 pr-4 text-[#DEEBFA] font-urbanist text-[14px] focus:outline-none focus:border-[#C0DDFF] focus:ring-2 focus:ring-[rgba(192,221,255,0.2)] transition-all duration-300 placeholder:text-[rgba(192,221,255,0.4)]"
-                                />
-                                <IconVideo size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-[rgba(192,221,255,0.5)]" />
-                            </div>
-                        </div>
-                        <div className="space-y-2">
-                            <label className="block font-urbanist text-[14px] font-semibold text-[#DEEBFA]">
                                 Service Link
                             </label>
                             <div className="relative">
@@ -333,15 +317,6 @@ const PackageModal = ({ modalMode, packageData, setShowModal, refreshPackages })
                             onImageSelect={handleMainImage}
                             onRemove={() => setMainImage({ file: null, preview: null })}
                         />
-                        <ImageUploader 
-                            id="videoThumb"
-                            label="Video Thumbnail" 
-                            subLabel="Cover for the video player"
-                            image={videoThumbnail.preview}
-                            onImageSelect={handleVideoThumbnail}
-                            onRemove={() => setVideoThumbnail({ file: null, preview: null })}
-                            isVideoThumb={true}
-                        />
                     </div>
 
                     <div className="space-y-2">
@@ -356,7 +331,7 @@ const PackageModal = ({ modalMode, packageData, setShowModal, refreshPackages })
                                     <button
                                         type="button"
                                         onClick={() => removeExistingThumbnail(url)}
-                                        className="absolute -top-1 -right-1 p-1.5 bg-[#ff5252] rounded-full hover:bg-[#ff7070] transition-colors shadow-lg cursor-pointer"
+                                        className="absolute top-1 right-1 p-1.5 bg-[#ff5252] rounded-full hover:bg-[#ff7070] transition-colors shadow-lg cursor-pointer"
                                     >
                                         <IconX size={12} className="text-white" />
                                     </button>
@@ -495,7 +470,7 @@ const ManagePackages = () => {
                     <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
                         <div>
                             <h1 className="font-urbanist text-[32px] md:text-[40px] font-bold text-[#DEEBFA] mb-2">
-                                Manage Packages
+                                Manage Featured Packages
                             </h1>
                         </div>
                     </div>
@@ -515,7 +490,7 @@ const ManagePackages = () => {
                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
                     <div>
                         <h1 className="font-urbanist text-[32px] md:text-[40px] font-bold text-[#DEEBFA] mb-2">
-                            Manage Packages
+                            Manage Featured Packages
                         </h1>
                         <p className="font-urbanist text-[16px] text-[rgba(222,235,250,0.70)]">
                             Create bundles, set prices, and manage gallery images
@@ -582,7 +557,7 @@ const ManagePackages = () => {
                             </div>
                         </div>
                     ))) : (
-                        <div className="col-span-full flex flex-col items-center justify-center py-20 bg-[rgba(192,221,255,0.02)] rounded-2xl border border-dashed border-[rgba(192,221,255,0.1)]">
+                        <div onClick={openAddModal} className="col-span-full cursor-pointer flex flex-col items-center justify-center py-20 bg-[rgba(192,221,255,0.02)] rounded-2xl border border-dashed border-[rgba(192,221,255,0.1)]">
                             <div className="w-16 h-16 bg-[rgba(192,221,255,0.05)] rounded-full flex items-center justify-center mb-4">
                                 <IconPlus size={32} className="text-[rgba(192,221,255,0.4)]" />
                             </div>

@@ -1,52 +1,22 @@
 'use client';
 
 import Heading from '@/components/Utils/Heading';
-import { useState } from 'react';
-
-const PROJECTS_DATA = [
-  {
-    id: 1,
-    mainImage: '/Images/section-four/project-one-pinned.png',
-    packageName: 'Home Decor',
-    price: '$10,000 BDT',
-    videoThumbnail: '/Images/section-four/fourth-video-thumbnail.png',
-    thumbnails: [
-      '/Images/section-four/project-one-pinned.png',
-      '/Images/section-four/other-project-one-imgs1.png',
-      '/Images/section-four/other-project-one-imgs1.png',
-      '/Images/section-four/other-project-one-imgs2.png',
-      '/Images/section-four/other-project-one-imgs3.png',
-      '/Images/section-four/other-project-one-imgs-3.png',
-    ],
-    reversed: false,
-  },
-  {
-    id: 2,
-    mainImage: '/Images/section-four/project-one-pinned.png',
-    packageName: 'Marriage Decor',
-    price: '$10,000 BDT',
-    videoThumbnail: '/Images/section-four/fourth-video-thumbnail.png',
-    thumbnails: [
-      '/Images/section-four/project-one-pinned.png',
-      '/Images/section-four/other-project-one-imgs1.png',
-      '/Images/section-four/other-project-one-imgs1.png',
-      '/Images/section-four/other-project-one-imgs2.png',
-      '/Images/section-four/other-project-one-imgs3.png',
-      '/Images/section-four/other-project-one-imgs-3.png',
-    ],
-    reversed: true,
-  },
-];
+import Loader from '@/components/Utils/Loader';
+import api from '@/lib/axios';
+import Link from 'next/link';
+import { useEffect, useState } from 'react';
 
 const ProjectSection = ({ project, index }) => {
   const [activeImage, setActiveImage] = useState(project.mainImage);
   const [activeIndex, setActiveIndex] = useState(0);
+  const [packages, setPackages] = useState([]);
 
   const handleThumbnailClick = (thumbnail, idx) => {
     if (idx === activeIndex) return;
     setActiveImage(thumbnail);
     setActiveIndex(idx);
   };
+
 
   return (
     <section
@@ -93,16 +63,18 @@ const ProjectSection = ({ project, index }) => {
               </p>
             </button>
 
-            <button className="project-details-page-indicator-btn absolute top-[10px] right-[10px] bg-[#9FADBE] border-none outline-none cursor-pointer px-[20px] py-[10px] rounded-[50px] flex items-center gap-[5px] z-[9999] hover:scale-105 hover:brightness-115 transition-all">
-              <span className="project-button-text font-urbanist text-[15px] font-medium text-[#0B141F]">
-                Order Now
-              </span>
-              <img
-                src="/Images/section-four/button-arrow.svg"
-                alt=""
-                className="cta-btn-arrow h-[40px] w-[40px] relative left-[10px]"
-              />
-            </button>
+            <Link href={project.serviceLink}>
+              <button className="project-details-page-indicator-btn absolute top-[10px] right-[10px] bg-[#9FADBE] border-none outline-none cursor-pointer px-[20px] py-[10px] rounded-[50px] flex items-center gap-[5px] z-[9999] hover:scale-105 hover:brightness-115 transition-all">
+                <span className="project-button-text font-urbanist text-[15px] font-medium text-[#0B141F]">
+                  Order Now
+                </span>
+                <img
+                  src="/Images/section-four/button-arrow.svg"
+                  alt=""
+                  className="cta-btn-arrow h-[40px] w-[40px] relative left-[10px]"
+                />
+              </button>
+            </Link>
           </div>
 
           <div className="fourth-right grid grid-cols-2 items-center gap-4">
@@ -122,49 +94,6 @@ const ProjectSection = ({ project, index }) => {
                 )}
               </div>
             ))}
-          </div>
-        </div>
-
-        <div className="fourth-video-container flex justify-center items-center rounded-[25px] max-w-[1300px] mx-auto mt-8 relative">
-          <img
-            src={project.videoThumbnail}
-            alt="Video"
-            className="fourth-video-thumbnail rounded-[25px] w-full max-w-[1320px] max-h-[566px]"
-          />
-          <div className="fourth-video-overlay absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex justify-center items-center gap-4 cursor-pointer">
-            <p
-              className="video-overlay-text font-['ClashDisplay-Regular'] font-normal text-[185px] text-center uppercase select-none brightness-[1.4]"
-              style={{
-                backgroundImage: `url(${project.videoThumbnail})`,
-                backgroundSize: 'contain',
-                backgroundPosition: 'center',
-                WebkitBackgroundClip: 'text',
-                backgroundClip: 'text',
-                color: 'transparent',
-                WebkitTextFillColor: 'transparent',
-              }}
-            >
-              PLAY
-            </p>
-            <img
-              src="/Images/section-four/video-play-icon.svg"
-              alt="Play"
-              className="video-play-icon w-auto h-auto"
-            />
-            <p
-              className="video-overlay-text font-['ClashDisplay-Regular'] font-normal text-[185px] text-center uppercase select-none brightness-[1.4]"
-              style={{
-                backgroundImage: `url(${project.videoThumbnail})`,
-                backgroundSize: 'contain',
-                backgroundPosition: 'center',
-                WebkitBackgroundClip: 'text',
-                backgroundClip: 'text',
-                color: 'transparent',
-                WebkitTextFillColor: 'transparent',
-              }}
-            >
-              VIDEO
-            </p>
           </div>
         </div>
       </div>
@@ -430,6 +359,32 @@ const ProjectSection = ({ project, index }) => {
 };
 
 export default function Packages() {
+  const [packages, setPackages] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchPackages = async () => {
+      try {
+        const response = await api.get('/api/v1/package/packages');
+        setPackages(response.data.data);
+      } catch (error) {
+        console.error("Error fetching packages:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPackages();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-70 z-50 flex items-center justify-center p-4">
+        <Loader />
+      </div>
+    );
+  }
+
   return (
     <>
       <svg width="0" height="0" style={{ position: 'absolute' }}>
@@ -440,9 +395,22 @@ export default function Packages() {
         </defs>
       </svg>
 
-      {PROJECTS_DATA.map((project, index) => (
-        <ProjectSection key={project.id} project={project} index={index} />
-      ))}
+      {packages.map((pkg, index) => {
+        const projectData = {
+          ...pkg,
+          id: pkg._id,
+          price: `৳${pkg.price.toLocaleString()} BDT`,
+          reversed: index % 2 !== 0
+        };
+
+        return (
+          <ProjectSection
+            key={pkg._id}
+            project={projectData}
+            index={index}
+          />
+        );
+      })}
     </>
   );
 }
