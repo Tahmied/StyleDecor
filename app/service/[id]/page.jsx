@@ -208,7 +208,7 @@ const ServiceDetailsPage = () => {
                         <div className="bg-[rgba(192,221,255,0.05)] backdrop-blur-sm border border-[rgba(192,221,255,0.15)] rounded-2xl overflow-hidden">
                             <div className="relative h-96 overflow-hidden">
                                 <img
-                                    src={serviceDetails.images[0] || 'https://images.unsplash.com/photo-1519225421980-715cb0215aed?w=800'}
+                                    src={serviceDetails.images[0]}
                                     alt={serviceDetails.serviceName}
                                     className="w-full h-full object-cover"
                                 />
@@ -227,10 +227,10 @@ const ServiceDetailsPage = () => {
                                     <div className="flex items-center gap-1">
                                         <IconStar size={18} className="text-[#FFD700]" fill="#FFD700" />
                                         <span className="font-urbanist text-[14px] text-[rgba(222,235,250,0.90)] font-semibold">
-                                            4.9
+                                            {serviceDetails.rating}
                                         </span>
                                         <span className="font-urbanist text-[14px] text-[rgba(222,235,250,0.60)]">
-                                            (124 reviews)
+                                            {serviceDetails.reviews} reviews
                                         </span>
                                     </div>
                                 </div>
@@ -358,7 +358,7 @@ const ServiceDetailsPage = () => {
                                 </div>
                                 <div className="flex items-center justify-between">
                                     <span className="font-urbanist text-[14px] text-[rgba(222,235,250,0.80)]">Rating</span>
-                                    <span className="font-urbanist text-[14px] font-semibold text-[#DEEBFA]">4.9/5.0</span>
+                                    <span className="font-urbanist text-[14px] font-semibold text-[#DEEBFA]">{serviceDetails.rating}/5.0</span>
                                 </div>
                             </div>
                         </div>

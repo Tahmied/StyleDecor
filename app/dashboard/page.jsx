@@ -7,10 +7,12 @@ import {
     IconCurrencyTaka,
     IconLoader,
     IconMapPin,
+    IconPhone,
     IconReceipt,
     IconUser
 } from '@tabler/icons-react';
 import { useSession } from 'next-auth/react';
+import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import Swal from 'sweetalert2';
 import UserProfilePage from '../profile/page';
@@ -101,7 +103,8 @@ const UserDashboard = () => {
                 icon: 'warning',
                 text: 'Cannot cancel a completed booking',
                 showConfirmButton: false,
-                timer: 2000
+                timer: 2000,
+                background: '#0B141F', color: '#DEEBFA'
             });
             return;
         }
@@ -111,13 +114,55 @@ const UserDashboard = () => {
                 icon: 'info',
                 text: 'This booking is already cancelled',
                 showConfirmButton: false,
-                timer: 2000
+                timer: 2000,
+                background: '#0B141F', color: '#DEEBFA'
             });
             return;
         }
 
-        setSelectedBooking(booking);
-        setShowCancelModal(true);
+        // 2. Show Warning Popup (Replaces the custom modal)
+        Swal.fire({
+            title: 'No Refund Warning',
+            text: "If you cancel this booking now, you will NOT get any refund. Do you want to proceed?",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#F44336', 
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Yes, Cancel it',
+            background: '#0B141F',
+            color: '#DEEBFA'
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                setCancelling(true); 
+                try {
+                    const response = await api.post('/api/v1/users/updateBookingStutes', {
+                        bookingId: booking._id,
+                        status: 'cancelled'
+                    });
+
+                    if (response.data.success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Cancelled',
+                            text: 'Booking cancelled successfully.',
+                            showConfirmButton: false,
+                            timer: 2000,
+                            background: '#0B141F', color: '#DEEBFA'
+                        });
+                        fetchBookings(); 
+                    }
+                } catch (err) {
+                    console.error('Error cancelling:', err);
+                    Swal.fire({
+                        icon: 'error',
+                        text: 'Failed to cancel booking',
+                        background: '#0B141F', color: '#DEEBFA'
+                    });
+                } finally {
+                    setCancelling(false);
+                }
+            }
+        });
     };
 
     const confirmCancellation = async () => {
@@ -157,9 +202,9 @@ const UserDashboard = () => {
 
     const canCancelBooking = (booking) => {
         const status = booking.status?.toLowerCase();
-        return status !== 'assigned' && status !== 'cancelled' && status !== 'paid';
+        const inProgressStatuses = ['materials prepared', 'on the way to venue', 'setup in progress', 'completed'];
+        return status !== 'cancelled' && !inProgressStatuses.includes(status);
     };
-
     return (
         <>
             {
@@ -234,114 +279,140 @@ const UserDashboard = () => {
                                         <p className="font-urbanist text-[14px] text-[rgba(222,235,250,0.70)] mb-6">
                                             You havent made any bookings yet. Browse our services to get started!
                                         </p>
-                                        <button className="bg-gradient-to-r from-[#C0DDFF] to-[#A0B8D4] text-[#0B141F] font-urbanist font-bold text-[14px] py-3 px-6 rounded-lg hover:brightness-110 transition-all duration-300">
-                                            Browse Services
-                                        </button>
+                                        <Link href={'/services'}>
+                                            <button className="bg-gradient-to-r cursor-pointer from-[#C0DDFF] to-[#A0B8D4] text-[#0B141F] font-urbanist font-bold text-[14px] py-3 px-6 rounded-lg hover:brightness-110 transition-all duration-300">
+                                                Browse Services
+                                            </button>
+                                        </Link>
                                     </div>
                                 ) : (
                                     <div className="space-y-6">
                                         {bookings.map((booking) => (
                                             <div
                                                 key={booking._id}
-                                                className="bg-[rgba(192,221,255,0.05)] backdrop-blur-sm border border-[rgba(192,221,255,0.15)] rounded-2xl overflow-hidden hover:border-[rgba(192,221,255,0.3)] transition-all duration-300"
+                                                className="group relative bg-[rgba(192,221,255,0.02)] backdrop-blur-sm border border-[rgba(192,221,255,0.1)] rounded-2xl overflow-hidden hover:border-[rgba(192,221,255,0.25)] transition-all duration-300 mb-6"
                                             >
-                                                <div className="flex flex-col md:flex-row">
-                                                    <div className="flex-1 p-6">
-                                                        <div className="flex flex-col sm:flex-row justify-between items-start gap-4 mb-4">
+                                                <div className="p-6 pb-4">
+                                                    <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
+                                                        <div>
+                                                            <h3 className="font-urbanist text-[24px] font-bold text-[#DEEBFA] mb-3 leading-tight">
+                                                                {booking.serviceName}
+                                                            </h3>
+                                                            <div className="flex flex-wrap gap-2">
+                                                                <span className={`px-3 py-1 rounded-full border font-urbanist text-[11px] font-semibold tracking-wide ${getStatusBadge(booking.status)}`}>
+                                                                    {booking.status?.toUpperCase()}
+                                                                </span>
+                                                                <span className={`px-3 py-1 rounded-full border font-urbanist text-[11px] font-semibold tracking-wide ${getPaymentBadge(booking.paymentStatus)}`}>
+                                                                    {booking.paymentStatus === 'paid' ? 'PAID' : 'PENDING'}
+                                                                </span>
+                                                            </div>
+                                                        </div>
+
+                                                        <div className="flex items-center gap-3 bg-[rgba(192,221,255,0.03)] border border-[rgba(192,221,255,0.08)] rounded-xl p-3 pr-5 self-start">
+                                                            <img
+                                                                src={booking.decoratorImage || 'https://via.placeholder.com/60'}
+                                                                alt={booking.decoratorName}
+                                                                className="w-12 h-12 rounded-full border border-[rgba(192,221,255,0.2)] object-cover"
+                                                            />
                                                             <div>
-                                                                <h3 className="font-urbanist text-[20px] font-bold text-[#DEEBFA] mb-2">
-                                                                    {booking.serviceName}
-                                                                </h3>
-                                                                <p className="font-urbanist text-[13px] text-[rgba(222,235,250,0.70)] mb-2">
-                                                                    Decorator: {booking.decoratorName}
+                                                                <p className="font-urbanist text-[10px] text-[rgba(222,235,250,0.50)] uppercase tracking-wider mb-0.5">
+                                                                    Assigned Team
                                                                 </p>
-                                                                <div className="flex flex-wrap gap-2">
-                                                                    <span className={`px-3 py-1 rounded-full border font-urbanist text-[11px] font-semibold ${getStatusBadge(booking.status)}`}>
-                                                                        {booking.status?.toUpperCase()}
-                                                                    </span>
-                                                                    <span className={`px-3 py-1 rounded-full border font-urbanist text-[11px] font-semibold ${getPaymentBadge(booking.paymentStatus)}`}>
-                                                                        {booking.paymentStatus === 'paid' ? 'PAID' : 'PAYMENT PENDING'}
-                                                                    </span>
-                                                                </div>
+                                                                <p className="font-urbanist text-[14px] font-bold text-[#DEEBFA] leading-none mb-1">
+                                                                    {booking.decoratorName}
+                                                                </p>
+                                                                {booking.decoratorNum && (
+                                                                    <div className="flex items-center gap-1.5 text-[#C0DDFF]">
+                                                                        <IconPhone size={12} />
+                                                                        <span className="font-urbanist text-[12px] font-medium tracking-wide">
+                                                                            {booking.decoratorNum}
+                                                                        </span>
+                                                                    </div>
+                                                                )}
                                                             </div>
-                                                            <div className="text-right">
-                                                                <div className="flex items-center gap-1 justify-end">
-                                                                    <IconCurrencyTaka size={20} className="text-[#C0DDFF]" />
-                                                                    <span className="font-urbanist text-[24px] font-bold text-[#C0DDFF]">
-                                                                        {booking.servicePrice?.toLocaleString()}
-                                                                    </span>
-                                                                </div>
-                                                                <p className="font-urbanist text-[12px] text-[rgba(222,235,250,0.60)]">
-                                                                    Total Amount
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div className="px-6 py-4">
+                                                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 bg-[rgba(11,20,31,0.3)] border border-[rgba(192,221,255,0.08)] rounded-xl p-4">
+
+                                                        <div className="flex items-center gap-3">
+                                                            <div className="p-2.5 rounded-lg bg-[rgba(192,221,255,0.05)] text-[#C0DDFF]">
+                                                                <IconCalendarEvent size={20} />
+                                                            </div>
+                                                            <div>
+                                                                <p className="font-urbanist text-[11px] text-[rgba(222,235,250,0.50)] uppercase">Date</p>
+                                                                <p className="font-urbanist text-[14px] font-semibold text-[#DEEBFA]">
+                                                                    {formatDate(booking.eventDate)}
+                                                                </p>
+                                                            </div>
+                                                        </div>
+                                                        <div className="flex items-center gap-3 border-t sm:border-t-0 sm:border-l border-[rgba(192,221,255,0.08)] pt-3 sm:pt-0 sm:pl-4">
+                                                            <div className="p-2.5 rounded-lg bg-[rgba(192,221,255,0.05)] text-[#C0DDFF]">
+                                                                <IconClock size={20} />
+                                                            </div>
+                                                            <div>
+                                                                <p className="font-urbanist text-[11px] text-[rgba(222,235,250,0.50)] uppercase">Time</p>
+                                                                <p className="font-urbanist text-[14px] font-semibold text-[#DEEBFA]">
+                                                                    {booking.eventTime}
                                                                 </p>
                                                             </div>
                                                         </div>
 
-                                                        <div className="grid sm:grid-cols-2 gap-4 mb-6">
-                                                            <div className="flex items-center gap-3">
-                                                                <IconCalendarEvent size={20} className="text-[rgba(192,221,255,0.7)]" />
-                                                                <div>
-                                                                    <p className="font-urbanist text-[12px] text-[rgba(222,235,250,0.60)]">
-                                                                        Event Date
-                                                                    </p>
-                                                                    <p className="font-urbanist text-[14px] font-semibold text-[#DEEBFA]">
-                                                                        {formatDate(booking.eventDate)}
-                                                                    </p>
+                                                        {booking.eventLocation && (
+                                                            <div className="flex items-center gap-3 border-t sm:border-t-0 sm:border-l border-[rgba(192,221,255,0.08)] pt-3 sm:pt-0 sm:pl-4">
+                                                                <div className="p-2.5 rounded-lg bg-[rgba(192,221,255,0.05)] text-[#C0DDFF]">
+                                                                    <IconMapPin size={20} />
                                                                 </div>
-                                                            </div>
-
-                                                            <div className="flex items-center gap-3">
-                                                                <IconClock size={20} className="text-[rgba(192,221,255,0.7)]" />
-                                                                <div>
-                                                                    <p className="font-urbanist text-[12px] text-[rgba(222,235,250,0.60)]">
-                                                                        Time
-                                                                    </p>
-                                                                    <p className="font-urbanist text-[14px] font-semibold text-[#DEEBFA]">
-                                                                        {booking.eventTime}
+                                                                <div className="min-w-0">
+                                                                    <p className="font-urbanist text-[11px] text-[rgba(222,235,250,0.50)] uppercase">Location</p>
+                                                                    <p className="font-urbanist text-[14px] font-semibold text-[#DEEBFA] truncate">
+                                                                        {booking.eventLocation}
                                                                     </p>
                                                                 </div>
                                                             </div>
+                                                        )}
+                                                    </div>
 
-                                                            {booking.eventLocation && (
-                                                                <div className="flex items-start gap-3 sm:col-span-2">
-                                                                    <IconMapPin size={20} className="text-[rgba(192,221,255,0.7)] flex-shrink-0 mt-0.5" />
-                                                                    <div>
-                                                                        <p className="font-urbanist text-[12px] text-[rgba(222,235,250,0.60)]">
-                                                                            Location
-                                                                        </p>
-                                                                        <p className="font-urbanist text-[14px] font-semibold text-[#DEEBFA]">
-                                                                            {booking.eventLocation}
-                                                                        </p>
-                                                                    </div>
-                                                                </div>
-                                                            )}
+                                                    {booking.bookingNotes && (
+                                                        <div className="mt-4 flex gap-2 text-[rgba(222,235,250,0.60)]">
+                                                            <IconAlertCircle size={16} className="mt-0.5 flex-shrink-0" />
+                                                            <p className="font-urbanist text-[13px] leading-relaxed">
+                                                                <span className="font-semibold text-[rgba(222,235,250,0.8)]">Note:</span> {booking.bookingNotes}
+                                                            </p>
+                                                        </div>
+                                                    )}
+                                                </div>
 
-                                                            {booking.bookingNotes && (
-                                                                <div className="flex items-start gap-3 sm:col-span-2">
-                                                                    <div className="w-full bg-[rgba(192,221,255,0.05)] border border-[rgba(192,221,255,0.15)] rounded-lg p-3">
-                                                                        <p className="font-urbanist text-[12px] text-[rgba(222,235,250,0.60)] mb-1">
-                                                                            Booking Notes
-                                                                        </p>
-                                                                        <p className="font-urbanist text-[13px] text-[#DEEBFA]">
-                                                                            {booking.bookingNotes}
-                                                                        </p>
-                                                                    </div>
-                                                                </div>
-                                                            )}
+                                                <div className="mt-2 bg-[rgba(192,221,255,0.03)] border-t border-[rgba(192,221,255,0.1)] p-4 px-6">
+                                                    <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+
+                                                        <div className="flex items-center gap-2">
+                                                            <div className="p-1.5 rounded-full bg-[rgba(192,221,255,0.1)]">
+                                                                <IconCurrencyTaka size={18} className="text-[#C0DDFF]" />
+                                                            </div>
+                                                            <div>
+                                                                <p className="font-urbanist text-[11px] text-[rgba(222,235,250,0.50)] uppercase leading-none">Total Cost</p>
+                                                                <p className="font-urbanist text-[20px] font-bold text-[#DEEBFA] leading-tight">
+                                                                    {booking.servicePrice?.toLocaleString()}
+                                                                </p>
+                                                            </div>
                                                         </div>
 
-                                                        <div className="flex flex-wrap gap-3">
+                                                        <div className="flex items-center gap-3 w-full sm:w-auto">
                                                             {booking.paymentStatus?.toLowerCase() === 'pending' && (
-                                                                <button className="flex-1 sm:flex-none bg-gradient-to-r from-[#C0DDFF] to-[#A0B8D4] text-[#0B141F] font-urbanist font-semibold text-[13px] py-2.5 px-6 rounded-lg hover:brightness-110 transition-all duration-300">
+                                                                <button className="flex-1 sm:flex-none cursor-pointer bg-gradient-to-r from-[#C0DDFF] to-[#A0B8D4] text-[#0B141F] font-urbanist font-bold text-[14px] py-2.5 px-6 rounded-lg hover:brightness-110 hover:shadow-lg hover:shadow-[rgba(192,221,255,0.2)] transition-all duration-300">
                                                                     Pay Now
                                                                 </button>
                                                             )}
+
                                                             {canCancelBooking(booking) && (
                                                                 <button
                                                                     onClick={() => handleCancelBooking(booking)}
-                                                                    className="flex-1 cursor-pointer sm:flex-none bg-[rgba(244,67,54,0.1)] border border-[rgba(244,67,54,0.3)] text-[#F44336] font-urbanist font-semibold text-[13px] py-2.5 px-6 rounded-lg hover:bg-[rgba(244,67,54,0.15)] transition-all duration-300"
+                                                                    className="flex-1 sm:flex-none cursor-pointer border border-[rgba(244,67,54,0.3)] text-[#F44336] font-urbanist font-semibold text-[14px] py-2.5 px-6 rounded-lg hover:bg-[rgba(244,67,54,0.1)] transition-all duration-300"
                                                                 >
-                                                                    Cancel Booking
+                                                                    Cancel
                                                                 </button>
                                                             )}
                                                         </div>

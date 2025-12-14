@@ -170,17 +170,17 @@ const DecoratorDashboard = () => {
                                 {
                                     assignedProjects.length === 0 ? (
                                         <div className="flex flex-col items-center justify-center py-12 px-4 border-2 border-dashed border-[rgba(192,221,255,0.15)] rounded-xl bg-[rgba(192,221,255,0.02)]">
-                                        <div className="p-4 bg-[rgba(192,221,255,0.05)] rounded-full mb-4">
-                                            <IconPackage size={48} className="text-[rgba(192,221,255,0.3)]" />
+                                            <div className="p-4 bg-[rgba(192,221,255,0.05)] rounded-full mb-4">
+                                                <IconPackage size={48} className="text-[rgba(192,221,255,0.3)]" />
+                                            </div>
+                                            <h3 className="font-urbanist text-[18px] font-bold text-[#DEEBFA] mb-1">
+                                                No Projects Assigned
+                                            </h3>
+                                            <p className="font-urbanist text-[14px] text-[rgba(222,235,250,0.60)] text-center max-w-xs">
+                                                You dont have any active decoration projects at the moment. New assignments will appear here.
+                                            </p>
                                         </div>
-                                        <h3 className="font-urbanist text-[18px] font-bold text-[#DEEBFA] mb-1">
-                                            No Projects Assigned
-                                        </h3>
-                                        <p className="font-urbanist text-[14px] text-[rgba(222,235,250,0.60)] text-center max-w-xs">
-                                            You dont have any active decoration projects at the moment. New assignments will appear here.
-                                        </p>
-                                    </div>
-                                    ): ('')
+                                    ) : ('')
                                 }
                                 {assignedProjects.map((project) => (
                                     <div
@@ -245,9 +245,14 @@ const DecoratorDashboard = () => {
                                                     </div>
                                                     <button
                                                         onClick={() => handleUpdateStatus(project)}
-                                                        className="w-full sm:w-auto bg-gradient-to-r from-[#C0DDFF] to-[#A0B8D4] text-[#0B141F] font-urbanist font-semibold text-[13px] px-5 py-2.5 rounded-lg hover:brightness-110 hover:shadow-lg hover:shadow-[rgba(192,221,255,0.3)] transition-all duration-300"
+                                                        disabled={project.status === 'cancelled' || project.status === 'Completed'}
+                                                        className={`w-full sm:w-auto font-urbanist font-semibold text-[13px] px-5 py-2.5 rounded-lg transition-all duration-300 ${project.status === 'cancelled' || project.status === 'Completed'
+                                                            ? 'bg-[rgba(192,221,255,0.05)] text-[rgba(222,235,250,0.3)] cursor-not-allowed'
+                                                            : 'bg-gradient-to-r from-[#C0DDFF] to-[#A0B8D4] text-[#0B141F] hover:brightness-110 hover:shadow-lg hover:shadow-[rgba(192,221,255,0.3)]'
+                                                            }`}
                                                     >
-                                                        Update Status
+                                                        {project.status === 'cancelled' ? 'Cancelled' :
+                                                            project.status === 'Completed' ? 'Finished' : 'Update Status'}
                                                     </button>
                                                 </div>
                                             </div>
@@ -256,8 +261,8 @@ const DecoratorDashboard = () => {
                                 ))}
                             </div>
                         </div>
-                       
-                       
+
+
                         <div className="bg-[rgba(192,221,255,0.05)] backdrop-blur-sm border border-[rgba(192,221,255,0.15)] rounded-2xl p-6 mt-6">
                             <div className="flex items-center gap-2 mb-6">
                                 <IconReceipt size={24} className="text-[#C0DDFF]" />
@@ -299,8 +304,8 @@ const DecoratorDashboard = () => {
                                                     </td>
                                                     <td className="p-4 text-center">
                                                         <span className={`px-2.5 py-1 rounded-full text-[11px] font-semibold border ${payment.status === 'paid'
-                                                                ? 'bg-[rgba(76,175,80,0.15)] text-[#4CAF50] border-[rgba(76,175,80,0.3)]'
-                                                                : 'bg-[rgba(244,67,54,0.15)] text-[#F44336] border-[rgba(244,67,54,0.3)]'
+                                                            ? 'bg-[rgba(76,175,80,0.15)] text-[#4CAF50] border-[rgba(76,175,80,0.3)]'
+                                                            : 'bg-[rgba(244,67,54,0.15)] text-[#F44336] border-[rgba(244,67,54,0.3)]'
                                                             }`}>
                                                             {payment.status.toUpperCase()}
                                                         </span>
@@ -388,7 +393,7 @@ const DecoratorDashboard = () => {
                                 {selectedProject.serviceName}
                             </h4>
                             <p className="font-urbanist text-[13px] text-[rgba(222,235,250,0.70)]">
-                                Client: {selectedProject.clientName}
+                                Client: {selectedProject.customerName}
                             </p>
                         </div>
 
@@ -396,18 +401,36 @@ const DecoratorDashboard = () => {
                             <p className="font-urbanist text-[14px] font-semibold text-[#DEEBFA] mb-3">
                                 Select new status:
                             </p>
-                            {statusOptions.map((status) => (
-                                <button
-                                    key={status}
-                                    onClick={() => handleStatusChange(status)}
-                                    className={`w-full text-left px-4 py-3 rounded-lg border font-urbanist text-[14px] font-semibold transition-all duration-300 ${selectedProject.status === status
-                                        ? 'bg-[rgba(192,221,255,0.15)] border-[#C0DDFF] text-[#C0DDFF]'
-                                        : 'bg-[rgba(11,20,31,0.6)] border-[rgba(192,221,255,0.15)] text-[rgba(222,235,250,0.80)] hover:border-[rgba(192,221,255,0.3)] hover:bg-[rgba(192,221,255,0.08)]'
-                                        }`}
-                                >
-                                    {status}
-                                </button>
-                            ))}
+                            {statusOptions.map((status, index) => {
+                                const currentStatusIndex = statusOptions.indexOf(selectedProject.status);
+                                const targetStatusIndex = index;
+                                const isDisabled = targetStatusIndex <= currentStatusIndex;
+
+                                return (
+                                    <button
+                                        key={status}
+                                        onClick={() => handleStatusChange(status)}
+                                        disabled={isDisabled}
+                                        className={`w-full text-left px-4 py-3 rounded-lg border font-urbanist text-[14px] font-semibold transition-all duration-300 ${selectedProject.status === status
+                                                ? 'bg-[rgba(192,221,255,0.15)] border-[#C0DDFF] text-[#C0DDFF]' 
+                                                : isDisabled
+                                                    ? 'bg-transparent border-[rgba(192,221,255,0.05)] text-[rgba(222,235,250,0.3)] cursor-not-allowed' 
+                                                    : 'bg-[rgba(11,20,31,0.6)] border-[rgba(192,221,255,0.15)] text-[rgba(222,235,250,0.80)] hover:border-[rgba(192,221,255,0.3)] hover:bg-[rgba(192,221,255,0.08)]'
+                                            }`}
+                                    >
+                                        <div className="flex items-center justify-between">
+                                            {status}
+                                            {selectedProject.status === status && (
+                                                <span className="text-[10px] bg-[#C0DDFF] text-[#0B141F] px-2 py-0.5 rounded-full">Current</span>
+                                            )}
+                                            
+                                            {isDisabled && selectedProject.status !== status && (
+                                                <IconCheck size={16} className="text-[rgba(222,235,250,0.3)]" />
+                                            )}
+                                        </div>
+                                    </button>
+                                );
+                            })}
                         </div>
                     </div>
                 </div>
