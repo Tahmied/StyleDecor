@@ -1,6 +1,6 @@
 'use client'
 import api from '@/lib/axios';
-import { IconBriefcase, IconCalendar, IconCurrencyDollar, IconEdit, IconPlus, IconStar, IconUpload, IconUser, IconX } from '@tabler/icons-react';
+import { IconBriefcase, IconCalendar, IconCurrencyDollar, IconEdit, IconPhone, IconPlus, IconStar, IconUpload, IconX } from '@tabler/icons-react';
 import { useEffect, useState } from 'react';
 import Swal from 'sweetalert2';
 
@@ -9,17 +9,18 @@ const ManageDecorators = () => {
     const [loading, setLoading] = useState(true);
     const [processingId, setProcessingId] = useState(null);
     const [filter, setFilter] = useState('all');
-    
+
     const [selectedUser, setSelectedUser] = useState(null);
     const [showUserModal, setShowUserModal] = useState(false);
     const [modalMode, setModalMode] = useState('add');
-    
+
     const [formData, setFormData] = useState({
         userId: '',
         name: '',
         email: '',
         password: '',
         role: 'user',
+        phoneNumber: ''
     });
     const [imageFile, setImageFile] = useState(null);
     const [imagePreview, setImagePreview] = useState(null);
@@ -44,7 +45,7 @@ const ManageDecorators = () => {
 
     const openAddModal = () => {
         setModalMode('add');
-        setFormData({ userId: '', name: '', email: '', password: '', role: 'user' });
+        setFormData({ userId: '', name: '', email: '', password: '', role: 'user', isFeaturedDecorator: false, phoneNumber: '' });
         setImageFile(null);
         setImagePreview(null);
         setShowUserModal(true);
@@ -57,7 +58,9 @@ const ManageDecorators = () => {
             name: user.name,
             email: user.email,
             password: '',
-            role: user.role
+            role: user.role,
+            isFeaturedDecorator: user.isFeaturedDecorator || false,
+            phoneNumber: user.phoneNumber || '',
         });
         setImageFile(null);
         setImagePreview(user.image);
@@ -80,9 +83,11 @@ const ManageDecorators = () => {
         data.append('name', formData.name);
         data.append('email', formData.email);
         data.append('role', formData.role);
-        
+        data.append('isFeaturedDecorator', formData.isFeaturedDecorator);
+        data.append('phoneNum', formData.phoneNumber)
+
         if (formData.password) data.append('password', formData.password);
-        
+
         if (imageFile) data.append('image', imageFile);
 
         try {
@@ -131,7 +136,7 @@ const ManageDecorators = () => {
                 userId,
                 role: newRole
             });
-            
+
             if (response.data.success) {
                 fetchUsers();
                 if (selectedUser && selectedUser._id === userId) {
@@ -180,7 +185,7 @@ const ManageDecorators = () => {
     return (
         <div className="min-h-screen bg-[#0b141f] lg:pl-64 pt-0">
             <div className="p-4 sm:p-6 lg:p-8">
-                
+
                 <div className="mb-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                     <div>
                         <h1 className="font-urbanist text-[28px] sm:text-[32px] font-bold text-[#DEEBFA] mb-2">
@@ -204,18 +209,16 @@ const ManageDecorators = () => {
                         <button
                             key={option.value}
                             onClick={() => setFilter(option.value)}
-                            className={`px-4 cursor-pointer py-2.5 rounded-lg font-urbanist text-[14px] font-semibold transition-all duration-300 ${
-                                filter === option.value
-                                    ? 'bg-gradient-to-r from-[#C0DDFF] to-[#A0B8D4] text-[#0B141F] shadow-lg'
-                                    : 'bg-[rgba(192,221,255,0.05)] border border-[rgba(192,221,255,0.15)] text-[rgba(222,235,250,0.80)] hover:bg-[rgba(192,221,255,0.1)]'
-                            }`}
+                            className={`px-4 cursor-pointer py-2.5 rounded-lg font-urbanist text-[14px] font-semibold transition-all duration-300 ${filter === option.value
+                                ? 'bg-gradient-to-r from-[#C0DDFF] to-[#A0B8D4] text-[#0B141F] shadow-lg'
+                                : 'bg-[rgba(192,221,255,0.05)] border border-[rgba(192,221,255,0.15)] text-[rgba(222,235,250,0.80)] hover:bg-[rgba(192,221,255,0.1)]'
+                                }`}
                         >
                             {option.label}
-                            <span className={`ml-2 px-2 py-0.5 rounded-full text-[11px] ${
-                                filter === option.value
-                                    ? 'bg-[rgba(11,20,31,0.2)]'
-                                    : 'bg-[rgba(192,221,255,0.1)]'
-                            }`}>
+                            <span className={`ml-2 px-2 py-0.5 rounded-full text-[11px] ${filter === option.value
+                                ? 'bg-[rgba(11,20,31,0.2)]'
+                                : 'bg-[rgba(192,221,255,0.1)]'
+                                }`}>
                                 {option.count}
                             </span>
                         </button>
@@ -246,7 +249,7 @@ const ManageDecorators = () => {
                                             <h3 className="font-urbanist text-[16px] font-semibold text-[#DEEBFA] truncate pr-2">
                                                 {user.name}
                                             </h3>
-                                            <button 
+                                            <button
                                                 onClick={() => openEditModal(user)}
                                                 className='cursor-pointer p-1.5 rounded-md bg-[rgba(192,221,255,0.08)] hover:bg-[rgba(192,221,255,0.15)] border border-[rgba(192,221,255,0.1)] transition-all duration-200'
                                                 title="Edit User"
@@ -274,11 +277,10 @@ const ManageDecorators = () => {
                                         <button
                                             onClick={() => handleRoleUpdate(user._id, user.role)}
                                             disabled={processingId === user._id}
-                                            className={`flex-1 cursor-pointer px-3 py-2 rounded-lg transition-all duration-300 font-urbanist text-[13px] font-semibold disabled:opacity-50 disabled:cursor-not-allowed ${
-                                                user.role === 'decorator'
-                                                    ? 'bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white'
-                                                    : 'bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white'
-                                            }`}
+                                            className={`flex-1 cursor-pointer px-3 py-2 rounded-lg transition-all duration-300 font-urbanist text-[13px] font-semibold disabled:opacity-50 disabled:cursor-not-allowed ${user.role === 'decorator'
+                                                ? 'bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white'
+                                                : 'bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white'
+                                                }`}
                                         >
                                             {user.role === 'decorator' ? 'Remove Role' : 'Make Decorator'}
                                         </button>
@@ -328,7 +330,7 @@ const ManageDecorators = () => {
                                     type="text"
                                     required
                                     value={formData.name}
-                                    onChange={(e) => setFormData({...formData, name: e.target.value})}
+                                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                                     className="w-full bg-[rgba(11,20,31,0.6)] border border-[rgba(192,221,255,0.2)] rounded-lg py-3 px-4 text-[#DEEBFA] font-urbanist focus:outline-none focus:border-[#C0DDFF] transition-all"
                                     placeholder="John Doe"
                                 />
@@ -340,9 +342,20 @@ const ManageDecorators = () => {
                                     type="email"
                                     required
                                     value={formData.email}
-                                    onChange={(e) => setFormData({...formData, email: e.target.value})}
+                                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                                     className="w-full bg-[rgba(11,20,31,0.6)] border border-[rgba(192,221,255,0.2)] rounded-lg py-3 px-4 text-[#DEEBFA] font-urbanist focus:outline-none focus:border-[#C0DDFF] transition-all"
                                     placeholder="john@example.com"
+                                />
+                            </div>
+
+                            <div className="space-y-2">
+                                <label className="block font-urbanist text-[14px] font-semibold text-[#DEEBFA]">Phone Number</label>
+                                <input
+                                    type="text"
+                                    value={formData.phoneNumber}
+                                    onChange={(e) => setFormData({ ...formData, phoneNumber: e.target.value })}
+                                    className="w-full bg-[rgba(11,20,31,0.6)] border border-[rgba(192,221,255,0.2)] rounded-lg py-3 px-4 text-[#DEEBFA] font-urbanist focus:outline-none focus:border-[#C0DDFF] transition-all"
+                                    placeholder="+880 1XXX XXXXXX"
                                 />
                             </div>
 
@@ -354,7 +367,7 @@ const ManageDecorators = () => {
                                     type="password"
                                     required={modalMode === 'add'}
                                     value={formData.password}
-                                    onChange={(e) => setFormData({...formData, password: e.target.value})}
+                                    onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                                     className="w-full bg-[rgba(11,20,31,0.6)] border border-[rgba(192,221,255,0.2)] rounded-lg py-3 px-4 text-[#DEEBFA] font-urbanist focus:outline-none focus:border-[#C0DDFF] transition-all"
                                     placeholder="••••••••"
                                 />
@@ -364,7 +377,7 @@ const ManageDecorators = () => {
                                 <label className="block font-urbanist text-[14px] font-semibold text-[#DEEBFA]">Role</label>
                                 <select
                                     value={formData.role}
-                                    onChange={(e) => setFormData({...formData, role: e.target.value})}
+                                    onChange={(e) => setFormData({ ...formData, role: e.target.value })}
                                     className="w-full cursor-pointer bg-[rgba(11,20,31,0.6)] border border-[rgba(192,221,255,0.2)] rounded-lg py-3 px-4 text-[#DEEBFA] font-urbanist focus:outline-none focus:border-[#C0DDFF] transition-all"
                                 >
                                     <option value="user">User</option>
@@ -372,6 +385,33 @@ const ManageDecorators = () => {
                                     <option value="admin">Admin</option>
                                 </select>
                             </div>
+
+                            {formData.role === 'decorator' && (
+                                <div className="flex items-center gap-3 bg-[rgba(192,221,255,0.05)] border border-[rgba(192,221,255,0.2)] rounded-lg px-4 py-3 transition-all">
+                                    <div className="relative flex items-center">
+                                        <input
+                                            type="checkbox"
+                                            id="featuredToggle"
+                                            checked={formData.isFeaturedDecorator}
+                                            onChange={(e) => setFormData({ ...formData, isFeaturedDecorator: e.target.checked })}
+                                            className="peer h-5 w-5 cursor-pointer appearance-none rounded border border-[rgba(192,221,255,0.4)] bg-[rgba(11,20,31,0.6)] checked:border-[#C0DDFF] checked:bg-[#C0DDFF] transition-all"
+                                        />
+                                        <IconStar
+                                            size={12}
+                                            className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-[#0B141F] opacity-0 peer-checked:opacity-100 transition-opacity"
+                                            fill="currentColor"
+                                        />
+                                    </div>
+                                    <label htmlFor="featuredToggle" className="cursor-pointer select-none">
+                                        <p className="font-urbanist text-[14px] font-semibold text-[#DEEBFA]">
+                                            Featured Decorator
+                                        </p>
+                                        <p className="font-urbanist text-[12px] text-[rgba(222,235,250,0.50)]">
+                                            Highlight this decorator on the home page
+                                        </p>
+                                    </label>
+                                </div>
+                            )}
 
                             <button
                                 type="submit"
@@ -388,7 +428,7 @@ const ManageDecorators = () => {
             {selectedUser && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-70">
                     <div className="bg-[#0B141F] border border-[rgba(192,221,255,0.15)] rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-                       
+
                         <div className="sticky top-0 bg-[#0B141F] border-b border-[rgba(192,221,255,0.15)] p-6 flex items-center justify-between">
                             <h2 className="font-urbanist text-[22px] font-bold text-[#DEEBFA]">
                                 User Details
@@ -434,17 +474,6 @@ const ManageDecorators = () => {
                                     </p>
                                 </div>
 
-                                <div className="bg-[rgba(192,221,255,0.05)] border border-[rgba(192,221,255,0.1)] rounded-lg p-4">
-                                    <div className="flex items-center gap-2 mb-2">
-                                        <IconStar size={18} className="text-[#C0DDFF]" />
-                                        <p className="font-urbanist text-[12px] text-[rgba(222,235,250,0.50)] uppercase tracking-wide">
-                                            Rating
-                                        </p>
-                                    </div>
-                                    <p className="font-urbanist text-[15px] text-[#DEEBFA] font-medium">
-                                        {selectedUser.rating ? selectedUser.rating.toFixed(1) : '0.0'} ({selectedUser.totalRatings || 0} reviews)
-                                    </p>
-                                </div>
 
                                 <div className="bg-[rgba(192,221,255,0.05)] border border-[rgba(192,221,255,0.1)] rounded-lg p-4">
                                     <div className="flex items-center gap-2 mb-2">
@@ -454,21 +483,23 @@ const ManageDecorators = () => {
                                         </p>
                                     </div>
                                     <p className="font-urbanist text-[15px] text-[#DEEBFA] font-medium">
-                                        ${selectedUser.earnings ? selectedUser.earnings.toFixed(2) : '0.00'}
+                                        ${selectedUser.totalEarnings ? selectedUser.totalEarnings.toFixed(2) : '0.00'}
                                     </p>
                                 </div>
 
                                 <div className="bg-[rgba(192,221,255,0.05)] border border-[rgba(192,221,255,0.1)] rounded-lg p-4">
                                     <div className="flex items-center gap-2 mb-2">
-                                        <IconUser size={18} className="text-[#C0DDFF]" />
+                                        <IconPhone size={18} className="text-[#C0DDFF]" />
                                         <p className="font-urbanist text-[12px] text-[rgba(222,235,250,0.50)] uppercase tracking-wide">
-                                            Verification
+                                            Phone Number
                                         </p>
                                     </div>
                                     <p className="font-urbanist text-[15px] text-[#DEEBFA] font-medium">
-                                        {selectedUser.isVerified ? 'Verified' : 'Not Verified'}
+                                        {selectedUser.phoneNumber}
                                     </p>
                                 </div>
+
+
                             </div>
 
                             {selectedUser.unavailableDates && selectedUser.unavailableDates.length > 0 && (
@@ -515,11 +546,10 @@ const ManageDecorators = () => {
                                 <button
                                     onClick={() => handleRoleUpdate(selectedUser._id, selectedUser.role)}
                                     disabled={processingId === selectedUser._id}
-                                    className={`w-full cursor-pointer px-4 py-3 rounded-lg transition-all duration-300 font-urbanist text-[14px] font-semibold disabled:opacity-50 disabled:cursor-not-allowed ${
-                                        selectedUser.role === 'decorator'
-                                            ? 'bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white'
-                                            : 'bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white'
-                                    }`}
+                                    className={`w-full cursor-pointer px-4 py-3 rounded-lg transition-all duration-300 font-urbanist text-[14px] font-semibold disabled:opacity-50 disabled:cursor-not-allowed ${selectedUser.role === 'decorator'
+                                        ? 'bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white'
+                                        : 'bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white'
+                                        }`}
                                 >
                                     {selectedUser.role === 'decorator' ? 'Remove Decorator Role' : 'Assign Decorator Role'}
                                 </button>

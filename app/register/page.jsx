@@ -1,5 +1,5 @@
 'use client'
-import { IconEye, IconEyeOff, IconLock, IconMail, IconUpload, IconUser, IconX } from '@tabler/icons-react';
+import { IconEye, IconEyeOff, IconLock, IconMail, IconPhone, IconUpload, IconUser, IconX } from '@tabler/icons-react';
 import { signIn } from 'next-auth/react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -13,6 +13,7 @@ const Registration = () => {
         fullName: '',
         email: '',
         password: '',
+        phoneNum: '',
         confirmPassword: '',
     });
     const [showPassword, setShowPassword] = useState(false);
@@ -52,8 +53,9 @@ const Registration = () => {
         SubmittedFormData.append('email', formData.email);
         SubmittedFormData.append('password', formData.password);
         SubmittedFormData.append('image', profileImage)
+        SubmittedFormData.append('phoneNum', formData.phoneNum)
         try {
-            const res = await api.post(`/api/v1/users/register`, SubmittedFormData, {
+            await api.post(`/api/v1/users/register`, SubmittedFormData, {
                 headers: { 'Content-Type': 'multipart/form-data' }
             })
             Swal.fire({
@@ -67,13 +69,19 @@ const Registration = () => {
             });
 
         } catch (error) {
-
+            Swal.fire({
+                title: 'Registration Failed',
+                text: error.response?.data?.message || 'Something went wrong',
+                icon: 'error',
+                background: '#0B141F',
+                color: '#DEEBFA'
+            });
         }
     };
 
     const handleGoogleSignUp = () => {
-        
-        signIn('google', {callbackUrl : '/'})
+
+        signIn('google', { callbackUrl: '/' })
     };
 
     return (
@@ -233,6 +241,30 @@ const Registration = () => {
                                             required
                                             className="w-full bg-[rgba(11,20,31,0.6)] border border-[rgba(192,221,255,0.2)] rounded-lg py-2.5 pl-11 pr-4 text-[#DEEBFA] font-urbanist text-[14px] focus:outline-none focus:border-[#C0DDFF] focus:ring-1 focus:ring-[rgba(192,221,255,0.3)] transition-all duration-300"
                                             placeholder="you@example.com"
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="space-y-2">
+                                    <label
+                                        htmlFor="phoneNum"
+                                        className="font-urbanist text-[13px] font-medium text-[rgba(222,235,250,0.90)]"
+                                    >
+                                        Phone Number
+                                    </label>
+                                    <div className="relative mt-2">
+                                        <div className="absolute left-4 top-1/2 -translate-y-1/2 text-[rgba(192,221,255,0.5)]">
+                                            <IconPhone size={18} />
+                                        </div>
+                                        <input
+                                            type="tel"
+                                            id="phoneNum"
+                                            name="phoneNum"
+                                            value={formData.phoneNum}
+                                            onChange={handleChange}
+                                            required
+                                            className="w-full bg-[rgba(11,20,31,0.6)] border border-[rgba(192,221,255,0.2)] rounded-lg py-2.5 pl-11 pr-4 text-[#DEEBFA] font-urbanist text-[14px] focus:outline-none focus:border-[#C0DDFF] focus:ring-1 focus:ring-[rgba(192,221,255,0.3)] transition-all duration-300"
+                                            placeholder="019....."
                                         />
                                     </div>
                                 </div>
