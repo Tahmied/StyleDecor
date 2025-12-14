@@ -3,12 +3,11 @@
 import Heading from '@/components/Utils/Heading';
 import { useState } from 'react';
 
-// Dummy data - replace with database fetch later
 const PROJECTS_DATA = [
   {
     id: 1,
     mainImage: '/Images/section-four/project-one-pinned.png',
-    packageType: 'Home Decor',
+    packageName: 'Home Decor',
     price: '$10,000 BDT',
     videoThumbnail: '/Images/section-four/fourth-video-thumbnail.png',
     thumbnails: [
@@ -24,7 +23,7 @@ const PROJECTS_DATA = [
   {
     id: 2,
     mainImage: '/Images/section-four/project-one-pinned.png',
-    packageType: 'Marriage Decor',
+    packageName: 'Marriage Decor',
     price: '$10,000 BDT',
     videoThumbnail: '/Images/section-four/fourth-video-thumbnail.png',
     thumbnails: [
@@ -87,7 +86,7 @@ const ProjectSection = ({ project, index }) => {
 
             <button className="project-pinned-pic-btn flex flex-col items-center justify-center w-[31%] h-[16%] bg-[#9FADBE] rounded-[900px] absolute bottom-[13px] left-0 border-none outline-none cursor-pointer hover:scale-[1.01] hover:brightness-110 transition-all">
               <p className="package-type font-['Urbanist'] font-semibold text-[#0B141F]">
-                {project.packageType}
+                {project.packageName}
               </p>
               <p className="package-price font-['Urbanist'] font-medium text-[#0B141F]">
                 {project.price}
