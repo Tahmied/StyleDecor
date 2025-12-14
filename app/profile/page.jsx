@@ -117,7 +117,7 @@ const UserProfilePage = () => {
     }
 
     return (
-        <div className="min-h-screen bg-[#0B141F] py-16 px-4">
+        <div className="bg-[#0B141F] py-16 px-4">
             <div className="max-w-5xl mx-auto">
             
                 <div className="mb-8">

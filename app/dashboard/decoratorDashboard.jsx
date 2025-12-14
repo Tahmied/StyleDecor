@@ -177,7 +177,7 @@ const DecoratorDashboard = () => {
                                             No Projects Assigned
                                         </h3>
                                         <p className="font-urbanist text-[14px] text-[rgba(222,235,250,0.60)] text-center max-w-xs">
-                                            You don't have any active decoration projects at the moment. New assignments will appear here.
+                                            You dont have any active decoration projects at the moment. New assignments will appear here.
                                         </p>
                                     </div>
                                     ): ('')
