@@ -30,7 +30,7 @@ const UserDashboard = () => {
         if (activeTab === 'bookings') {
             fetchBookings();
         } else if (activeTab === 'payments') {
-            fetchPayments();
+            fetchPayments()
         }
     }, [activeTab]);
 

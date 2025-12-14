@@ -6,6 +6,7 @@ import {
     IconCurrencyTaka,
     IconMapPin,
     IconPackage,
+    IconReceipt,
     IconUser
 } from '@tabler/icons-react';
 import { useEffect, useState } from 'react';
@@ -18,6 +19,7 @@ const DecoratorDashboard = () => {
     const [assignedProjects, setProjects] = useState([])
     const [earningsData, setEarningData] = useState({})
     const [todaySchedule, setTodaysSchedule] = useState([])
+    const [decorPay, setDecorPay] = useState([])
 
     useEffect(() => {
         const getAssignedProjects = async () => {
@@ -25,22 +27,29 @@ const DecoratorDashboard = () => {
             setProjects(res.data.data)
             return res.data.data
         }
-        const getDecorStates = async ()=>{
+        const getDecorStates = async () => {
             const res = await api.get('/api/v1/users/getDecorStates')
             setEarningData(res.data.data)
             return res.data.data
         }
-        const getTodaysSchedule = async ()=>{
+        const getTodaysSchedule = async () => {
             const res = await api.get('/api/v1/booking/getTodaysDecorSchedule')
             setTodaysSchedule(res.data.data)
             return res.data.data
         }
+        const fetchDecorPay = async () => {
+            const res = await api.get('/api/v1/payment/myDecorPay')
+            setDecorPay(res.data.data)
+            return res.data.data
+        }
+
         getAssignedProjects()
         getDecorStates()
         getTodaysSchedule()
+        fetchDecorPay()
     }, [])
 
-    console.log(todaySchedule);
+    console.log(decorPay);
 
     const statusOptions = [
         'Assigned',
@@ -231,6 +240,68 @@ const DecoratorDashboard = () => {
                                         </div>
                                     </div>
                                 ))}
+                            </div>
+                        </div>
+                       
+                       
+                        <div className="bg-[rgba(192,221,255,0.05)] backdrop-blur-sm border border-[rgba(192,221,255,0.15)] rounded-2xl p-6 mt-6">
+                            <div className="flex items-center gap-2 mb-6">
+                                <IconReceipt size={24} className="text-[#C0DDFF]" />
+                                <h2 className="font-urbanist text-[24px] font-bold text-[#DEEBFA]">
+                                    Received Payment
+                                </h2>
+                            </div>
+
+                            <div className="overflow-x-auto">
+                                <table className="w-full text-left border-collapse">
+                                    <thead>
+                                        <tr className="border-b border-[rgba(192,221,255,0.1)] text-[rgba(222,235,250,0.6)] font-urbanist text-[13px] uppercase tracking-wider">
+                                            <th className="p-4 font-medium">Service</th>
+                                            <th className="p-4 font-medium">Date</th>
+                                            <th className="p-4 font-medium">Transaction ID</th>
+                                            <th className="p-4 font-medium text-right">Amount</th>
+                                            <th className="p-4 font-medium text-center">Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody className="font-urbanist text-[14px] text-[#DEEBFA]">
+                                        {decorPay.length > 0 ? (
+                                            decorPay.map((payment) => (
+                                                <tr key={payment._id} className="border-b border-[rgba(192,221,255,0.05)] hover:bg-[rgba(192,221,255,0.02)] transition-colors">
+                                                    <td className="p-4 font-semibold">{payment.serviceName}</td>
+                                                    <td className="p-4">
+                                                        {new Date(payment.paymentDate).toLocaleDateString('en-US', {
+                                                            month: 'short',
+                                                            day: 'numeric',
+                                                            year: 'numeric'
+                                                        })}
+                                                    </td>
+                                                    <td className="p-4 font-mono text-[13px] text-[rgba(222,235,250,0.7)]">
+                                                        {payment.transactionId}
+                                                    </td>
+                                                    <td className="p-4 text-right">
+                                                        <span className="text-[#C0DDFF] font-bold">
+                                                            ৳{payment.amount.toLocaleString()}
+                                                        </span>
+                                                    </td>
+                                                    <td className="p-4 text-center">
+                                                        <span className={`px-2.5 py-1 rounded-full text-[11px] font-semibold border ${payment.status === 'paid'
+                                                                ? 'bg-[rgba(76,175,80,0.15)] text-[#4CAF50] border-[rgba(76,175,80,0.3)]'
+                                                                : 'bg-[rgba(244,67,54,0.15)] text-[#F44336] border-[rgba(244,67,54,0.3)]'
+                                                            }`}>
+                                                            {payment.status.toUpperCase()}
+                                                        </span>
+                                                    </td>
+                                                </tr>
+                                            ))
+                                        ) : (
+                                            <tr>
+                                                <td colSpan="5" className="p-8 text-center text-[rgba(222,235,250,0.6)]">
+                                                    No payment history found.
+                                                </td>
+                                            </tr>
+                                        )}
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
                     </div>
