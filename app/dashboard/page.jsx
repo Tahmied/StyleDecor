@@ -459,7 +459,7 @@ const UserDashboard = () => {
                                                                 </button>
                                                             )}
 
-                                                            {booking.status !== 'cancelled' && booking.status !== 'completed' && (
+                                                            {booking.status !== 'cancelled' && booking.status !== 'Completed' && (
                                                                 <button
                                                                     onClick={() => handleEditClick(booking)}
                                                                     className="flex-1 sm:flex-none cursor-pointer border border-[rgba(192,221,255,0.3)] text-[#C0DDFF] font-urbanist font-semibold text-[14px] py-2.5 px-6 rounded-lg hover:bg-[rgba(192,221,255,0.1)] transition-all duration-300 flex items-center justify-center gap-2"
