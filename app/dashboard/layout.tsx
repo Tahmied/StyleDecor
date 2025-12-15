@@ -1,10 +1,12 @@
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
-export default function HomepageLayout({
+import checkAuth from "@/lib/auth-check";
+export default async function HomepageLayout({
     children,
 }: {
     children: React.ReactNode;
 }) {
+    await checkAuth()
     return (
         <>
             <Header height={'auto'}>
