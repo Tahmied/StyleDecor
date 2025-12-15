@@ -1,5 +1,5 @@
 'use client'
-import { IconEye, IconEyeOff, IconLock, IconMail } from '@tabler/icons-react';
+import { IconEye, IconEyeOff, IconLoader, IconLock, IconMail } from '@tabler/icons-react';
 import { signIn } from 'next-auth/react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -14,6 +14,7 @@ const Login = () => {
     });
     const [showPassword, setShowPassword] = useState(false);
     const [rememberMe, setRememberMe] = useState(false);
+    const [loading, setLoading] = useState(false);
 
     const handleChange = (e) => {
         setFormData({
@@ -24,6 +25,7 @@ const Login = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setLoading(true);
         
         const res = await signIn('credentials', {
             email: formData.email,
@@ -31,7 +33,7 @@ const Login = () => {
             redirect: false,
         });
         if (res.error) {
-            
+            setLoading(false);
             alert("Invalid Credentials");
         } else {
             Swal.fire({
@@ -189,17 +191,23 @@ const Login = () => {
 
                                 <button
                                     onClick={handleSubmit}
-                                    className="w-full cursor-pointer bg-gradient-to-r from-[#C0DDFF] to-[#A0B8D4] text-[#0B141F] font-urbanist font-bold text-[15px] py-3 rounded-lg hover:brightness-110 hover:shadow-lg hover:shadow-[rgba(192,221,255,0.3)] transition-all duration-300 transform hover:-translate-y-0.5 mt-2"
+                                    disabled={loading}
+                                    className={`w-full cursor-pointer bg-gradient-to-r from-[#C0DDFF] to-[#A0B8D4] text-[#0B141F] font-urbanist font-bold text-[15px] py-3 rounded-lg hover:brightness-110 hover:shadow-lg hover:shadow-[rgba(192,221,255,0.3)] transition-all duration-300 transform hover:-translate-y-0.5 mt-2 flex items-center justify-center gap-2 ${loading ? 'opacity-80 cursor-not-allowed hover:translate-y-0' : ''}`}
                                 >
-                                    Sign In
+                                    {loading ? (
+                                        <>
+                                            <IconLoader className="animate-spin" size={20} />
+                                            Signing In...
+                                        </>
+                                    ) : (
+                                        'Sign In'
+                                    )}
                                 </button>
 
                                 <div className="relative my-6">
-                                    <div className="absolute inset-0 flex items-center">
-                                        <div className="w-full border-t border-[rgba(192,221,255,0.15)]"></div>
-                                    </div>
+                                    
                                     <div className="relative flex justify-center text-sm">
-                                        <span className="px-4 bg-[rgba(192,221,255,0.05)] font-urbanist text-[12px] text-[rgba(222,235,250,0.60)] uppercase tracking-wider">
+                                        <span className="px-4 font-urbanist text-[12px] text-[rgba(222,235,250,0.60)] uppercase tracking-wider">
                                             Or continue with
                                         </span>
                                     </div>

@@ -1,5 +1,5 @@
 'use client'
-import { IconEye, IconEyeOff, IconLock, IconMail, IconPhone, IconUpload, IconUser, IconX } from '@tabler/icons-react';
+import { IconEye, IconEyeOff, IconLoader, IconLock, IconMail, IconPhone, IconUpload, IconUser, IconX } from '@tabler/icons-react';
 import { signIn } from 'next-auth/react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -20,6 +20,7 @@ const Registration = () => {
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [profileImage, setProfileImage] = useState(null);
     const [imagePreview, setImagePreview] = useState(null);
+    const [loading, setLoading] = useState(false);
 
 
     const handleChange = (e) => {
@@ -48,6 +49,7 @@ const Registration = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setLoading(true);
         const SubmittedFormData = new FormData();
         SubmittedFormData.append('name', formData.fullName);
         SubmittedFormData.append('email', formData.email);
@@ -69,6 +71,7 @@ const Registration = () => {
             });
 
         } catch (error) {
+            setLoading(false);
             Swal.fire({
                 title: 'Registration Failed',
                 text: error.response?.data?.message || 'Something went wrong',
@@ -336,9 +339,17 @@ const Registration = () => {
 
                                 <button
                                     onClick={handleSubmit}
-                                    className="w-full cursor-pointer bg-gradient-to-r from-[#C0DDFF] to-[#A0B8D4] text-[#0B141F] font-urbanist font-bold text-[15px] py-3 rounded-lg hover:brightness-110 hover:shadow-lg hover:shadow-[rgba(192,221,255,0.3)] transition-all duration-300 transform hover:-translate-y-0.5 mt-2"
+                                    disabled={loading}
+                                    className={`w-full cursor-pointer bg-gradient-to-r from-[#C0DDFF] to-[#A0B8D4] text-[#0B141F] font-urbanist font-bold text-[15px] py-3 rounded-lg hover:brightness-110 hover:shadow-lg hover:shadow-[rgba(192,221,255,0.3)] transition-all duration-300 transform hover:-translate-y-0.5 mt-2 flex items-center justify-center gap-2 ${loading ? 'opacity-80 cursor-not-allowed hover:translate-y-0' : ''}`}
                                 >
-                                    Create Account
+                                    {loading ? (
+                                        <>
+                                            <IconLoader className="animate-spin" size={20} />
+                                            Creating Account...
+                                        </>
+                                    ) : (
+                                        'Create Account'
+                                    )}
                                 </button>
 
                                 <div className="relative my-2">
