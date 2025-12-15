@@ -172,7 +172,7 @@ const ProfileDropdown = ({ session }) => {
     );
 };
 
-const MobileMenu = ({ menuOpen, MenuItems }) => {
+const MobileMenu = ({ menuOpen, MenuItems, status }) => {
     return (
         <>
             <div
@@ -190,7 +190,9 @@ const MobileMenu = ({ menuOpen, MenuItems }) => {
                             </li>
                         </Link>
                     ))}
-                    <Cta text={'Join Us'} href={'/register'} />
+                    {status !== 'authenticated' && (
+                        <Cta text={'Join Us'} href={'/register'} />
+                    )}
                 </ul>
             </div>
         </>
@@ -266,7 +268,7 @@ const Header = ({ children, height = '90vh', styles = '' }) => {
                         </div>
                     </div>
 
-                    <MobileMenu MenuItems={MenuItems} menuOpen={menuOpen} />
+                    <MobileMenu MenuItems={MenuItems} menuOpen={menuOpen} status={status} />
 
                 </header>
                 {children}
