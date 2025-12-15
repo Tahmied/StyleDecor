@@ -14,7 +14,7 @@ export const authOptions = {
 
       async authorize(credentials) {
         try {
-          
+
           const res = await fetch(`${process.env.BACKEND_URI}/api/v1/users/login`, {
             method: 'POST',
             body: JSON.stringify({
@@ -23,7 +23,7 @@ export const authOptions = {
             }),
             headers: { "Content-Type": "application/json" }
           });
-          
+
           const response = await res.json();
           if (response.statusCode === 200 && response.data) {
             return {
@@ -53,7 +53,7 @@ export const authOptions = {
   ],
 
   callbacks: {
-    
+
     async jwt({ token, user, account }) {
       if (user) {
 
@@ -85,13 +85,34 @@ export const authOptions = {
             console.error("Google Sync Error:", error);
           }
         }
-        
+
         else {
           token._id = user._id;
           token.accessToken = user.accessToken;
           token.refreshToken = user.refreshToken;
           token.image = user.image;
           token.role = user.role;
+        }
+      }
+
+      else if (token?.accessToken) {
+        try {
+          const res = await fetch(`${process.env.BACKEND_URI}/api/v1/users/me`, {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${token.accessToken}`,
+            },
+            cache: "no-store" 
+          });
+
+          if (res.ok) {
+            const response = await res.json();
+            if (response?.data?.role) {
+              token.role = response.data.role;
+            }
+          }
+        } catch (error) {
+          console.error("Error syncing user role:", error);
         }
       }
       return token;
