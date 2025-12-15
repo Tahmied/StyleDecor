@@ -5,11 +5,13 @@ import {
     IconCalendarEvent,
     IconClock,
     IconCurrencyTaka,
+    IconEdit,
     IconLoader,
     IconMapPin,
     IconPhone,
     IconReceipt,
-    IconUser
+    IconUser,
+    IconX
 } from '@tabler/icons-react';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
@@ -27,6 +29,15 @@ const UserDashboard = () => {
     const [loading, setLoading] = useState(true);
     const [cancelling, setCancelling] = useState(false);
     const [paymentHistory, setPayment] = useState([])
+    const [showEditModal, setShowEditModal] = useState(false);
+    const [updating, setUpdating] = useState(false);
+    const [editFormData, setEditFormData] = useState({
+        bookingId: '',
+        eventDate: '',
+        eventTime: '',
+        eventLocation: '',
+        bookingNotes: ''
+    });
 
     useEffect(() => {
         if (activeTab === 'bookings') {
@@ -120,20 +131,19 @@ const UserDashboard = () => {
             return;
         }
 
-        // 2. Show Warning Popup (Replaces the custom modal)
         Swal.fire({
             title: 'No Refund Warning',
             text: "If you cancel this booking now, you will NOT get any refund. Do you want to proceed?",
             icon: 'warning',
             showCancelButton: true,
-            confirmButtonColor: '#F44336', 
+            confirmButtonColor: '#F44336',
             cancelButtonColor: '#3085d6',
             confirmButtonText: 'Yes, Cancel it',
             background: '#0B141F',
             color: '#DEEBFA'
         }).then(async (result) => {
             if (result.isConfirmed) {
-                setCancelling(true); 
+                setCancelling(true);
                 try {
                     const response = await api.post('/api/v1/users/updateBookingStutes', {
                         bookingId: booking._id,
@@ -149,7 +159,7 @@ const UserDashboard = () => {
                             timer: 2000,
                             background: '#0B141F', color: '#DEEBFA'
                         });
-                        fetchBookings(); 
+                        fetchBookings();
                     }
                 } catch (err) {
                     console.error('Error cancelling:', err);
@@ -204,7 +214,48 @@ const UserDashboard = () => {
         const status = booking.status?.toLowerCase();
         const inProgressStatuses = ['materials prepared', 'on the way to venue', 'setup in progress', 'completed'];
         return status !== 'cancelled' && !inProgressStatuses.includes(status);
+    }
+
+    const handleEditClick = (booking) => {
+        const formattedDate = new Date(booking.eventDate).toISOString().split('T')[0];
+
+        setEditFormData({
+            bookingId: booking._id,
+            eventDate: formattedDate,
+            eventTime: booking.eventTime,
+            eventLocation: booking.eventLocation,
+            bookingNotes: booking.bookingNotes || ''
+        });
+        setShowEditModal(true);
     };
+
+    const handleUpdateBooking = async (e) => {
+        e.preventDefault();
+        setUpdating(true);
+        try {
+            const response = await api.post('/api/v1/booking/update-booking-details', editFormData);
+            if (response.data.success) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Updated!',
+                    showConfirmButton: false,
+                    timer: 1500,
+                    background: '#0B141F', color: '#DEEBFA'
+                });
+                setShowEditModal(false);
+                fetchBookings();
+            }
+        } catch (err) {
+            Swal.fire({
+                icon: 'error',
+                text: err.response?.data?.message || 'Update failed',
+                background: '#0B141F', color: '#DEEBFA'
+            });
+        } finally {
+            setUpdating(false);
+        }
+    };
+
     return (
         <>
             {
@@ -397,6 +448,7 @@ const UserDashboard = () => {
                                                                 <p className="font-urbanist text-[20px] font-bold text-[#DEEBFA] leading-tight">
                                                                     {booking.servicePrice?.toLocaleString()}
                                                                 </p>
+
                                                             </div>
                                                         </div>
 
@@ -404,6 +456,15 @@ const UserDashboard = () => {
                                                             {booking.paymentStatus?.toLowerCase() === 'pending' && (
                                                                 <button className="flex-1 sm:flex-none cursor-pointer bg-gradient-to-r from-[#C0DDFF] to-[#A0B8D4] text-[#0B141F] font-urbanist font-bold text-[14px] py-2.5 px-6 rounded-lg hover:brightness-110 hover:shadow-lg hover:shadow-[rgba(192,221,255,0.2)] transition-all duration-300">
                                                                     Pay Now
+                                                                </button>
+                                                            )}
+
+                                                            {booking.status !== 'cancelled' && booking.status !== 'completed' && (
+                                                                <button
+                                                                    onClick={() => handleEditClick(booking)}
+                                                                    className="flex-1 sm:flex-none cursor-pointer border border-[rgba(192,221,255,0.3)] text-[#C0DDFF] font-urbanist font-semibold text-[14px] py-2.5 px-6 rounded-lg hover:bg-[rgba(192,221,255,0.1)] transition-all duration-300 flex items-center justify-center gap-2"
+                                                                >
+                                                                    <IconEdit size={16} /> Edit
                                                                 </button>
                                                             )}
 
@@ -572,6 +633,44 @@ const UserDashboard = () => {
                                     )}
                                 </button>
                             </div>
+                        </div>
+                    </div>
+                )}
+                {showEditModal && (
+                    <div className="fixed inset-0 bg-black bg-opacity-70 z-50 flex items-center justify-center p-4">
+                        <div className="bg-[#0B141F] border-2 border-[rgba(192,221,255,0.2)] rounded-2xl max-w-lg w-full p-6">
+                            <div className="flex items-center justify-between mb-6">
+                                <h3 className="font-urbanist text-[24px] font-bold text-[#DEEBFA]">Update Details</h3>
+                                <button onClick={() => setShowEditModal(false)} className="text-[#DEEBFA] hover:bg-white/10 p-2 rounded-full"><IconX size={24} /></button>
+                            </div>
+
+                            <form onSubmit={handleUpdateBooking} className="space-y-4">
+                                <div>
+                                    <label className="block text-[13px] text-[rgba(222,235,250,0.7)] mb-2 font-urbanist">Event Date</label>
+                                    <input type="date" required value={editFormData.eventDate} onChange={(e) => setEditFormData({ ...editFormData, eventDate: e.target.value })}
+                                        className="w-full bg-[rgba(192,221,255,0.05)] border border-[rgba(192,221,255,0.1)] rounded-xl py-3 px-4 text-[#DEEBFA] font-urbanist focus:border-[#C0DDFF] outline-none [color-scheme:dark]" />
+                                </div>
+                                <div>
+                                    <label className="block text-[13px] text-[rgba(222,235,250,0.7)] mb-2 font-urbanist">Event Time</label>
+                                    <input type="text" required value={editFormData.eventTime} onChange={(e) => setEditFormData({ ...editFormData, eventTime: e.target.value })}
+                                        className="w-full bg-[rgba(192,221,255,0.05)] border border-[rgba(192,221,255,0.1)] rounded-xl py-3 px-4 text-[#DEEBFA] font-urbanist focus:border-[#C0DDFF] outline-none" />
+                                </div>
+                                <div>
+                                    <label className="block text-[13px] text-[rgba(222,235,250,0.7)] mb-2 font-urbanist">Location</label>
+                                    <input type="text" required value={editFormData.eventLocation} onChange={(e) => setEditFormData({ ...editFormData, eventLocation: e.target.value })}
+                                        className="w-full bg-[rgba(192,221,255,0.05)] border border-[rgba(192,221,255,0.1)] rounded-xl py-3 px-4 text-[#DEEBFA] font-urbanist focus:border-[#C0DDFF] outline-none" />
+                                </div>
+                                <div>
+                                    <label className="block text-[13px] text-[rgba(222,235,250,0.7)] mb-2 font-urbanist">Notes</label>
+                                    <textarea value={editFormData.bookingNotes} onChange={(e) => setEditFormData({ ...editFormData, bookingNotes: e.target.value })}
+                                        className="w-full bg-[rgba(192,221,255,0.05)] border border-[rgba(192,221,255,0.1)] rounded-xl py-3 px-4 text-[#DEEBFA] font-urbanist focus:border-[#C0DDFF] outline-none min-h-[100px]" />
+                                </div>
+
+                                <button type="submit" disabled={updating}
+                                    className="w-full cursor-pointer mt-4 bg-gradient-to-r from-[#C0DDFF] to-[#A0B8D4] text-[#0B141F] font-urbanist font-bold text-[16px] py-3.5 rounded-xl hover:brightness-110 flex items-center justify-center gap-2">
+                                    {updating ? <IconLoader className="animate-spin" size={20} /> : 'Save Changes'}
+                                </button>
+                            </form>
                         </div>
                     </div>
                 )}

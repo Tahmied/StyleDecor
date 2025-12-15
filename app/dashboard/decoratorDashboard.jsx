@@ -4,10 +4,12 @@ import {
     IconCheck,
     IconClock,
     IconCurrencyTaka,
+    IconFileDescription,
     IconMapPin,
     IconPackage,
     IconReceipt,
-    IconUser
+    IconUser,
+    IconX
 } from '@tabler/icons-react';
 import { useEffect, useState } from 'react';
 import Swal from 'sweetalert2';
@@ -231,6 +233,14 @@ const DecoratorDashboard = () => {
                                                             </div>
                                                         ) : ('')
                                                     }
+                                                    {
+                                                        project.bookingNotes ? (
+                                                            <div className="flex items-center gap-2 text-[rgba(222,235,250,0.70)]">
+                                                                <IconFileDescription size={16} className="text-[#C0DDFF]" />
+                                                                <span className="font-urbanist text-[13px]">{project.bookingNotes}</span>
+                                                            </div>
+                                                        ) : ('')
+                                                    }
                                                 </div>
 
                                                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pt-3 border-t border-[rgba(192,221,255,0.15)]">
@@ -246,7 +256,7 @@ const DecoratorDashboard = () => {
                                                     <button
                                                         onClick={() => handleUpdateStatus(project)}
                                                         disabled={project.status === 'cancelled' || project.status === 'Completed'}
-                                                        className={`w-full sm:w-auto font-urbanist font-semibold text-[13px] px-5 py-2.5 rounded-lg transition-all duration-300 ${project.status === 'cancelled' || project.status === 'Completed'
+                                                        className={`w-full cursor-pointer sm:w-auto font-urbanist font-semibold text-[13px] px-5 py-2.5 rounded-lg transition-all duration-300 ${project.status === 'cancelled' || project.status === 'Completed'
                                                             ? 'bg-[rgba(192,221,255,0.05)] text-[rgba(222,235,250,0.3)] cursor-not-allowed'
                                                             : 'bg-gradient-to-r from-[#C0DDFF] to-[#A0B8D4] text-[#0B141F] hover:brightness-110 hover:shadow-lg hover:shadow-[rgba(192,221,255,0.3)]'
                                                             }`}
@@ -382,9 +392,9 @@ const DecoratorDashboard = () => {
                                     setShowStatusModal(false);
                                     setSelectedProject(null);
                                 }}
-                                className="p-2 hover:bg-[rgba(192,221,255,0.1)] rounded-full transition-colors"
+                                className="p-2 cursor-pointer hover:bg-[rgba(192,221,255,0.1)] rounded-full transition-colors"
                             >
-                                <IconPackage size={24} className="text-[#DEEBFA]" />
+                                <IconX size={24} className="text-[#DEEBFA]" />
                             </button>
                         </div>
 

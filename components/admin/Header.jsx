@@ -1,7 +1,6 @@
 'use client'
 import {
     IconCalendarEvent,
-    IconChartBar,
     IconHome,
     IconLayoutDashboard,
     IconMenu2,
@@ -25,8 +24,7 @@ const AdminHeader = () => {
         { name: 'Manage Decorators', href: '/admin/decorators', icon: IconUsers },
         { name: 'Manage Services', href: '/admin/services', icon: IconPackage },
         { name: 'Manage Bookings', href: '/admin/bookings', icon: IconCalendarEvent },
-        { name: 'Manage Packages', href: '/admin/package', icon: IconPackages },
-        { name: 'Analytics', href: '/admin/analytics', icon: IconChartBar },
+        { name: 'Manage Packages', href: '/admin/package', icon: IconPackages }
     ];
 
 
