@@ -70,20 +70,9 @@ const DynamicInputList = ({ label, placeholder, items, setItems }) => {
 const Modal = ({ modalMode, combinedImages, setCombinedImages, features, setFeatures, includes, setIncludes, setShowModal, selectedService }) => {
     const router = useRouter()
     const [formLoading, setFormLoading] = useState(false)
-    const [formData, setFormData] = useState({
-        serviceName: '',
-        category: '',
-        shortDescription: '',
-        longDescription: '',
-        cost: '',
-        duration: '',
-        serviceType: 'onsite',
-        unit: 'per-service'
-    });
-
-    useEffect(() => {
+    const [formData, setFormData] = useState(() => {
         if (modalMode === 'edit' && selectedService) {
-            setFormData({
+            return {
                 serviceName: selectedService.serviceName || '',
                 category: selectedService.serviceCategory || '',
                 shortDescription: selectedService.description || '',
@@ -92,9 +81,19 @@ const Modal = ({ modalMode, combinedImages, setCombinedImages, features, setFeat
                 duration: selectedService.duration || '',
                 serviceType: selectedService.serviceType || 'onsite',
                 unit: selectedService.unit || 'per-service'
-            });
+            };
         }
-    }, [modalMode, selectedService]);
+        return {
+            serviceName: '',
+            category: '',
+            shortDescription: '',
+            longDescription: '',
+            cost: '',
+            duration: '',
+            serviceType: 'onsite',
+            unit: 'per-service'
+        };
+    });
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -515,14 +514,14 @@ const ManageServices = () => {
         setSelectedService(service);
         setFeatures(parseList(service.features));
         setIncludes(parseList(service.includes));
-        
+
         const existingImages = service.images ? service.images.map(url => ({
             url: url,
             file: null,
             isExisting: true
         })) : [];
         setCombinedImages(existingImages);
-        
+
         setShowModal(true);
     };
 
@@ -695,15 +694,15 @@ const ManageServices = () => {
             </div>
 
             {showModal && (
-                <Modal 
-                    modalMode={modalMode} 
-                    combinedImages={combinedImages} 
-                    setCombinedImages={setCombinedImages} 
-                    features={features} 
-                    setFeatures={setFeatures} 
-                    includes={includes} 
-                    setIncludes={setIncludes} 
-                    setShowModal={setShowModal} 
+                <Modal
+                    modalMode={modalMode}
+                    combinedImages={combinedImages}
+                    setCombinedImages={setCombinedImages}
+                    features={features}
+                    setFeatures={setFeatures}
+                    includes={includes}
+                    setIncludes={setIncludes}
+                    setShowModal={setShowModal}
                     selectedService={selectedService}
                 />
             )}
