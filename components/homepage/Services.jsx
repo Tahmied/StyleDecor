@@ -1,10 +1,45 @@
 "use client";
 
 import Btn from '@/components/Utils/Btn';
-import { Bell, Calendar, Sparkles, Store, Users } from "lucide-react";
+import api from '@/lib/axios';
+import { IconBell, IconCalendar, IconShoppingBag, IconSparkles, IconUser } from '@tabler/icons-react';
 import Link from 'next/link';
+import { useEffect, useState } from 'react';
 
 export default function Services() {
+    const [services, setServices] = useState([]);
+
+    useEffect(() => {
+        const fetchServices = async () => {
+            try {
+                const response = await api.get('/api/v1/admin/homepage-services');
+                if (response.data.success) {
+                    const formattedServices = response.data.data.map(item => ({
+                        id: item._id,
+                        title: item.serviceName,
+                        description: item.description,
+                        price: item.cost.toLocaleString(),
+                        image: item.images[0],
+                        category: item.serviceCategory || 'General'
+                    }));
+                    setServices(formattedServices);
+                }
+            } catch (error) {
+                console.error("Failed to fetch services:", error);
+            }
+        };
+        fetchServices();
+    }, []);
+
+    const getIcon = (category) => {
+        const cat = category.toLowerCase();
+        if (cat.includes('wedding')) return <IconSparkles className="h-6 w-6" />;
+        if (cat.includes('birthday')) return <IconCalendar className="h-6 w-6" />;
+        if (cat.includes('corporate')) return <IconUser className="h-6 w-6" />;
+        if (cat.includes('home')) return <IconShoppingBag className="h-6 w-6" />;
+        return <IconBell className="h-6 w-6" />; 
+    };
+
     return (
         <div className="w-full py-16 px-4 sm:px-6 lg:px-8 bg-[#9fadbe]">
             <div className="max-w-7xl mx-auto">
@@ -51,7 +86,7 @@ export default function Services() {
 
                                         <div className="flex justify-end">
                                             <div className="h-12 w-12 rounded-xl bg-white/10 backdrop-blur-sm flex items-center justify-center text-white border border-white/20 transition-all duration-300 group-hover:bg-white/20 group-hover:scale-110">
-                                                {service.icon}
+                                                {getIcon(service.category)}
                                             </div>
                                         </div>
 
@@ -99,53 +134,3 @@ export default function Services() {
     );
 }
 
-const services = [
-    {
-        id: 1,
-        title: "Wedding Decorations",
-        description: "Create magical moments with our elegant wedding decoration packages tailored to your dream celebration",
-        price: "1,999",
-        image: "/Images/decors/wedding.jpg",
-        icon: <Sparkles className="h-6 w-6" />
-    },
-    {
-        id: 2,
-        title: "Birthday Parties",
-        description: "Make birthdays unforgettable with vibrant, themed decorations for all ages",
-        price: "299",
-        image: "/Images/decors/birthday.avif",
-        icon: <Calendar className="h-6 w-6" />
-    },
-    {
-        id: 6,
-        title: "Festival Decorations",
-        description: "Bring cultural celebrations to life with authentic, vibrant festival decor",
-        price: "499",
-        image: "/Images/decors/fest.jpg",
-        icon: <Sparkles className="h-6 w-6" />
-    },
-    {
-        id: 4,
-        title: "Home Makeover",
-        description: "Transform your living space with our seasonal and permanent decoration solutions",
-        price: "599",
-        image: "/Images/decors/home.jpg",
-        icon: <Store className="h-6 w-6" />
-    },
-    {
-        id: 5,
-        title: "Lighting Design",
-        description: "Celebrate new beginnings with adorable, customized baby shower decorations",
-        price: "399",
-        image: "/Images/decors/lighting.jpg",
-        icon: <Bell className="h-6 w-6" />
-    },
-    {
-        id: 3,
-        title: "Corporate Events",
-        description: "Professional setups for conferences, product launches, and company celebrations",
-        price: "799",
-        image: "/Images/decors/corp-event.jpeg",
-        icon: <Users className="h-6 w-6" />
-    }
-];

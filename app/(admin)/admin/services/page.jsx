@@ -67,7 +67,7 @@ const DynamicInputList = ({ label, placeholder, items, setItems }) => {
     );
 };
 
-const Modal = ({ modalMode, selectedImages, handleImageSelect, features, setFeatures, includes, setIncludes, setShowModal, removeImage, setSelectedImages, imageFiles }) => {
+const Modal = ({ modalMode, combinedImages, setCombinedImages, features, setFeatures, includes, setIncludes, setShowModal, selectedService }) => {
     const router = useRouter()
     const [formLoading, setFormLoading] = useState(false)
     const [formData, setFormData] = useState({
@@ -81,12 +81,41 @@ const Modal = ({ modalMode, selectedImages, handleImageSelect, features, setFeat
         unit: 'per-service'
     });
 
+    useEffect(() => {
+        if (modalMode === 'edit' && selectedService) {
+            setFormData({
+                serviceName: selectedService.serviceName || '',
+                category: selectedService.serviceCategory || '',
+                shortDescription: selectedService.description || '',
+                longDescription: selectedService.longDescription || '',
+                cost: selectedService.cost || '',
+                duration: selectedService.duration || '',
+                serviceType: selectedService.serviceType || 'onsite',
+                unit: selectedService.unit || 'per-service'
+            });
+        }
+    }, [modalMode, selectedService]);
+
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData(prev => ({
             ...prev,
             [name]: value
         }));
+    };
+
+    const handleImageSelect = (e) => {
+        const files = Array.from(e.target.files);
+        const newImages = files.map(file => ({
+            url: URL.createObjectURL(file),
+            file: file,
+            isExisting: false
+        }));
+        setCombinedImages([...combinedImages, ...newImages]);
+    };
+
+    const removeImage = (index) => {
+        setCombinedImages(combinedImages.filter((_, i) => i !== index));
     };
 
     const handleSubmit = async (e) => {
@@ -100,54 +129,67 @@ const Modal = ({ modalMode, selectedImages, handleImageSelect, features, setFeat
         data.append('longDescription', formData.longDescription);
         data.append('cost', formData.cost);
         data.append('duration', formData.duration);
-        data.append('mode', modalMode);
-        data.append('features', JSON.stringify(features));
-        data.append('includes', JSON.stringify(includes));
         data.append('serviceType', formData.serviceType)
         data.append('unit', formData.unit)
-        imageFiles.forEach((file) => {
+        data.append('features', JSON.stringify(features));
+        data.append('includes', JSON.stringify(includes));
+
+        const existingImages = combinedImages.filter(img => img.isExisting).map(img => img.url);
+        const newFiles = combinedImages.filter(img => !img.isExisting).map(img => img.file);
+
+        existingImages.forEach(url => {
+            data.append('existingImages', url);
+        });
+
+        newFiles.forEach(file => {
             data.append('images', file);
         });
 
-        for (var pair of data.entries()) {
-            console.log(pair[0] + ', ' + pair[1]);
-        }
-
         try {
-            await api.post(`/api/v1/admin/add-service`, data, {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
-            });
+            let response;
+            if (modalMode === 'add') {
+                response = await api.post(`/api/v1/admin/add-service`, data, {
+                    headers: { 'Content-Type': 'multipart/form-data' },
+                });
+            } else {
+                data.append('serviceId', selectedService._id);
+                response = await api.post(`/api/v1/admin/edit-service`, data, {
+                    headers: { 'Content-Type': 'multipart/form-data' },
+                });
+            }
+
             setFormLoading(false)
             Swal.fire({
-                title: 'Service Added!',
-                text: 'Your service has been added successfully',
+                title: modalMode === 'add' ? 'Service Added!' : 'Service Updated!',
+                text: `Your service has been ${modalMode === 'add' ? 'added' : 'updated'} successfully`,
                 icon: 'success',
                 showConfirmButton: false,
                 timer: 1500
             }).then(() => {
-                router.refresh()
+                setShowModal(false);
+                window.location.reload();
             })
         } catch (error) {
-            console.error('Upload failed:', error);
+            console.error('Operation failed:', error);
             setFormLoading(false)
+            Swal.fire({
+                title: 'Error!',
+                text: error.response?.data?.message || 'Something went wrong',
+                icon: 'error',
+                confirmButtonColor: '#ff5252'
+            });
         }
     }
 
     if (formLoading) {
         return (
             <div className="fixed inset-0 bg-black bg-opacity-70 z-50 flex items-center justify-center p-4">
-
                 <div className="bg-[#0B141F] border-2 border-[rgba(192,221,255,0.2)] rounded-2xl max-w-4xl w-full min-h-[600px] flex flex-col max-h-[90vh] overflow-hidden">
-
                     <div className="sticky top-0 bg-[#0B141F] border-b border-[rgba(192,221,255,0.15)] px-6 py-4 flex items-center justify-between rounded-t-2xl z-10">
                         <h3 className="font-urbanist text-[24px] font-bold text-[#DEEBFA]">
                             {modalMode === 'add' ? 'Add New Service' : 'Edit Service'}
                         </h3>
                     </div>
-
-
                     <div className="p-6 flex-1 flex flex-col items-center justify-center space-y-4">
                         <Loader />
                         <div className="text-center mt-4">
@@ -296,8 +338,6 @@ const Modal = ({ modalMode, selectedImages, handleImageSelect, features, setFeat
 
                     </div>
 
-
-
                     <div className="space-y-2">
                         <label className="block font-urbanist text-[14px] font-semibold text-[#DEEBFA]">
                             Service Images <span className="text-[#ff5252]">*</span>
@@ -307,7 +347,7 @@ const Modal = ({ modalMode, selectedImages, handleImageSelect, features, setFeat
                         </p>
 
                         <div className="space-y-3">
-                            {selectedImages.length === 0 ? (
+                            {combinedImages.length === 0 ? (
                                 <label className="block">
                                     <input
                                         type="file"
@@ -342,21 +382,21 @@ const Modal = ({ modalMode, selectedImages, handleImageSelect, features, setFeat
                                 <div className="bg-[rgba(192,221,255,0.05)] border border-[rgba(192,221,255,0.15)] rounded-xl p-4">
                                     <div className="flex items-center justify-between mb-3">
                                         <p className="font-urbanist text-[13px] font-semibold text-[#DEEBFA]">
-                                            Selected Images ({selectedImages.length})
+                                            Selected Images ({combinedImages.length})
                                         </p>
                                         <button
-                                            onClick={() => setSelectedImages([])} type='button'
+                                            onClick={() => setCombinedImages([])} type='button'
                                             className="font-urbanist cursor-pointer text-[12px] text-[#ff5252] hover:text-[#ff7070] transition-colors font-semibold"
                                         >
                                             Clear All
                                         </button>
                                     </div>
                                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 mb-3">
-                                        {selectedImages.map((image, index) => (
+                                        {combinedImages.map((image, index) => (
                                             <div key={index} className="relative">
                                                 <div className="relative h-28 rounded-lg overflow-hidden border border-[rgba(192,221,255,0.2)]">
                                                     <img
-                                                        src={image}
+                                                        src={image.url}
                                                         alt={`Preview ${index + 1}`}
                                                         className="w-full h-full object-cover"
                                                     />
@@ -429,16 +469,15 @@ const ManageServices = () => {
     const [includes, setIncludes] = useState(['']);
     const [showModal, setShowModal] = useState(false);
     const [modalMode, setModalMode] = useState('add');
-    const [selectedImages, setSelectedImages] = useState([]);
-    const [imageFiles, setImageFiles] = useState([]);
+    const [combinedImages, setCombinedImages] = useState([]);
     const [dummyServices, setServices] = useState([])
     const [loading, setLoading] = useState(true)
+    const [selectedService, setSelectedService] = useState(null);
 
     useEffect(() => {
         const services = async () => {
             try {
-                const services = await api.get(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/admin/services`)
-                console.log(services.data.data);
+                const services = await api.get(`/api/v1/admin/services`)
                 setServices(services.data.data)
                 setLoading(false)
                 return services.data.data
@@ -450,32 +489,79 @@ const ManageServices = () => {
         services()
     }, [])
 
-    const handleImageSelect = (e) => {
-        const files = Array.from(e.target.files);
-        const newPreviews = files.map(file => URL.createObjectURL(file));
-        setSelectedImages([...selectedImages, ...newPreviews]);
-        setImageFiles([...imageFiles, ...files])
-    };
-
-    const removeImage = (index) => {
-        setSelectedImages(selectedImages.filter((_, i) => i !== index));
-        setImageFiles(imageFiles.filter((_, i) => i !== index))
-    };
-
     const openAddModal = () => {
         setModalMode('add');
-        setSelectedImages([]);
+        setSelectedService(null);
+        setCombinedImages([]);
         setFeatures(['']);
         setIncludes(['']);
         setShowModal(true);
     };
 
-    const openEditModal = () => {
+    const parseList = (list) => {
+        if (!list || list.length === 0) return [''];
+        if (list.length === 1 && typeof list[0] === 'string' && list[0].startsWith('[')) {
+            try {
+                return JSON.parse(list[0]);
+            } catch (e) {
+                return list;
+            }
+        }
+        return list;
+    }
+
+    const openEditModal = (service) => {
         setModalMode('edit');
-        setSelectedImages([]);
-        setFeatures(['Premium floral arrangements', 'Custom color schemes']);
-        setIncludes(['Initial design consultation', 'All decorative materials']);
+        setSelectedService(service);
+        setFeatures(parseList(service.features));
+        setIncludes(parseList(service.includes));
+        
+        const existingImages = service.images ? service.images.map(url => ({
+            url: url,
+            file: null,
+            isExisting: true
+        })) : [];
+        setCombinedImages(existingImages);
+        
         setShowModal(true);
+    };
+
+    const handleDelete = async (serviceId) => {
+        const result = await Swal.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#ff5252',
+            cancelButtonColor: '#0B141F',
+            confirmButtonText: 'Yes, delete it!',
+            background: '#0B141F',
+            color: '#DEEBFA'
+        });
+
+        if (result.isConfirmed) {
+            try {
+                await api.post('/api/v1/admin/delete-service', { serviceId });
+                setServices(prev => prev.filter(service => service._id !== serviceId));
+                Swal.fire({
+                    title: 'Deleted!',
+                    text: 'Service has been deleted.',
+                    icon: 'success',
+                    background: '#0B141F',
+                    color: '#DEEBFA',
+                    confirmButtonColor: '#C0DDFF',
+                    confirmButtonText: '<span style="color: #0B141F">OK</span>'
+                });
+            } catch (error) {
+                Swal.fire({
+                    title: 'Error!',
+                    text: 'Failed to delete service',
+                    icon: 'error',
+                    background: '#0B141F',
+                    color: '#DEEBFA'
+                });
+            }
+        }
     };
 
     if (loading) {
@@ -575,13 +661,14 @@ const ManageServices = () => {
 
                                     <div className="flex gap-2">
                                         <button
-                                            onClick={openEditModal}
+                                            onClick={() => openEditModal(service)}
                                             className="flex-1 cursor-pointer bg-[rgba(192,221,255,0.1)] border border-[rgba(192,221,255,0.2)] text-[#DEEBFA] font-urbanist font-semibold text-[13px] py-2.5 rounded-lg hover:bg-[rgba(192,221,255,0.15)] hover:border-[rgba(192,221,255,0.3)] transition-all duration-300 flex items-center justify-center gap-2"
                                         >
                                             <IconEdit size={16} />
                                             Edit
                                         </button>
                                         <button
+                                            onClick={() => handleDelete(service._id)}
                                             className="flex-1 cursor-pointer bg-[rgba(255,82,82,0.1)] border border-[rgba(255,82,82,0.3)] text-[#ff5252] font-urbanist font-semibold text-[13px] py-2.5 rounded-lg hover:bg-[rgba(255,82,82,0.15)] hover:border-[#ff5252] transition-all duration-300 flex items-center justify-center gap-2"
                                         >
                                             <IconTrash size={16} />
@@ -608,7 +695,17 @@ const ManageServices = () => {
             </div>
 
             {showModal && (
-                <Modal modalMode={modalMode} selectedImages={selectedImages} handleImageSelect={handleImageSelect} features={features} setFeatures={setFeatures} includes={includes} setIncludes={setIncludes} setShowModal={setShowModal} removeImage={removeImage} setSelectedImages={setSelectedImages} imageFiles={imageFiles} />
+                <Modal 
+                    modalMode={modalMode} 
+                    combinedImages={combinedImages} 
+                    setCombinedImages={setCombinedImages} 
+                    features={features} 
+                    setFeatures={setFeatures} 
+                    includes={includes} 
+                    setIncludes={setIncludes} 
+                    setShowModal={setShowModal} 
+                    selectedService={selectedService}
+                />
             )}
         </div>
     );
