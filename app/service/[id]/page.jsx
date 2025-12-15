@@ -1,6 +1,6 @@
 'use client'
 import api from '@/lib/axios';
-import { IconCalendar, IconCheck, IconClock, IconMapPin, IconMapPinFilled, IconStar, IconX } from '@tabler/icons-react';
+import { IconCalendar, IconCheck, IconClock, IconMapPin, IconMapPinFilled, IconSearch, IconStar, IconX } from '@tabler/icons-react';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
@@ -121,7 +121,7 @@ const ServiceDetailsPage = () => {
                     icon: 'success',
                     showConfirmButton: false,
                     timer: 1500
-                }).then(()=>{
+                }).then(() => {
                     router.push(res.data.url)
                 })
             }
@@ -176,8 +176,26 @@ const ServiceDetailsPage = () => {
 
     if (!serviceDetails) {
         return (
-            <div className="min-h-screen bg-[#0B141F] flex items-center justify-center">
-                <div className="text-[#C0DDFF] font-urbanist text-[18px]">Service not found</div>
+            <div className=" bg-[#0B141F] flex flex-col items-center justify-center p-4">
+                <div className="bg-[rgba(192,221,255,0.05)] backdrop-blur-sm border border-[rgba(192,221,255,0.15)] rounded-2xl p-12 text-center max-w-md w-full animate-fade-in">
+                    <div className="w-20 h-20 bg-[rgba(192,221,255,0.1)] rounded-full flex items-center justify-center mx-auto mb-6">
+                        <IconSearch size={40} className="text-[#C0DDFF]" />
+                    </div>
+
+                    <h3 className="font-urbanist text-[24px] font-bold text-[#DEEBFA] mb-3">
+                        Service Not Found
+                    </h3>
+
+                    <p className="font-urbanist text-[16px] text-[rgba(222,235,250,0.60)] mb-8 leading-relaxed">
+                        The service you are looking for doesnt exist or may have been removed.
+                    </p>
+
+                    <Link href="/services">
+                        <button className="bg-gradient-to-r cursor-pointer from-[#C0DDFF] to-[#A0B8D4] text-[#0B141F] font-urbanist font-bold text-[14px] py-3 px-8 rounded-lg hover:brightness-110 hover:shadow-lg hover:shadow-[rgba(192,221,255,0.2)] transition-all duration-300">
+                            Browse All Services
+                        </button>
+                    </Link>
+                </div>
             </div>
         );
     }
