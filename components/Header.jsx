@@ -205,11 +205,11 @@ const Header = ({ children, height = '90vh', styles = '' }) => {
         ? [
             { name: 'Services', Link: '/services' },
             { name: 'Dashboard', Link: '/dashboard' },
-            { name: 'Contact', Link: '/contact' },
+            { name: 'Service Coverage', Link: '/service-coverage' },
         ] : [
             { name: 'Services', Link: '/services' },
             { name: 'About', Link: '/about' },
-            { name: 'Contact', Link: '/contact' },
+            { name: 'Service Coverage', Link: '/service-coverage' },
         ]
     const [menuOpen, isMenuOpen] = useState(false)
     return (
