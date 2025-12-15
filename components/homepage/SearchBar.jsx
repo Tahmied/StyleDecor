@@ -1,5 +1,6 @@
 'use client'
 import { ChevronDown, Search, Sparkles, X } from 'lucide-react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
@@ -373,29 +374,31 @@ export default function AirbnbSearchBar() {
 
                 <div className="mt-8 flex flex-col items-center gap-4">
 
-                    <button
-                        className="group cursor-pointer relative bg-gradient-to-r from-[#9FADBE] to-[#DEEBFA] text-[#0B141F] px-6 sm:px-8 py-3 sm:py-4 rounded-full font-bold text-sm sm:text-base lg:text-lg shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105 flex items-center gap-2 sm:gap-3 overflow-hidden border-2 border-transparent hover:border-[#DEEBFA] w-full sm:w-auto justify-center"
-                    >
-                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent opacity-0 group-hover:opacity-30 transition-opacity duration-500 transform -skew-x-12 group-hover:translate-x-full"></div>
-
-                        <Sparkles className="h-5 w-5 sm:h-6 sm:w-6 animate-pulse flex-shrink-0" />
-                        <span className="relative z-5 whitespace-nowrap">Book Decoration Service</span>
-                        <svg
-                            width="20"
-                            height="20"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            className="transform group-hover:translate-x-1 transition-transform flex-shrink-0 sm:w-6 sm:h-6"
+                    <Link href={'/services'}>
+                        <button
+                            className="group cursor-pointer relative bg-gradient-to-r from-[#9FADBE] to-[#DEEBFA] text-[#0B141F] px-6 sm:px-8 py-3 sm:py-4 rounded-full font-bold text-sm sm:text-base lg:text-lg shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105 flex items-center gap-2 sm:gap-3 overflow-hidden border-2 border-transparent hover:border-[#DEEBFA] w-full sm:w-auto justify-center"
                         >
-                            <path
-                                d="M5 12h14m0 0l-7-7m7 7l-7 7"
-                                stroke="currentColor"
-                                strokeWidth="2"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                            />
-                        </svg>
-                    </button>
+                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent opacity-0 group-hover:opacity-30 transition-opacity duration-500 transform -skew-x-12 group-hover:translate-x-full"></div>
+
+                            <Sparkles className="h-5 w-5 sm:h-6 sm:w-6 animate-pulse flex-shrink-0" />
+                            <span className="relative z-5 whitespace-nowrap">Book Decoration Service</span>
+                            <svg
+                                width="20"
+                                height="20"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                className="transform group-hover:translate-x-1 transition-transform flex-shrink-0 sm:w-6 sm:h-6"
+                            >
+                                <path
+                                    d="M5 12h14m0 0l-7-7m7 7l-7 7"
+                                    stroke="currentColor"
+                                    strokeWidth="2"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                />
+                            </svg>
+                        </button>
+                    </Link>
 
                     <p className="text-sm text-[#9FADBE] font-medium">
                         Quick search • Instant booking • Best decorators

@@ -100,7 +100,7 @@ export default function Services() {
 
                                             <div className="inline-block">
                                                 <span className="px-4 py-2 bg-white/20 backdrop-blur-sm rounded-full text-white text-sm font-semibold border border-white/30">
-                                                    Starting at ${service.price}
+                                                    Starting at ৳{service.price}
                                                 </span>
                                             </div>
 

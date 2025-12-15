@@ -232,7 +232,7 @@ const ServiceDetailsPage = () => {
                                 />
                                 <div className="absolute top-6 right-6 bg-[rgba(11,20,31,0.9)] backdrop-blur-sm px-4 py-2 rounded-full">
                                     <span className="font-urbanist text-[18px] font-bold text-[#C0DDFF]">
-                                        ${serviceDetails.cost}
+                                        ৳{serviceDetails.cost}
                                     </span>
                                 </div>
                             </div>
@@ -411,7 +411,7 @@ const ServiceDetailsPage = () => {
                                             {serviceDetails.serviceName}
                                         </h4>
                                         <p className="font-urbanist text-[14px] text-[rgba(222,235,250,0.70)]">
-                                            ${serviceDetails.cost} • {serviceDetails.duration}
+                                            ৳{serviceDetails.cost} • {serviceDetails.duration}
                                         </p>
                                     </div>
 
