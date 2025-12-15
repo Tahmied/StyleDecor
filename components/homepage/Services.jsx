@@ -92,7 +92,7 @@ export default function Services() {
 
 
                 <div className="mt-12 text-center">
-                    <Btn text={'Book a Consultation'} link={'/'} />
+                    <Btn text={'View All Services'} link={'/services'} />
                 </div>
             </div>
         </div>
