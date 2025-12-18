@@ -16,7 +16,7 @@ export default function AirbnbSearchBar() {
     const [isClosing, setIsClosing] = useState(false);
 
     const serviceTypes = ['Wedding', 'Birthday', 'Home Decor', 'Corporate Event', 'Festival'];
-    const budgetRanges = ['$0 - $500', '$500 - $1000', '$1000 - $2500', '$2500+'];
+    const budgetRanges = ['৳5000 - ৳20000', '৳20000 - ৳40000', '৳40000 - ৳60000', '৳60000+'];
 
     const handleSearch = () => {
         const params = new URLSearchParams();
