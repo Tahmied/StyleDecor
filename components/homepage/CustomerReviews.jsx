@@ -1,69 +1,81 @@
 'use client'
 import { useEffect, useState } from 'react';
-import Headings from '../Utils/Heading';
+
+const Headings = ({ text }) => (
+    <h2 className="text-3xl font-bold text-center mb-12 text-[#deebfacc]">{text}</h2>
+);
 
 export default function CustomerReviews() {
     const [currentSlide, setCurrentSlide] = useState(0);
+    const [nextSlide, setNextSlide] = useState(0);
     const [isTransitioning, setIsTransitioning] = useState(false);
 
     const reviews = [
         {
             id: 1,
-            name: "Stevia Angela",
-            role: "Homeowner",
-            image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=300&h=300&fit=crop",
-            text: "Working with Plexi was such a pleasure! They helped me make the most of my small apartment, transforming it into a functional and chic space. I'm in love with how everything turned out!",
+            name: "Jhankar Mahbub",
+            role: "Founder",
+            image: "https://res.cloudinary.com/dp17s655f/image/upload/v1766049710/jhankar_mpgkrd.jpg",
+            text: "We did our programming hero even decorations from styledecor, such a great service and professionalism. ",
             rating: 4.5,
-            projectImage: "/Images/section-four/project-one-pinned.png"
+            projectImage: "https://res.cloudinary.com/dp17s655f/image/upload/v1766046163/we5tugjc6njqmjledd7g.jpg"
         },
         {
             id: 2,
-            name: "Michael Roberts",
+            name: "Talha Tarique",
             role: "Business Owner",
-            image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=300&fit=crop",
+            image: "https://res.cloudinary.com/dp17s655f/image/upload/v1766049710/talha_vtxstr.jpg",
             text: "The team exceeded all expectations! Their attention to detail and creative solutions made our office space both beautiful and highly functional. Couldn't be happier with the results!",
             rating: 5,
-            projectImage: "https://images.unsplash.com/photo-1497366216548-37526070297c?w=800&h=600&fit=crop"
+            projectImage: "https://res.cloudinary.com/dp17s655f/image/upload/v1766046163/zacsevewzgff60k3kp9n.jpg"
         },
         {
             id: 3,
-            name: "Sarah Johnson",
+            name: "Azizul Islam",
             role: "Interior Enthusiast",
-            image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=300&h=300&fit=crop",
+            image: "https://res.cloudinary.com/dp17s655f/image/upload/v1766049710/milton_c4os0u.jpg",
             text: "From concept to completion, the experience was seamless. They truly understood my vision and brought it to life in ways I couldn't have imagined. Highly recommend their services!",
             rating: 5,
-            projectImage: "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?w=800&h=600&fit=crop"
+            projectImage: "https://res.cloudinary.com/dp17s655f/image/upload/v1766046253/n8omxyiu98y3q0fzwimb.png"
         }
     ];
 
     const clientAvatars = [
-        "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop",
-        "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&h=100&fit=crop",
-        "https://images.unsplash.com/photo-1527980965255-d3b416303d12?w=100&h=100&fit=crop"
+        "https://res.cloudinary.com/dp17s655f/image/upload/v1766049710/jhankar_mpgkrd.jpg",
+        "https://res.cloudinary.com/dp17s655f/image/upload/v1766049710/talha_vtxstr.jpg",
+        "https://res.cloudinary.com/dp17s655f/image/upload/v1766049710/milton_c4os0u.jpg"
     ];
 
-    const nextSlide = () => {
+    const handleNextSlide = () => {
         if (!isTransitioning) {
             setIsTransitioning(true);
-            setCurrentSlide((prev) => (prev + 1) % reviews.length);
+            setNextSlide((currentSlide + 1) % reviews.length);
         }
     };
 
-    const prevSlide = () => {
+    const handlePrevSlide = () => {
         if (!isTransitioning) {
             setIsTransitioning(true);
-            setCurrentSlide((prev) => (prev - 1 + reviews.length) % reviews.length);
+            setNextSlide((currentSlide - 1 + reviews.length) % reviews.length);
+        }
+    };
+
+    const handleDotClick = (index) => {
+        if (!isTransitioning && index !== currentSlide) {
+            setIsTransitioning(true);
+            setNextSlide(index);
         }
     };
 
     useEffect(() => {
         if (isTransitioning) {
             const timer = setTimeout(() => {
+                setCurrentSlide(nextSlide);
                 setIsTransitioning(false);
-            }, 600);
+            }, 300);
             return () => clearTimeout(timer);
         }
-    }, [isTransitioning]);
+    }, [isTransitioning, nextSlide]);
 
     const renderStars = (rating) => {
         const stars = [];
@@ -95,6 +107,8 @@ export default function CustomerReviews() {
         return stars;
     };
 
+    const displayIndex = isTransitioning ? currentSlide : currentSlide;
+
     return (
         <div className="w-full py-16 px-4 sm:px-6 lg:px-8 bg-[#0B141F]">
             <Headings text={'Customer Reviews'}/>
@@ -110,7 +124,7 @@ export default function CustomerReviews() {
                     >
                         <div className="rounded-3xl overflow-hidden">
                             <img
-                                src={reviews[currentSlide].projectImage}
+                                src={reviews[displayIndex].projectImage}
                                 alt="Interior design showcase"
                                 className="w-full h-[500px] object-cover max-[426px]:h-[400px]"
                             />
@@ -149,29 +163,29 @@ export default function CustomerReviews() {
                                 
                                 <div className="flex items-start gap-6 mb-6 max-[400px]:flex-col max-[400px]:gap-2 max-[400px]:items-center">
                                     <img
-                                        src={reviews[currentSlide].image}
-                                        alt={reviews[currentSlide].name}
+                                        src={reviews[displayIndex].image}
+                                        alt={reviews[displayIndex].name}
                                         className="w-24 h-24 rounded-2xl object-cover flex-shrink-0"
                                     />
                                     <div className='flex flex-col gap-2'>
                                         <div className="flex gap-1 mt-2">
-                                            {renderStars(reviews[currentSlide].rating)}
+                                            {renderStars(reviews[displayIndex].rating)}
                                         </div>
                                         <div>
-                                            <h4 className="text-xl font-bold text-[#0b141f]">{reviews[currentSlide].name}</h4>
-                                            <p className="text-[#0b141f]">{reviews[currentSlide].role}</p>
+                                            <h4 className="text-xl font-bold text-[#0b141f]">{reviews[displayIndex].name}</h4>
+                                            <p className="text-[#0b141f]">{reviews[displayIndex].role}</p>
                                         </div>
                                     </div>
                                 </div>
 
                                 <p className="text-gray-700 text-lg mb-6 leading-relaxed max-[400px]:text-center">
-                                    {reviews[currentSlide].text}
+                                    {reviews[displayIndex].text}
                                 </p>
                             </div>
 
                             <div className="flex justify-end gap-3">
                                 <button
-                                    onClick={prevSlide}
+                                    onClick={handlePrevSlide}
                                     disabled={isTransitioning}
                                     className="w-12 h-12 cursor-pointer rounded-full bg-[#9fadbe] hover:bg-[#8a9dae] flex items-center justify-center transition-colors disabled:opacity-50"
                                     aria-label="Previous review"
@@ -181,7 +195,7 @@ export default function CustomerReviews() {
                                     </svg>
                                 </button>
                                 <button
-                                    onClick={nextSlide}
+                                    onClick={handleNextSlide}
                                     disabled={isTransitioning}
                                     className="w-12 h-12 cursor-pointer rounded-full bg-[#9fadbe] hover:bg-[#8a9dae] text-white flex items-center justify-center transition-colors disabled:opacity-50"
                                     aria-label="Next review"
@@ -197,12 +211,7 @@ export default function CustomerReviews() {
                                 {reviews.map((_, index) => (
                                     <button
                                         key={index}
-                                        onClick={() => {
-                                            if (!isTransitioning) {
-                                                setIsTransitioning(true);
-                                                setCurrentSlide(index);
-                                            }
-                                        }}
+                                        onClick={() => handleDotClick(index)}
                                         className={`h-2 rounded-full transition-all ${
                                             index === currentSlide 
                                                 ? 'w-8 bg-[#9fadbe]' 

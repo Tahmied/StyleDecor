@@ -46,6 +46,9 @@ export const metadata = {
     ],
     locale: 'en_US',
     type: 'website',
+    icons: {
+      icon: '/icon.png'
+    }
   },
   description: 'Book the best event decorators for weddings, birthdays, and corporate events.',
 };
