@@ -1,5 +1,7 @@
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
+import Loader from "@/components/Utils/Loader";
+import { Suspense } from "react";
 export default function HomepageLayout({
     children,
 }: {
@@ -10,7 +12,12 @@ export default function HomepageLayout({
             <Header height={'auto'}>
                 <p></p>
             </Header>
-            <main>{children}</main>
+            <main>
+                <Suspense fallback={<Loader />}>
+                    {children}
+                </Suspense>
+
+            </main>
             <Footer />
         </>
     );
