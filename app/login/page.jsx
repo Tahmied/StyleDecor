@@ -169,25 +169,6 @@ const Login = () => {
                                     </div>
                                 </div>
 
-                                <div className="flex items-center justify-between">
-                                    <label className="flex items-center gap-2 cursor-pointer group">
-                                        <input
-                                            type="checkbox"
-                                            checked={rememberMe}
-                                            onChange={(e) => setRememberMe(e.target.checked)}
-                                            className="w-4 h-4 rounded border-2 border-[rgba(192,221,255,0.3)] bg-transparent checked:bg-[#C0DDFF] checked:border-[#C0DDFF] focus:ring-2 focus:ring-[rgba(192,221,255,0.2)] transition-all duration-300 cursor-pointer"
-                                        />
-                                        <span className="font-urbanist text-[13px] text-[rgba(222,235,250,0.80)] group-hover:text-[#C0DDFF] transition-colors duration-300">
-                                            Remember me
-                                        </span>
-                                    </label>
-                                    <Link
-                                        href="/forgot-password"
-                                        className="font-urbanist text-[13px] text-[#C0DDFF] hover:text-[#DEEBFA] font-semibold transition-colors duration-300"
-                                    >
-                                        Forgot Password?
-                                    </Link>
-                                </div>
 
                                 <button
                                     onClick={handleSubmit}
