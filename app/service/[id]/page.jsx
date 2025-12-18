@@ -1,6 +1,6 @@
 'use client'
 import api from '@/lib/axios';
-import { IconCalendar, IconCheck, IconClock, IconMapPin, IconMapPinFilled, IconSearch, IconStar, IconX } from '@tabler/icons-react';
+import { IconCalendar, IconCheck, IconClock, IconLoader, IconMapPin, IconMapPinFilled, IconSearch, IconStar, IconX } from '@tabler/icons-react';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
@@ -21,6 +21,7 @@ const ServiceDetailsPage = () => {
     const [loading, setLoading] = useState(true);
     const [availableDecorators, setAvailableDecorators] = useState([]);
     const [loadingDecorators, setLoadingDecorators] = useState(false);
+    const [processingBooking, setProcessingBooking] = useState(false);
     const [bookingData, setBookingData] = useState({
         email: session?.user?.email || '',
         name: session?.user?.name || '',
@@ -98,6 +99,7 @@ const ServiceDetailsPage = () => {
     };
 
     const handleFinalBooking = async () => {
+        setProcessingBooking(true)
         try {
             const bookingPayload = {
                 decoratorId: selectedDecorator._id,
@@ -131,6 +133,7 @@ const ServiceDetailsPage = () => {
             setSelectedDecorator(null);
         } catch (error) {
             console.error('Booking Error:', error);
+            setProcessingBooking(false)
         }
     };
 
@@ -519,7 +522,14 @@ const ServiceDetailsPage = () => {
                                             disabled={!bookingData.date || !bookingData.time || (!isOnlineService && !bookingData.location)}
                                             className="w-full bg-gradient-to-r from-[#C0DDFF] to-[#A0B8D4] text-[#0B141F] font-urbanist font-bold text-[16px] py-4 cursor-pointer rounded-lg hover:brightness-110 hover:shadow-lg hover:shadow-[rgba(192,221,255,0.3)] transition-all duration-300 transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:brightness-100 disabled:hover:shadow-none disabled:hover:translate-y-0"
                                         >
-                                            Continue
+                                            {loadingDecorators ? (
+                                                <div className="flex items-center justify-center gap-2">
+                                                    <IconLoader className="animate-spin" size={20} />
+                                                    <span>Finding Decorators...</span>
+                                                </div>
+                                            ) : (
+                                                'Continue'
+                                            )}
                                         </button>
                                     </div>
                                 </>
@@ -623,10 +633,17 @@ const ServiceDetailsPage = () => {
 
                                             <button
                                                 onClick={handleFinalBooking}
-                                                disabled={!selectedDecorator}
+                                                disabled={!selectedDecorator || processingBooking}
                                                 className="w-full cursor-pointer bg-gradient-to-r from-[#C0DDFF] to-[#A0B8D4] text-[#0B141F] font-urbanist font-bold text-[16px] py-4 rounded-lg hover:brightness-110 hover:shadow-lg hover:shadow-[rgba(192,221,255,0.3)] transition-all duration-300 transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:brightness-100 disabled:hover:shadow-none disabled:hover:translate-y-0"
                                             >
-                                                Confirm Booking
+                                                {processingBooking ? (
+                                                    <div className="flex items-center justify-center gap-2">
+                                                        <IconLoader className="animate-spin" size={20} />
+                                                        <span>Processing...</span>
+                                                    </div>
+                                                ) : (
+                                                    'Confirm Booking'
+                                                )}
                                             </button>
                                         </>
                                     )}
