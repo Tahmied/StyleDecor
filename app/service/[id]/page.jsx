@@ -341,7 +341,7 @@ const ServiceDetailsPage = () => {
                             <div className="mb-6">
                                 <div className="flex items-baseline gap-2 mb-2">
                                     <span className="font-urbanist text-[36px] font-bold text-[#C0DDFF]">
-                                        ${serviceDetails.cost}
+                                        ৳{serviceDetails.cost}
                                     </span>
                                     <span className="font-urbanist text-[14px] text-[rgba(222,235,250,0.60)]">
                                         per service
