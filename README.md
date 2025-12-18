@@ -16,12 +16,12 @@
 - [Features](#features)
 - [Tech Stack](#tech-stack)
 - [Project Structure](#project-structure)
+- [Key Features](#key-features)
 - [Installation](#installation)
 - [Environment Variables](#environment-variables)
 - [Authentication System](#authentication-system)
 - [API Integration](#api-integration)
 - [Protected Routes](#protected-routes)
-- [Key Features](#key-features)
 - [Backend Repository](#backend-repository)
 - [Contributing](#contributing)
 - [License](#license)
@@ -256,6 +256,64 @@ styledecor
 │   └── logo.svg
 └── tsconfig.json
 ```
+
+## 🎨 Key Features
+
+### 1. Service Discovery
+- **Browse by Category**: Wedding, Birthday, Corporate, Home, Seasonal
+- **Advanced Filtering**: Price range, decorator specialty, ratings
+- **Search Functionality**: Find services by name or keywords
+- **Service Details**: Comprehensive information with images and features
+
+### 2. Booking System
+- **Real-Time Availability**: Check decorator schedule instantly
+- **Flexible Date Selection**: Choose preferred date and time
+- **Location Input**: Specify event location for on-site services
+- **Special Requests**: Add custom notes and requirements
+
+### 3. Payment Processing
+- **Stripe Checkout**: Secure, PCI-compliant payment flow
+- **Multiple Payment Methods**: Credit/debit cards, digital wallets
+- **Payment Verification**: Automatic booking creation after payment
+- **Receipt Generation**: Email receipts and transaction history
+
+### 4. Dashboard Features
+
+#### User Dashboard
+- View upcoming and past bookings
+- Track project status in real-time
+- Access payment history
+- Manage profile and preferences
+- Cancel or reschedule bookings
+
+#### Decorator Dashboard
+- View assigned projects and details
+- Update project status (Planning, Materials Prepared, On the Way, Setup in Progress, Completed)
+- Manage availability calendar
+- Track earnings and payment history
+- Access customer contact information
+
+#### Admin Dashboard
+- Service management (Create, Update, Delete)
+- User management and role assignment
+- Booking oversight and decorator assignment
+- Payment tracking and financial analytics
+- Feature decorator promotion
+- System statistics and reports
+
+### 5. UI/UX Features
+- **Responsive Design**: Optimized for mobile, tablet, and desktop
+- **Dark Mode Support**: Theme toggle for user preference
+- **Loading States**: Skeleton loaders and spinners
+- **Error Handling**: User-friendly error messages
+- **Toast Notifications**: Real-time feedback for actions
+- **Animations**: Smooth transitions with Framer Motion
+
+### 6. Google Maps Integration
+- **Service Coverage**: React Leaflet maps showing service areas
+- **Location Selection**: Interactive map for event location
+- **Decorator Proximity**: Find nearest available decorators
+
 
 ## 🚀 Installation
 
@@ -711,63 +769,6 @@ export default function ProtectedComponent() {
   );
 }
 ```
-
-## 🎨 Key Features
-
-### 1. Service Discovery
-- **Browse by Category**: Wedding, Birthday, Corporate, Home, Seasonal
-- **Advanced Filtering**: Price range, decorator specialty, ratings
-- **Search Functionality**: Find services by name or keywords
-- **Service Details**: Comprehensive information with images and features
-
-### 2. Booking System
-- **Real-Time Availability**: Check decorator schedule instantly
-- **Flexible Date Selection**: Choose preferred date and time
-- **Location Input**: Specify event location for on-site services
-- **Special Requests**: Add custom notes and requirements
-
-### 3. Payment Processing
-- **Stripe Checkout**: Secure, PCI-compliant payment flow
-- **Multiple Payment Methods**: Credit/debit cards, digital wallets
-- **Payment Verification**: Automatic booking creation after payment
-- **Receipt Generation**: Email receipts and transaction history
-
-### 4. Dashboard Features
-
-#### User Dashboard
-- View upcoming and past bookings
-- Track project status in real-time
-- Access payment history
-- Manage profile and preferences
-- Cancel or reschedule bookings
-
-#### Decorator Dashboard
-- View assigned projects and details
-- Update project status (Planning, Materials Prepared, On the Way, Setup in Progress, Completed)
-- Manage availability calendar
-- Track earnings and payment history
-- Access customer contact information
-
-#### Admin Dashboard
-- Service management (Create, Update, Delete)
-- User management and role assignment
-- Booking oversight and decorator assignment
-- Payment tracking and financial analytics
-- Feature decorator promotion
-- System statistics and reports
-
-### 5. UI/UX Features
-- **Responsive Design**: Optimized for mobile, tablet, and desktop
-- **Dark Mode Support**: Theme toggle for user preference
-- **Loading States**: Skeleton loaders and spinners
-- **Error Handling**: User-friendly error messages
-- **Toast Notifications**: Real-time feedback for actions
-- **Animations**: Smooth transitions with Framer Motion
-
-### 6. Google Maps Integration
-- **Service Coverage**: React Leaflet maps showing service areas
-- **Location Selection**: Interactive map for event location
-- **Decorator Proximity**: Find nearest available decorators
 
 ## 🔗 Backend Repository
 
