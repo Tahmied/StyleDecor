@@ -26,9 +26,26 @@ const urbanist = Urbanist({
 });
 
 export const metadata = {
+  metadataBase: new URL('https://style-decor.vercel.app'),
   title: {
     template: '%s | StyleDecor',
     default: 'StyleDecor - Premium Event Decoration',
+  },
+  openGraph: {
+    title: 'StyleDecor - Premium Event Decoration',
+    description: 'Book the best event decorators for weddings, birthdays, and corporate events.',
+    url: 'https://style-decor.vercel.app',
+    siteName: 'StyleDecor',
+    images: [
+      {
+        url: 'https://res.cloudinary.com/dp17s655f/image/upload/v1766049155/Furniture_iedxay.png',
+        width: 1200,
+        height: 630,
+        alt: 'StyleDecor Preview',
+      },
+    ],
+    locale: 'en_US',
+    type: 'website',
   },
   description: 'Book the best event decorators for weddings, birthdays, and corporate events.',
 };
