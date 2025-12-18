@@ -1,6 +1,6 @@
 # StyleDecor Frontend
 
-<img src='https://raw.githubusercontent.com/Tahmied/StyleDecor/refs/heads/main/screenshot.png' alt='StyleDecor UI'/>
+<img src='https://raw.githubusercontent.com/Tahmied/StyleDecor/refs/heads/main/ss.png' alt='StyleDecor UI'/>
 
 > **Frontend application for StyleDecor - A modern appointment management system for decoration services with real-time booking, Stripe payments, and role-based dashboards**
 
