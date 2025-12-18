@@ -50,10 +50,10 @@ const ServiceDetailsPage = () => {
         }
     }, [serviceId]);
 
-    const fetchAvailableDecorators = async (date) => {
+    const fetchAvailableDecorators = async (date, category) => {
         try {
             setLoadingDecorators(true);
-            const response = await api.post('/api/v1/booking/get-available-decors', { date });
+            const response = await api.post('/api/v1/booking/get-available-decors', { date, category });
 
             if (response.data.success && response.data.data) {
                 setAvailableDecorators(response.data.data);
@@ -88,7 +88,7 @@ const ServiceDetailsPage = () => {
         const hasRequiredFields = bookingData.date && bookingData.time && (isOnlineService || bookingData.location);
 
         if (hasRequiredFields) {
-            await fetchAvailableDecorators(bookingData.date);
+            await fetchAvailableDecorators(bookingData.date, serviceDetails.serviceCategory);
             setShowDecoratorSelection(true);
         }
     };

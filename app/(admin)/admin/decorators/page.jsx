@@ -20,7 +20,8 @@ const ManageDecorators = () => {
         email: '',
         password: '',
         role: 'user',
-        phoneNumber: ''
+        phoneNumber: '',
+        specialty: 'All'
     });
     const [imageFile, setImageFile] = useState(null);
     const [imagePreview, setImagePreview] = useState(null);
@@ -45,7 +46,7 @@ const ManageDecorators = () => {
 
     const openAddModal = () => {
         setModalMode('add');
-        setFormData({ userId: '', name: '', email: '', password: '', role: 'user', isFeaturedDecorator: false, phoneNumber: '' });
+        setFormData({ userId: '', name: '', email: '', password: '', role: 'user', isFeaturedDecorator: false, phoneNumber: '', specialty: '' });
         setImageFile(null);
         setImagePreview(null);
         setShowUserModal(true);
@@ -61,6 +62,7 @@ const ManageDecorators = () => {
             role: user.role,
             isFeaturedDecorator: user.isFeaturedDecorator || false,
             phoneNumber: user.phoneNumber || '',
+            specialty: user.specialty || 'All'
         });
         setImageFile(null);
         setImagePreview(user.image);
@@ -85,6 +87,9 @@ const ManageDecorators = () => {
         data.append('role', formData.role);
         data.append('isFeaturedDecorator', formData.isFeaturedDecorator);
         data.append('phoneNum', formData.phoneNumber)
+        if (formData.role === 'decorator') {
+            data.append('specialty', formData.specialty);
+        }
 
         if (formData.password) data.append('password', formData.password);
 
@@ -385,6 +390,24 @@ const ManageDecorators = () => {
                                     <option value="admin">Admin</option>
                                 </select>
                             </div>
+
+                            {formData.role === 'decorator' && (
+                                <div className="space-y-2">
+                                    <label className="block font-urbanist text-[14px] font-semibold text-[#DEEBFA]">Specialty</label>
+                                    <select
+                                        value={formData.specialty}
+                                        onChange={(e) => setFormData({ ...formData, specialty: e.target.value })}
+                                        className="w-full cursor-pointer bg-[rgba(11,20,31,0.6)] border border-[rgba(192,221,255,0.2)] rounded-lg py-3 px-4 text-[#DEEBFA] font-urbanist focus:outline-none focus:border-[#C0DDFF] transition-all"
+                                    >
+                                        <option value="All">All Categories</option>
+                                        <option value="Wedding">Wedding</option>
+                                        <option value="Birthday">Birthday</option>
+                                        <option value="Corporate">Corporate</option>
+                                        <option value="Home">Home</option>
+                                        <option value="Seasonal">Seasonal</option>
+                                    </select>
+                                </div>
+                            )}
 
                             {formData.role === 'decorator' && (
                                 <div className="flex items-center gap-3 bg-[rgba(192,221,255,0.05)] border border-[rgba(192,221,255,0.2)] rounded-lg px-4 py-3 transition-all">
