@@ -26,7 +26,7 @@ const ServicesPage = () => {
             '৳5000 - ৳20000': { min: '5000', max: '20000' },
             '৳20000 - ৳40000': { min: '20000', max: '40000' },
             '৳40000 - ৳60000': { min: '40000', max: '60000' },
-            '৳60000+': { min: '60000', max: '' } 
+            '৳60000+': { min: '60000', max: '' }
         };
 
         return {
@@ -41,23 +41,53 @@ const ServicesPage = () => {
     const [budgetRange, setBudgetRange] = useState(getInitialState.budget);
     const [selectedDate, setSelectedDate] = useState(getInitialState.date);
     const [showFilters, setShowFilters] = useState(false);
-    const [allServices, setServices] = useState([])
+    
+    const [services, setServices] = useState([]);
+    const [pagination, setPagination] = useState({ page: 1, pages: 1, total: 0 });
+    const [page, setPage] = useState(1);
+    
     const [loading, setLoading] = useState(true);
     const [sortBy, setSortBy] = useState('newest');
 
     useEffect(() => {
         const fetchServices = async () => {
+            setLoading(true);
             try {
-                const res = await api.get('/api/v1/admin/services')
-                setServices(res.data.data)
+                const params = new URLSearchParams({
+                    page: page.toString(),
+                    limit: '9',
+                    sort: sortBy
+                });
+
+                if (searchQuery) params.append('search', searchQuery);
+                if (selectedType !== 'all') params.append('category', selectedType);
+                if (budgetRange.min) params.append('minPrice', budgetRange.min);
+                if (budgetRange.max) params.append('maxPrice', budgetRange.max);
+
+                const res = await api.get(`/api/v1/admin/services?${params.toString()}`);
+                
+                if (res.data.success) {
+                    setServices(res.data.data.services);
+                    setPagination(res.data.data.pagination);
+                }
             } catch (error) {
                 console.error("Failed to fetch services", error);
+                setServices([]);
             } finally {
                 setLoading(false);
             }
-        }
-        fetchServices()
-    }, [])
+        };
+
+        const timeoutId = setTimeout(() => {
+            fetchServices();
+        }, 500);
+
+        return () => clearTimeout(timeoutId);
+    }, [page, searchQuery, selectedType, budgetRange, sortBy]);
+
+    useEffect(() => {
+        setPage(1);
+    }, [searchQuery, selectedType, budgetRange, sortBy]);
 
     const serviceCategory = [
         { value: 'all', label: 'All Services' },
@@ -68,43 +98,12 @@ const ServicesPage = () => {
         { value: 'seasonal', label: 'Seasonal Decoration' },
     ];
 
-    const filteredServices = allServices.filter(service => {
-
-        const name = service.serviceName || ''
-        const desc = service.description || ''
-        const category = service.serviceCategory ? service.serviceCategory.toLowerCase() : ''
-        const price = service.cost || 0
-
-        const matchesSearch = name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            desc.toLowerCase().includes(searchQuery.toLowerCase())
-        const matchesType = selectedType === 'all' || category === selectedType.toLowerCase()
-        const matchesBudget =
-            (!budgetRange.min || price >= Number(budgetRange.min)) &&
-            (!budgetRange.max || price <= Number(budgetRange.max))
-
-        return matchesSearch && matchesType && matchesBudget;
-    })
-
-        .sort((a, b) => {
-            switch (sortBy) {
-                case 'price-asc':
-                    return (a.cost || 0) - (b.cost || 0);
-                case 'price-desc':
-                    return (b.cost || 0) - (a.cost || 0);
-                case 'rating':
-                    return (b.rating || 0) - (a.rating || 0);
-                case 'newest':
-                    return new Date(b.createdAt || 0) - new Date(a.createdAt || 0);
-                default:
-                    return 0;
-            }
-        })
-
     const clearFilters = () => {
-        setSearchQuery('')
-        setSelectedType('all')
-        setBudgetRange({ min: '', max: '' })
-        setSelectedDate('')
+        setSearchQuery('');
+        setSelectedType('all');
+        setBudgetRange({ min: '', max: '' });
+        setSelectedDate('');
+        setPage(1);
     };
 
     const hasActiveFilters = searchQuery || selectedType !== 'all' || budgetRange.min || budgetRange.max || selectedDate;
@@ -237,14 +236,13 @@ const ServicesPage = () => {
 
                 <div className="mb-6 flex items-center justify-between">
                     <p className="font-urbanist text-[14px] text-[rgba(222,235,250,0.70)]">
-                        Showing <span className="text-[#C0DDFF] font-semibold">{filteredServices.length}</span> of <span className="text-[#C0DDFF] font-semibold">{allServices.length}</span> services
+                        Showing <span className="text-[#C0DDFF] font-semibold">{services.length}</span> of <span className="text-[#C0DDFF] font-semibold">{pagination.total}</span> services
                     </p>
                 </div>
 
                 {loading ? (
                     <div className="mt-6">
                         <div className="">
-
                             <div className="w-full mt-4 flex flex-col items-center justify-center rounded-2xl">
                                 <Loader />
                                 <div className="text-center mt-6">
@@ -256,71 +254,97 @@ const ServicesPage = () => {
                                     </p>
                                 </div>
                             </div>
-
                         </div>
                     </div>
-                ) : filteredServices.length > 0 ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {filteredServices.map(service => (
-                            <div
-                                key={service._id}
-                                className="bg-[rgba(192,221,255,0.05)] backdrop-blur-sm border border-[rgba(192,221,255,0.15)] rounded-2xl overflow-hidden hover:border-[#C0DDFF] transition-all duration-300 group"
-                            >
-                                <div className="relative h-48 overflow-hidden">
-                                    <img
-                                        src={service.images && service.images.length > 0 ? service.images[0] : 'https://via.placeholder.com/400'}
-                                        alt={service.serviceName}
-                                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                                    />
-                                    <div className="absolute top-4 right-4 bg-[rgba(11,20,31,0.9)] backdrop-blur-sm px-3 py-1 rounded-full">
-                                        <span className="font-urbanist text-[14px] font-bold text-[#C0DDFF]">
-                                            ৳{service.cost}
-                                        </span>
-                                    </div>
-                                </div>
-
-                                <div className="p-6">
-                                    <h3 className="font-urbanist text-[20px] font-bold text-[#DEEBFA] mb-2">
-                                        {service.serviceName}
-                                    </h3>
-
-                                    <p className="font-urbanist text-[14px] text-[rgba(222,235,250,0.80)] mb-4 line-clamp-2">
-                                        {service.description}
-                                    </p>
-
-                                    <div className="flex items-center gap-4 mb-4 text-[rgba(222,235,250,0.70)]">
-
-                                        <div className="flex items-center gap-1">
-                                            <IconStar size={16} className="text-[#FFD700]" fill="#FFD700" />
-                                            <span className="font-urbanist text-[13px]">
-                                                {service.rating || 0} ({service.reviews || 0})
-                                            </span>
-                                        </div>
-
-                                        <div className="flex items-center gap-1">
-                                            <IconClock size={16} />
-                                            <span className="font-urbanist text-[13px]">
-                                                {service.duration}
+                ) : services.length > 0 ? (
+                    <>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {services.map(service => (
+                                <div
+                                    key={service._id}
+                                    className="bg-[rgba(192,221,255,0.05)] backdrop-blur-sm border border-[rgba(192,221,255,0.15)] rounded-2xl overflow-hidden hover:border-[#C0DDFF] transition-all duration-300 group"
+                                >
+                                    <div className="relative h-48 overflow-hidden">
+                                        <img
+                                            src={service.images && service.images.length > 0 ? service.images[0] : 'https://via.placeholder.com/400'}
+                                            alt={service.serviceName}
+                                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                                        />
+                                        <div className="absolute top-4 right-4 bg-[rgba(11,20,31,0.9)] backdrop-blur-sm px-3 py-1 rounded-full">
+                                            <span className="font-urbanist text-[14px] font-bold text-[#C0DDFF]">
+                                                ৳{service.cost}
                                             </span>
                                         </div>
                                     </div>
 
-                                    <div className="flex items-center gap-2 mb-4 text-[rgba(222,235,250,0.70)]">
-                                        <IconMapPin size={16} />
-                                        <span className="font-urbanist text-[13px] capitalize">
-                                            {service.serviceType || 'On-site'}
-                                        </span>
-                                    </div>
+                                    <div className="p-6">
+                                        <h3 className="font-urbanist text-[20px] font-bold text-[#DEEBFA] mb-2">
+                                            {service.serviceName}
+                                        </h3>
 
-                                    <Link href={`/service/${service._id}${selectedDate ? `?date=${selectedDate}` : ''}`}>
-                                        <button className="w-full bg-gradient-to-r from-[#C0DDFF] to-[#A0B8D4] text-[#0B141F] font-urbanist font-bold cursor-pointer text-[14px] py-3 rounded-lg hover:brightness-110 hover:shadow-lg hover:shadow-[rgba(192,221,255,0.3)] transition-all duration-300 transform hover:-translate-y-0.5">
-                                            View Details
-                                        </button>
-                                    </Link>
+                                        <p className="font-urbanist text-[14px] text-[rgba(222,235,250,0.80)] mb-4 line-clamp-2">
+                                            {service.description}
+                                        </p>
+
+                                        <div className="flex items-center gap-4 mb-4 text-[rgba(222,235,250,0.70)]">
+                                            <div className="flex items-center gap-1">
+                                                <IconStar size={16} className="text-[#FFD700]" fill="#FFD700" />
+                                                <span className="font-urbanist text-[13px]">
+                                                    {service.rating || 0} ({service.reviews || 0})
+                                                </span>
+                                            </div>
+
+                                            <div className="flex items-center gap-1">
+                                                <IconClock size={16} />
+                                                <span className="font-urbanist text-[13px]">
+                                                    {service.duration}
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                        <div className="flex items-center gap-2 mb-4 text-[rgba(222,235,250,0.70)]">
+                                            <IconMapPin size={16} />
+                                            <span className="font-urbanist text-[13px] capitalize">
+                                                {service.serviceType || 'On-site'}
+                                            </span>
+                                        </div>
+
+                                        <Link href={`/service/${service._id}${selectedDate ? `?date=${selectedDate}` : ''}`}>
+                                            <button className="w-full bg-gradient-to-r from-[#C0DDFF] to-[#A0B8D4] text-[#0B141F] font-urbanist font-bold cursor-pointer text-[14px] py-3 rounded-lg hover:brightness-110 hover:shadow-lg hover:shadow-[rgba(192,221,255,0.3)] transition-all duration-300 transform hover:-translate-y-0.5">
+                                                View Details
+                                            </button>
+                                        </Link>
+                                    </div>
                                 </div>
+                            ))}
+                        </div>
+
+                        {!loading && pagination.pages > 0 && (
+                            <div className="mt-12 flex justify-center items-center gap-4">
+                                <button
+                                    onClick={() => setPage(prev => Math.max(prev - 1, 1))}
+                                    disabled={page === 1}
+                                    className="px-4 py-2 rounded-lg bg-[rgba(192,221,255,0.05)] border border-[rgba(192,221,255,0.15)] text-[#DEEBFA] font-urbanist font-semibold text-[14px] disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[rgba(192,221,255,0.1)] transition-all cursor-pointer"
+                                >
+                                    Previous
+                                </button>
+
+                                <div className="flex items-center gap-2">
+                                    <span className="font-urbanist text-[14px] text-[#DEEBFA] bg-[rgba(192,221,255,0.05)] border border-[rgba(192,221,255,0.15)] px-4 py-2 rounded-lg">
+                                        Page {pagination.page} of {pagination.pages}
+                                    </span>
+                                </div>
+
+                                <button
+                                    onClick={() => setPage(prev => Math.min(prev + 1, pagination.pages))}
+                                    disabled={page === pagination.pages}
+                                    className="px-4 py-2 rounded-lg bg-[rgba(192,221,255,0.05)] border border-[rgba(192,221,255,0.15)] text-[#DEEBFA] font-urbanist font-semibold text-[14px] disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[rgba(192,221,255,0.1)] transition-all cursor-pointer"
+                                >
+                                    Next
+                                </button>
                             </div>
-                        ))}
-                    </div>
+                        )}
+                    </>
                 ) : (
                     <div className="text-center py-16">
                         <div className="bg-[rgba(192,221,255,0.05)] backdrop-blur-sm border border-[rgba(192,221,255,0.15)] rounded-2xl p-12 max-w-md mx-auto">
@@ -333,7 +357,7 @@ const ServicesPage = () => {
                             </p>
                             <button
                                 onClick={clearFilters}
-                                className="bg-gradient-to-r from-[#C0DDFF] to-[#A0B8D4] text-[#0B141F] font-urbanist font-bold text-[14px] py-3 px-6 rounded-lg hover:brightness-110 transition-all duration-300"
+                                className="bg-gradient-to-r from-[#C0DDFF] to-[#A0B8D4] text-[#0B141F] font-urbanist font-bold text-[14px] py-3 px-6 rounded-lg hover:brightness-110 transition-all duration-300 cursor-pointer"
                             >
                                 Clear Filters
                             </button>
